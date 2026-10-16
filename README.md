@@ -6,6 +6,8 @@ End-of-life solar panels can still produce about 80% of their original rated pow
 
 This project measures used panels, automatically selects a wiring arrangement, and compares its measured output with a baseline arrangement. A water pump demonstrates the load being powered, while a live dashboard shows panel measurements and output power. The system is designed to make reuse easier to evaluate and to demonstrate the benefit of matching panels with similar current in each series string.
 
+Microinverters and DC optimizers put a separate power converter on every panel. That cost works against the reason for buying cheap used panels. Research on automatic rewiring has focused on temporary shade across new panels, not on permanently reduced output.
+
 ## How It Works
 
 The prototype is designed around four panels arranged as two series pairs, with the pairs connected in parallel. A single panel does not provide enough voltage for the pump system, so series pairs provide the needed voltage while parallel wiring combines their output current.
@@ -20,7 +22,7 @@ The prototype is designed around four panels arranged as two series pairs, with 
 
 In a series string, every panel carries the same current. A panel with lower current capability therefore limits the current of the other panel in that string. In parallel, the strings share voltage and their currents add, so pairing panels with similar current can increase the combined output.
 
-For illustration, suppose two panels produce 1.0 unit of current and two produce 0.5 units. Pairing each high-current panel with a low-current panel gives two strings limited to 0.5 units each, or 1.0 unit total current. Pairing the high-current panels together and the low-current panels together gives strings carrying 1.0 and 0.5 units, or 1.5 units total current. At the same voltage, that idealized example is a 50% increase in power. Real hardware may show a smaller gain; the prototype measures and reports the actual result instead of assuming this ideal gain.
+For illustration, suppose two panels produce 1.0 unit of current and two produce 0.5 units, and each panel contributes 1 unit of voltage in its series pair. Pairing each high-current panel with a low-current panel gives two strings limited to 0.5 units of current, for 2 units of power. Pairing the high-current panels together and the low-current panels together gives strings carrying 1.0 and 0.5, for 3 units of power, 50% more. Real hardware may show a smaller gain; the prototype measures and reports the actual result instead of assuming this ideal gain.
 
 ## Panel Measurements
 
@@ -69,6 +71,13 @@ The ESP32 hosts a web page over Wi-Fi. The dashboard is intended to show:
 - A live chart of output power in watts for the optimized and arbitrary pairings
 - The measured percentage gain of the optimized pairing over the baseline
 
-## Project Status
+## Run the dashboard
 
-This README describes the project design and measurement approach. Hardware, firmware, and dashboard setup instructions will be added when their implementation is available.
+The ESP32, relays, INA219, and pump are not in this repository. `solar_pairing` is a local stand-in: it measures four panels, tries all three pairings, alternates the optimized pairing with position wiring, and serves the dashboard.
+
+```bash
+python3 -m solar_pairing.server --host 0.0.0.0 --port 8765
+python3 -m unittest discover -s tests
+```
+
+Open `http://127.0.0.1:8765`. The default setup puts 50% tint on panels B and D, which makes position wiring the mismatched case. The pump indicator follows panel power. It is not driven by a separate battery.

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adaptive wiring</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="eyebrow">Used solar panels</p>
+      <h1>Adaptive wiring</h1>
+      <p class="lede">Measure each panel, try all three pairings, and keep the wiring that delivers more power. This page is the dashboard an ESP32 would host. Here, the sensor and relays are simulated with those same rules.</p>
+    </div>
+    <p class="hardware-note" id="hardware-note"></p>
+  </header>
+
+  <section class="proof" aria-label="Measured gain and pump">
+    <div class="gain-card">
+      <p class="label">Measured gain</p>
+      <p class="gain" id="gain">Measuring…</p>
+      <p class="fine" id="gain-detail">Average difference in output power, optimized pairing over position wiring, across alternation cycles.</p>
+    </div>
+    <div class="pump-card">
+      <p class="label">Water pump</p>
+      <div class="pump" id="pump" aria-hidden="true">
+        <div class="impeller" id="impeller"></div>
+      </div>
+      <p class="fine" id="pump-detail">Driven by the panels, not a battery, so the indicator follows output power.</p>
+    </div>
+    <div class="now-card">
+      <p class="label">Connected now</p>
+      <p class="now" id="active-role">—</p>
+      <p class="power-now" id="active-power">—</p>
+      <p class="fine" id="light-detail"></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Panel measurements</h2>
+      <p>Short-circuit current, open-circuit voltage, and relative current score. Scores compare panels under the same light.</p>
+    </div>
+    <div class="panel-grid" id="panels"></div>
+  </section>
+
+  <section class="chart-section">
+    <div class="section-head">
+      <h2>Live output power</h2>
+      <p id="chart-caption">The relays alternate pairings every few seconds. Each point is the power measured while that pairing was connected.</p>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart" width="800" height="280" aria-label="Output power chart"></canvas>
+      <div class="legend">
+        <span><i class="swatch optimized"></i> Optimized</span>
+        <span><i class="swatch arbitrary"></i> Arbitrary position wiring</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Pairings under test</h2>
+      <p>Four panels make two series pairs, and those pairs connect in parallel. There are three ways to pair them.</p>
+    </div>
+    <div class="pairing-grid" id="pairings"></div>
+  </section>
+
+  <section class="controls">
+    <div class="section-head">
+      <h2>Simulate reduced output</h2>
+      <p>Window tint covers a whole panel. A series resistor stands in for a corroded connection. A failed cell group drops open-circuit voltage by about a third.</p>
+    </div>
+    <div class="presets">
+      <button type="button" id="preset-mismatch">50% tint on B and D</button>
+      <button type="button" id="preset-together">50% tint on C and D</button>
+      <button type="button" id="preset-clear">All panels clear</button>
+    </div>
+    <label class="light-control">Light level
+      <input id="light" type="range" min="0.2" max="1.2" step="0.05" value="1">
+      <span id="light-value">100%</span>
+    </label>
+    <div class="control-grid" id="controls"></div>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
