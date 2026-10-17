@@ -125,14 +125,39 @@
     document.body.addEventListener("drop", (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) f.text().then(importText, bad); }, { once: true });
   }
 
+  // What someone who just scanned a card needs before the numbers: what tested this panel, and where the rest is.
+  const PROJECT_URL = "https://mscl741.github.io/HackHarvard/";
+  const passportIntro = () => `<p class="lede passport-intro">This panel was tested by <a href="${PROJECT_URL}">Second String</a>, a bench that grades used solar panels against each other and finds the wiring that wastes the least power. The numbers below were measured, not copied from the label. <a href="#/">See every panel tested so far</a>.</p>`;
+  // This panel against the others measured in the same run: relative score bars, this one in ink and the others muted,
+  // over the grade bands (C under 75%, B to 90%, A above) so the letter explains itself. Nothing to compare with one panel.
+  function batchCard(p) {
+    const batch = p.run && Array.isArray(p.run.passports) ? p.run.passports : [];
+    if (batch.length < 2) return "";
+    const width = (x) => { const v = Number(x); return x != null && x !== "" && Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : 0; };
+    const pct = (x) => { const s = num(x, 0); return s === "—" ? s : `${s}%`; };
+    const rows = batch.map((q) => {
+      const me = q.passport_id === p.passport_id;
+      const id = me ? `<b class="batch__id" aria-current="page">${esc(q.passport_id)}</b>` : `<a class="batch__id" href="#/p/${encodeURIComponent(q.passport_id)}">${esc(q.passport_id)}</a>`;
+      return `<li class="batch__row${me ? " is-me" : ""}">${id}<span class="batch__track"><span class="batch__bar" style="width:${width(q.score_pct)}%"></span></span><span class="batch__pct">${pct(q.score_pct)}</span><span class="grade g-${esc(q.grade)}">${esc(q.grade || "—")}</span></li>`;
+    }).join("");
+    const scale = `<li class="batch__row batch__scale" aria-hidden="true"><span></span><span class="batch__bands"><span style="width:75%">C</span><span style="width:15%">B</span><span style="width:10%">A</span></span></li>`;
+    const word = gradeWord[p.grade];
+    return `<div class="card batch-card">
+        <h2>Against the panels tested with it</h2>
+        <ul class="batch">${rows}${scale}</ul>
+        <p class="small muted batch__note">${word ? `<b>Grade ${esc(p.grade)}</b>, ${esc(word)}. ` : ""}Each bar is a panel's short-circuit current as a share of the strongest panel in run ${esc(p.run.run_id)}, all measured at the same instant under the same light.</p>
+      </div>`;
+  }
+
   function pagePassport(id) {
     const p = passport(id);
-    if (!p) return `<h1 class="page-title">${esc(id)}</h1>${emptyNote(`<p class="lede">No passport with this ID has been imported into this browser. <a href="#/">Back to the list.</a></p>`)}`;
+    if (!p) return `<h1 class="page-title">${esc(id)}</h1>${passportIntro()}${emptyNote(`<p class="lede">No passport with this ID has been imported into this browser. <a href="#/">Back to the list.</a></p>`)}`;
     const url = location.href;
     const qr = window.qrcode(0, "M"); qr.addData(url); qr.make();
     const flags = (p.flags || []).map((f) => `<li>${esc(flagWord[f] || f)}</li>`).join("");
     return `
       <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← All passports</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print</button></div>
+      ${passportIntro()}
       <div class="card passport">
         <div class="passport__visual">
           ${cellSvg({ label: p.passport_id, dim: p.grade === "C" })}
@@ -154,7 +179,8 @@
           ${p.verified ? `<p style="margin-top:16px">${pairingLine(p.verified)}</p>` : ""}
           <p class="small muted" style="margin-top:14px">A relative score compares panels of the same model measured under the same light at the same instant, which removes light level from the comparison. Rated values from a label: ${p.rated && p.rated.isc_ma ? `${p.rated.isc_ma} mA, ${p.rated.voc_v} V` : "not recorded"}.</p>
         </div>
-      </div>`;
+      </div>
+      ${batchCard(p)}`;
   }
 
   // #/print: one card per passport, four to a sheet (two columns, two rows); each sheet is one printed page.
