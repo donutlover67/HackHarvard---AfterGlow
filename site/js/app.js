@@ -362,10 +362,9 @@
   }
 
   // ---------- router ----------
-  // The front page proper arrives with the redesign; until then #/ shows the headline and the two ways in.
-  function pageFront() {
-    return `<section class="hero"><h1 class="display">Used panels still work.</h1><p class="row"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></p></section>`;
-  }
+  // the front page's data and helpers; front.js draws it. While the first pull is running it shows a loading
+  // note, so say so (loadingShown) and settle() redraws it when the pull ends, as emptyNote does for the other pages.
+  const frontCtx = () => { if (loading) loadingShown = true; return { runs, passports: passports(), loading, esc, num, cellSvg, fmtDay }; };
   // reason: "route" when the hash changed (start at the top), "data" when runs arrived (redraw in place)
   function render(reason = "route") {
     const r = window.SSRoutes.parse(location.hash);
@@ -377,7 +376,8 @@
       else if (r.page === "impact") view.innerHTML = pageImpact();
       else if (r.page === "print") view.innerHTML = pagePrint();
       else if (r.page === "passports") { view.innerHTML = pageIndex(); wireIndex(); }
-      else view.innerHTML = pageFront();
+      else if (reason === "data" && view.querySelector("[data-hero]")) window.SSFront.refresh(view, frontCtx());
+      else { view.innerHTML = window.SSFront.page(frontCtx()); window.SSFront.wire(view, { loadSample }); }
     } catch (err) {
       // never leave a blank page on a judge's phone: say what happened and offer the one fix that always works
       console.error(err);
