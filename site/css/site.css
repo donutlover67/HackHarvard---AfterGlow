@@ -305,8 +305,25 @@ a.btn--primary { color: #fff; }
 }
 
 /* ---------- automatic Array Builder, Impact demo ---------- */
-.need-field { font-size: 0.95rem; color: var(--ink); font-weight: 600; gap: 8px; max-width: 460px; }
-.need-field select { font-size: 1rem; font-weight: 500; padding: 9px 11px; }
+/* searchable load picker: type to filter, a typed number becomes "Use N V", or enter your own voltage */
+.combo { position: relative; max-width: 520px; margin-bottom: 14px; }
+.combo__label { display: block; font-size: 0.95rem; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.combo__box { position: relative; }
+.combo__box input { width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--surface); border: 1px solid var(--busbar); border-radius: var(--radius); padding: 10px 40px 10px 12px; }
+.combo__box input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.combo__toggle { position: absolute; right: 1px; top: 1px; bottom: 1px; width: 38px; border: 0; background: transparent; color: var(--ink-2); font-size: 1rem; cursor: pointer; border-radius: var(--radius); }
+.combo__list { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); max-height: 320px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: var(--surface); border: 1px solid var(--busbar); border-radius: var(--radius); }
+.combo__opt { display: flex; justify-content: space-between; gap: 12px; padding: 9px 10px; border-radius: var(--radius); cursor: pointer; color: var(--ink); }
+.combo__opt:hover, .combo__opt.is-active { background: var(--busbar-2); }
+.combo__v { color: var(--ink-3); white-space: nowrap; }
+.combo__opt.is-volts { font-weight: 600; color: var(--cell); }
+.combo__opt.is-other { border-top: 1px solid var(--busbar-2); margin-top: 2px; color: var(--pair-b); font-weight: 600; }
+.combo__empty { padding: 9px 10px 4px; color: var(--ink-3); font-size: 0.9rem; }
+.combo__custom { margin-top: 10px; padding: 12px; border: 1px solid var(--busbar); border-radius: var(--radius); background: var(--surface); display: grid; gap: 6px; }
+.combo__list[hidden], .combo__custom[hidden] { display: none; }
+/* the open list must sit above the result card that follows (each card is its own layer while it fades in) */
+.view > *:has(.combo) { position: relative; z-index: 5; overflow: visible; }
+.combo__custom .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--ink); }
 .build-auto { margin: -2px 0 16px; color: var(--ink-2); }
 .build-auto b { color: var(--ink); }
 details.adjust summary, details.impact-edit summary { cursor: pointer; font-weight: 700; color: var(--cell); }

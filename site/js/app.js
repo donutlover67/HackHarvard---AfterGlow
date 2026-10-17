@@ -301,34 +301,51 @@
       ${sheets.length ? sheets.join("") : `<div class="card">${emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}</div>`}`;
   }
 
-  // What the panels will power decides the string length: the fewest panels in series whose working voltage
-  // (about 0.82 x the summed open-circuit voltage, the same rule as tools/eval) reaches the load's minimum.
+  // What the panels will power sets one thing: the fewest panels in series whose working voltage (about 0.82 x the
+  // summed open-circuit voltage, the rule tools/eval uses) reaches the load's minimum. Within that, the builder
+  // always maximizes total watts. "min" is the working voltage each load needs, in volts.
   const NEEDS = [
-    { id: "12v", min: 9, text: "A 12 V load, like a small pump or fan" },
-    { id: "18v", min: 14, text: "An 18 V tool-battery charger" },
-    { id: "24v", min: 19, text: "A 24 V system, like an electric-fence energizer" },
-    { id: "custom", min: null, text: "I'll choose the string length myself" },
+    { id: "12v-load", min: 9, text: "12 V load: small pump, fan or LED strip", keys: "pump water fan light led strip dc motor 12v" },
+    { id: "12v-batt", min: 15, text: "Charge a 12 V battery through a charge controller", keys: "battery charge controller lead acid lifepo4 car rv boat 12v" },
+    { id: "usb", min: 7, text: "Phone or USB device through a 5 V converter", keys: "usb phone charger 5v buck converter" },
+    { id: "18v", min: 14, text: "18 V tool-battery charger", keys: "drill tool power tool battery 18v 20v" },
+    { id: "24v-load", min: 19, text: "24 V system: pump or electric-fence energizer", keys: "fence energizer pump farm 24v" },
+    { id: "24v-batt", min: 30, text: "Charge a 24 V battery", keys: "battery bank charge 24v" },
+    { id: "48v", min: 60, text: "48 V system or battery bank", keys: "inverter home battery bank 48v off-grid" },
+    { id: "maxw", min: null, text: "No set voltage: the most total watts", keys: "max maximum most watts power any voltage none" },
+    { id: "manual", min: null, text: "I'll set panels per string myself", keys: "manual custom string length series myself" },
   ];
   const VMP_RATIO = 0.82;
-  function stringLength(panels, need, customK) {
-    if (!need.min) return customK;
-    const vocs = panels.map((p) => p.voc_v).sort((a, b) => a - b);
-    const med = vocs.length ? vocs[Math.floor(vocs.length / 2)] : 6.8;
-    return Math.max(1, Math.ceil(need.min / (VMP_RATIO * med) - 1e-9));
+  const medianVoc = (panels) => { const v = panels.map((p) => p.voc_v).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : 6.8; };
+  const kForVolts = (panels, min) => Math.max(1, Math.ceil(min / (VMP_RATIO * medianVoc(panels)) - 1e-9));
+  // the saved choice: a listed load, or { id: "volts", min } typed in by the user
+  function savedNeed() {
+    const v = LS.get("ss.site.need", "12v-load");
+    if (v && typeof v === "object" && v.id === "volts" && Number(v.min) > 0) return { id: "volts", min: Number(v.min), text: `My own load: ${Number(v.min)} V working voltage` };
+    return NEEDS.find((n) => n.id === v) || NEEDS[0];
   }
+  const needLabel = (n) => n.min && n.id !== "volts" ? `${n.text} (about ${n.min} V)` : n.text;
 
   function pageBuild() {
     const ps = passports();
     const off = new Set(LS.get("ss.site.excluded", []));
-    const needId = LS.get("ss.site.need", "12v");
     const items = ps.map((p) => `<label class="${off.has(p.passport_id) ? "" : "is-on"}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${off.has(p.passport_id) ? "" : "checked"}> <b>${esc(p.passport_id)}</b>${isSim(p.run) ? ` <span class="tag">Simulated</span>` : ""} <span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, ${esc(p.grade)}</span></label>`).join("");
     return `
       <h1 class="page-title">Array Builder</h1>
       <p class="lede">Tell it what the panels will power. The builder takes every tested panel, works out how many go in each series string, groups them so no strong panel is held back by a weaker partner, and shows how much more power that wiring gives. It updates on its own whenever something changes.</p>
       <div class="card no-print need-card">
-        <label class="field need-field">What will the panels power?
-          <select id="need">${NEEDS.map((n) => `<option value="${n.id}" ${n.id === needId ? "selected" : ""}>${esc(n.text)}</option>`).join("")}</select>
-        </label>
+        <div class="combo" id="need-combo">
+          <label class="combo__label" for="need-input">What will the panels power?</label>
+          <div class="combo__box">
+            <input id="need-input" type="text" role="combobox" aria-expanded="false" aria-controls="need-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Type to search: pump, battery, 24 V…" value="${esc(needLabel(savedNeed()))}">
+            <button type="button" class="combo__toggle" id="need-toggle" aria-label="Show every option" tabindex="-1">▾</button>
+          </div>
+          <ul class="combo__list" id="need-list" role="listbox" hidden></ul>
+          <div class="combo__custom" id="need-custom" hidden>
+            <label class="field">Working voltage your load needs <span class="row"><input id="need-volts" type="number" min="1" step="0.5" placeholder="e.g. 36" style="width:110px"> V <button type="button" class="btn btn--primary" id="btn-need-volts">Use it</button></span></label>
+            <p class="small muted">For a battery, use a little above its charging voltage; for a device, the lowest voltage it runs on.</p>
+          </div>
+        </div>
         ${ps.length ? "" : emptyNote(`<div class="row" style="margin-top:12px"><span class="muted">No panels to group yet.</span><button type="button" class="btn btn--primary" id="btn-build-demo">Load the demo panels</button><span class="small muted">A simulated batch, not a real measurement.</span></div>`)}
       </div>
       <div id="build-result"></div>
@@ -352,8 +369,8 @@
       pool.querySelectorAll("label").forEach((l) => l.classList.toggle("is-on", l.querySelector("input").checked));
       runBuild();
     });
-    $("#need").addEventListener("change", () => { LS.set("ss.site.need", $("#need").value); runBuild(); });
-    $("#k").addEventListener("change", () => { $("#need").value = "custom"; LS.set("ss.site.need", "custom"); runBuild(); });
+    wireNeedPicker();
+    $("#k").addEventListener("change", () => { LS.set("ss.site.need", "manual"); $("#need-input").value = needLabel(savedNeed()); runBuild(); });
     $("#btn-add").addEventListener("click", () => {
       const isc = Number($("#add-isc").value), voc = Number($("#add-voc").value);
       if (!(isc > 0 && voc > 0)) return;
@@ -369,6 +386,62 @@
     runBuild();
   }
 
+  // A searchable picker: type to filter the loads; a number offers "Use N V"; anything else can be entered as your own voltage.
+  function wireNeedPicker() {
+    const input = $("#need-input"), list = $("#need-list"), custom = $("#need-custom"), box = $("#need-combo");
+    let items = [], active = -1;
+    const words = (q) => q.toLowerCase().split(/[^a-z0-9.]+/).filter(Boolean);
+    function options(q) {
+      const ws = words(q);
+      const hits = NEEDS.filter((n) => ws.every((w) => `${n.text} ${n.keys} ${n.min || ""} v`.toLowerCase().includes(w)));
+      const out = [];
+      const volts = Number((q.match(/(\d+(?:\.\d+)?)/) || [])[1]);
+      if (volts > 0) out.push({ id: "volts", min: volts, text: `Use ${volts} V: my own load's working voltage` });
+      out.push(...hits);
+      out.push({ id: "other", text: "None of these: enter my own voltage…" });
+      return { out, empty: !hits.length && ws.length > 0 };
+    }
+    function draw(q) {
+      const { out, empty } = options(q);
+      items = out; active = -1;
+      list.innerHTML = (empty ? `<li class="combo__empty" role="presentation">No listed load matches “${esc(q)}”.</li>` : "") + out.map((o, i) => `<li role="option" id="need-opt-${i}" data-i="${i}" class="combo__opt${o.id === "other" ? " is-other" : ""}${o.id === "volts" ? " is-volts" : ""}"><span>${esc(o.text)}</span>${o.min && o.id !== "volts" ? `<span class="combo__v">about ${o.min} V</span>` : ""}</li>`).join("");
+      list.hidden = false; input.setAttribute("aria-expanded", "true");
+    }
+    function close(restore) {
+      list.hidden = true; input.setAttribute("aria-expanded", "false"); input.removeAttribute("aria-activedescendant");
+      if (restore) input.value = needLabel(savedNeed());
+    }
+    function choose(o) {
+      if (!o) return;
+      if (o.id === "other") { close(false); input.value = ""; custom.hidden = false; $("#need-volts").focus(); return; }
+      custom.hidden = true;
+      LS.set("ss.site.need", o.id === "volts" ? { id: "volts", min: o.min } : o.id);
+      close(true); runBuild();
+    }
+    function setActive(i) {
+      const opts = [...list.querySelectorAll(".combo__opt")];
+      if (!opts.length) return;
+      active = (i + opts.length) % opts.length;
+      opts.forEach((el, j) => el.classList.toggle("is-active", j === active));
+      input.setAttribute("aria-activedescendant", opts[active].id);
+      opts[active].scrollIntoView({ block: "nearest" });
+    }
+    input.addEventListener("focus", () => { input.select(); draw(""); });
+    input.addEventListener("input", () => draw(input.value));
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") { e.preventDefault(); if (list.hidden) draw(input.value); setActive(active + 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); setActive(active - 1); }
+      else if (e.key === "Enter") { e.preventDefault(); choose(items[active >= 0 ? active : 0]); input.blur(); }
+      else if (e.key === "Escape") { close(true); input.blur(); }
+    });
+    list.addEventListener("mousedown", (e) => { const li = e.target.closest(".combo__opt"); if (li) { e.preventDefault(); choose(items[Number(li.dataset.i)]); input.blur(); } });
+    $("#need-toggle").addEventListener("mousedown", (e) => { e.preventDefault(); if (list.hidden) { input.focus(); } else close(true); });
+    input.addEventListener("blur", () => setTimeout(() => { if (!box.contains(document.activeElement)) close(true); }, 120));
+    const useVolts = () => { const v = Number($("#need-volts").value); if (v > 0) choose({ id: "volts", min: v }); };
+    $("#btn-need-volts").addEventListener("click", useVolts);
+    $("#need-volts").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); useVolts(); } });
+  }
+
   function groupsHtml(groups, byId) {
     return `<div class="groups">${groups.map((g, i) => `<div class="group"><span class="muted small">String ${i + 1}</span><span class="group__string">${g.map((p) => `<span class="chip ${byId[p.id] && byId[p.id].grade === "C" ? "is-weak" : ""}">${esc(p.id)}</span>`).join("<span class='muted'>+</span>")}</span><span class="muted small">limited to ${Math.min(...g.map((p) => p.isc_ma)).toFixed(0)} mA</span></div>`).join("")}</div>`;
   }
@@ -380,21 +453,37 @@
     const off = new Set(LS.get("ss.site.excluded", []));
     const chosen = ps.filter((p) => !off.has(p.passport_id) && Number(p.isc_ma) > 0 && Number(p.voc_v) > 0).map((p) => ({ id: p.passport_id, isc_ma: Number(p.isc_ma), voc_v: Number(p.voc_v) }));
     const pool = [...chosen, ...extraPanels];
-    const need = NEEDS.find((n) => n.id === $("#need").value) || NEEDS[0];
-    const k = stringLength(pool, need, Number($("#k").value));
-    if (need.min) $("#k").value = String(Math.min(6, k));
-    const vocs = pool.map((p) => p.voc_v).sort((a, b) => a - b);
-    const medVoc = vocs.length ? vocs[Math.floor(vocs.length / 2)] : 0;
-    $("#k-note").textContent = need.min ? `Worked out from the load: ${k} panel${k === 1 ? "" : "s"} per string reach about ${(VMP_RATIO * k * medVoc).toFixed(1)} V working voltage, the fewest that clear ${need.min} V. Changing it here switches to choosing it yourself.` : "You are choosing the string length.";
-    if (!pool.length) { out.innerHTML = ""; return; }
-    if (pool.length < k) { out.innerHTML = `<div class="card"><p class="status is-bad">${pool.length} panel${pool.length === 1 ? "" : "s"} can't make a ${k}-panel string. Add panels or pick a smaller load.</p></div>`; return; }
+    const need = savedNeed();
+    if (!pool.length) { out.innerHTML = ""; $("#k-note").textContent = ""; return; }
+    const medVoc = medianVoc(pool);
+    const vAt = (kk) => VMP_RATIO * kk * medVoc;
     // every string needs exactly k panels: leave out the weakest extras and say so
-    const keep = Math.floor(pool.length / k) * k;
-    const leftIds = new Set([...pool].sort((a, b) => b.isc_ma - a.isc_ma).slice(keep).map((p) => p.id));
-    const panels = pool.filter((p) => !leftIds.has(p.id));
-    const res = window.SSBuilder.analyze(panels, k);
+    const plan = (kk) => {
+      const keep = Math.floor(pool.length / kk) * kk;
+      const leftIds = new Set([...pool].sort((a, b) => b.isc_ma - a.isc_ma).slice(keep).map((p) => p.id));
+      const panels = pool.filter((p) => !leftIds.has(p.id));
+      return { k: kk, leftIds, panels, res: panels.length ? window.SSBuilder.analyze(panels, kk) : { error: "no panels" } };
+    };
+    let best, maxwTop = 0;
+    if (need.id === "maxw") {
+      // try every string length up to six panels; among those within 1% of the most total watts, take the longest
+      // strings: well-matched panels lose almost nothing in series, and a higher voltage is easier to use and wire
+      const plans = [];
+      for (let kk = 1; kk <= Math.min(6, pool.length); kk++) { const pl = plan(kk); if (!pl.res.error) plans.push(pl); }
+      const top = Math.max(...plans.map((pl) => pl.res.greedy.pmax));
+      best = plans.filter((pl) => pl.res.greedy.pmax >= 0.99 * top).pop();
+      maxwTop = top;
+    } else {
+      const kk = need.id === "manual" ? Number($("#k").value) : kForVolts(pool, need.min);
+      if (pool.length < kk) { out.innerHTML = `<div class="card"><p class="status is-bad">${pool.length} panel${pool.length === 1 ? "" : "s"} can't make a ${kk}-panel string${need.min ? ` for ${need.min} V` : ""}. Add panels or pick a lower voltage.</p></div>`; $("#k-note").textContent = ""; return; }
+      best = plan(kk);
+    }
+    const { k, leftIds, panels, res } = best;
+    $("#k").value = String(Math.min(6, k));
+    $("#k-note").textContent = need.id === "manual" ? `You are setting the string length: about ${vAt(k).toFixed(1)} V working voltage per string.` : need.id === "maxw" ? `Picked for the most total watts: ${k} per string, about ${vAt(k).toFixed(1)} V. Changing it here switches to setting it yourself.` : `Worked out from the load: ${k} panel${k === 1 ? "" : "s"} per string reach about ${vAt(k).toFixed(1)} V working voltage, the fewest that clear ${need.min} V. Changing it here switches to setting it yourself.`;
     if (res.error) { out.innerHTML = `<div class="card"><p class="status is-bad">${esc(res.error)}</p></div>`; return; }
-    const autoLine = `<p class="build-auto">Grouped automatically: <b>${panels.length} panels</b> into <b>${panels.length / k} string${panels.length / k === 1 ? "" : "s"} of ${k}</b>${need.min ? ` for ${esc(need.text.charAt(0).toLowerCase() + need.text.slice(1))}` : ""}.${leftIds.size ? ` Left out, as the weakest extra${leftIds.size === 1 ? "" : "s"} that can't fill a string: ${[...leftIds].map(esc).join(", ")}.` : ""}</p>`;
+    const forWhat = need.id === "maxw" ? ` for the most total watts at any voltage, about <b>${vAt(k).toFixed(1)} V</b> per string${res.greedy.pmax < maxwTop - 1e-9 ? ` (within 1% of the most possible, ${maxwTop.toFixed(2)} W, at a more usable voltage)` : ""}${vAt(k) < 9 ? `, too low to run a 12 V load directly` : ""}` : need.min ? ` for ${esc(need.text.charAt(0).toLowerCase() + need.text.slice(1))}, about ${vAt(k).toFixed(1)} V per string` : ` (string length set by hand), about ${vAt(k).toFixed(1)} V per string`;
+    const autoLine = `<p class="build-auto">Grouped automatically: <b>${panels.length} panels</b> into <b>${panels.length / k} string${panels.length / k === 1 ? "" : "s"} of ${k}</b>${forWhat}.${leftIds.size ? ` Left out, as the weakest extra${leftIds.size === 1 ? "" : "s"} that can't fill a string: ${[...leftIds].map(esc).join(", ")}.` : ""}</p>`;
     const naiveGain = (res.greedy.pmax / res.naive.pmax - 1) * 100;
     const avg = res.brute ? res.brute.average : res.sampledAverage;
     const avgGain = (res.greedy.pmax / avg - 1) * 100;
