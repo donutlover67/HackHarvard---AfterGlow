@@ -36,6 +36,7 @@
       <button type="button" class="btn" id="btn-connect">Connect ESP32</button>
       <button type="button" class="btn btn--quiet" id="btn-mock">Use mock bench</button>
       <button type="button" class="btn btn--quiet" id="btn-replay" hidden>Replay recording</button>
+      <button type="button" class="btn" id="btn-rec-stop" hidden>Stop playback</button>
     </div>
   </header>
 
@@ -185,6 +186,17 @@
         <button type="button" class="btn btn--quiet" id="btn-dl-jsonl">Download all messages (JSONL)</button>
         <button type="button" class="btn btn--quiet" id="btn-dl-csv">Download live power (CSV)</button>
         <button type="submit" class="btn btn--quiet">Close</button>
+      </div>
+      <div class="sheet__actions playback">
+        <label class="btn" id="rec-pick">Play a recording…<input type="file" id="rec-file" accept=".log,.jsonl,.txt,.json" class="visually-hidden"></label>
+        <label class="field">Speed
+          <select id="rec-speed">
+            <option value="1">1×</option>
+            <option value="4" selected>4×</option>
+            <option value="0">As fast as possible</option>
+          </select>
+        </label>
+        <span class="sheet__status" id="rec-status">A capture from tools/capture.py, a messages download (JSONL) or an exported run (JSON). It plays through the same serial parser as the board and is labelled as a recording, never as live.</span>
       </div>
       <table class="table" id="data-table">
         <thead><tr><th>Time</th><th>Type</th><th>Summary</th></tr></thead>
