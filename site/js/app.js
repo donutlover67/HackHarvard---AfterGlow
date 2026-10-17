@@ -42,6 +42,10 @@
     return [...map.values()].sort((a, b) => String(a.passport_id).localeCompare(String(b.passport_id)));
   }
   function passport(id) { return passports().find((p) => p.passport_id === id); }
+  // Runs made by the model (the site's sample batch, or the dashboard's mock bench) are demo data, never shown as measurements.
+  const SIM_LINKS = ["sample", "mock"];
+  const isSim = (run) => !!run && SIM_LINKS.includes(run.link);
+  const LINK_WORD = { serial: "Bench", manual: "Typed in by hand", recording: "Recording of a bench run", sample: "Simulated (demo)", mock: "Simulated (demo)" };
   // true until the first pull of runs (the local API, then data/runs/index.json) has finished; empty states say "Loading…" meanwhile
   let loading = true, loadingShown = false;
   const emptyNote = (html) => { if (loading) loadingShown = true; return loading ? `<p class="muted">Loading passports…</p>` : html; };
@@ -71,8 +75,24 @@
   }
 
   // ---------- pages ----------
-  function pageIndex() {
-    const ps = passports();
+  // The front page: what Second String is, then the real tested panels, then the demo, kept apart.
+  const heroHtml = () => `
+      <section class="hero">
+        <h1 class="hero__title">Most retired solar panels still work. Second String proves which ones, and wires them so none is wasted.</h1>
+        <p class="hero__lede">Used panels usually keep about 80% of their output, but they go to landfill because testing them in a lab costs almost as much as a new panel. And when weak and strong panels share a series string, the weak one sets the current for both. Second String measures used panels cheaply, grades them against each other, and finds the wiring that gets the most power out of a mixed batch.</p>
+        <ol class="steps">
+          <li class="step"><b class="step__n">1</b><div><h2>Measure</h2><p>A small bench reads every panel's short-circuit current at the same instant, plus its open-circuit voltage, under the same light.</p></div></li>
+          <li class="step"><b class="step__n">2</b><div><h2>Grade</h2><p>Each panel is scored against the strongest one tested with it and gets a passport: an ID, a QR code and its numbers.</p></div></li>
+          <li class="step"><b class="step__n">3</b><div><h2>Wire</h2><p>Panels with similar current go in series together, so no strong panel is held back. The bench checks by measuring every wiring.</p></div></li>
+        </ol>
+        <div class="row hero__actions no-print">
+          <button type="button" class="btn btn--primary" id="btn-go-demo">Try the demo</button>
+          <a class="btn" href="#/build">Open the Array Builder</a>
+          <a class="btn btn--quiet" href="#/impact">Why it matters</a>
+        </div>
+      </section>`;
+
+  function panelTable(ps) {
     const rows = ps.map((p) => `<tr>
       <td><a href="#/p/${encodeURIComponent(p.passport_id)}">${esc(p.passport_id)}</a></td>
       <td><span class="grade g-${esc(p.grade)}">${esc(p.grade)}</span></td>
@@ -82,42 +102,64 @@
       <td>${(p.flags || []).map((f) => esc(String(f).replace("_", " "))).join(", ") || "—"}</td>
       <td class="small muted">${fmtDate(p.measured_at)}</td>
     </tr>`).join("");
+    return `<table class="table"><thead><tr><th>Passport</th><th>Grade</th><th class="num">Current</th><th class="num">Voltage</th><th class="num">Score</th><th>Flags</th><th>Tested</th></tr></thead><tbody>${rows}</tbody></table>
+          <p class="legend">Current is the short-circuit current and voltage the open-circuit voltage, read for every panel at the same instant. Score is a panel's current as a share of the strongest panel tested with it: A within 10%, B 75–90%, C under 75%.</p>`;
+  }
+
+  function pageIndex() {
+    const all = passports();
+    const real = all.filter((p) => !isSim(p.run));
+    const demo = all.filter((p) => isSim(p.run));
+    const demoRun = runs.filter(isSim).slice(-1)[0];
+    const firstDemo = demo[0];
+    const runRows = runs.map((r) => `<tr><td>${esc(r.run_id)}${isSim(r) ? ` <span class="tag">Simulated</span>` : ""}</td><td class="small">${esc(LINK_WORD[r.link] || "Not recorded")}</td><td class="small muted">${esc(r.bench || "")}</td><td>${r.search ? `<b class="pair-${esc(r.search.best)}">${esc(r.search.best)}</b>` : "—"}</td><td>${r.proof ? `+${num(r.proof.gain_pct, 1)}% ± ${num(r.proof.ci95_pct, 1)} (${r.proof.cycle} cycles)` : r.search ? "search only" : "—"}</td><td>${(r.passports || []).map((p) => `<a href="#/p/${encodeURIComponent(p.passport_id)}">${esc(p.passport_id)}</a>`).join(", ")}</td></tr>`).join("");
     return `
-      <h1 class="page-title">Panel passports</h1>
-      <p class="lede">Second String grades used solar panels against each other and wires them so no good panel is wasted on a weak partner. Every panel we test gets a passport: an ID, a QR code and this record of what the bench measured.</p>
+      ${heroHtml()}
       <div class="card">
-        <div class="row" style="justify-content:space-between;align-items:baseline"><h2>Tested panels</h2>${ps.length ? `<a class="small no-print" href="#/print">Print cards for all ${ps.length}</a>` : ""}</div>
-        ${ps.length ? `<table class="table"><thead><tr><th>Passport</th><th>Grade</th><th class="num">Current</th><th class="num">Voltage</th><th class="num">Score</th><th>Flags</th><th>Measured</th></tr></thead><tbody>${rows}</tbody></table>
-          <p class="legend">Current is the short-circuit current and voltage the open-circuit voltage, measured for every panel at the same instant. Score is a panel's current as a share of the strongest panel tested with it: A within 10%, B 75–90%, C under 75%.</p>`
-                    : emptyNote(`<p class="muted">No panels published yet.</p><div class="row no-print" style="margin-top:10px"><button type="button" class="btn" id="btn-sample">Show example panels</button><span class="small muted">A simulated batch, not a real measurement.</span></div>`)}
+        <div class="row" style="justify-content:space-between;align-items:baseline"><h2>Tested panels</h2>${real.length ? `<a class="small no-print" href="#/print">Print passport cards</a>` : ""}</div>
+        ${real.length ? panelTable(real) : emptyNote(`<p class="muted">No real panels published yet. Panels tested on the bench appear here with their passports; until then, try the demo below.</p>`)}
+      </div>
+      <div class="card demo" id="demo">
+        <div class="row" style="justify-content:space-between;align-items:baseline"><h2>Demo <span class="tag">Simulated</span></h2>${demo.length ? `<button type="button" class="btn btn--quiet no-print" id="btn-demo-clear">Clear the demo</button>` : ""}</div>
+        ${demo.length ? `<p class="muted demo__note">${demoRun && demoRun.bench ? `${esc(String(demoRun.bench).charAt(0).toUpperCase() + String(demoRun.bench).slice(1))}. ` : ""}These numbers come from our panel model, not from a measurement. Open a passport, or group the panels in the Array Builder.</p>
+          <div class="row no-print demo__actions">${firstDemo ? `<a class="btn btn--primary" href="#/p/${encodeURIComponent(firstDemo.passport_id)}">Open a demo passport</a>` : ""}<a class="btn" href="#/build">Group them in the Array Builder</a></div>
+          ${panelTable(demo)}`
+          : `<p class="muted demo__note">Load four simulated panels, two of them dimmed to act like aged panels, to see passports, grades and the wiring the builder picks. Nothing here is a real measurement.</p>
+          <div class="row no-print demo__actions"><button type="button" class="btn btn--primary" id="btn-sample">Load the demo panels</button><span class="status" id="demo-status"></span></div>`}
       </div>
       <details class="card tools no-print">
         <summary>Add a run <span class="muted small">(for the team)</span></summary>
         <p class="muted small">On the bench dashboard, open Data and press “Export passports (JSON)”. Drop that file here, or paste its contents.</p>
         <div class="row" style="margin-top:10px">
           <label class="btn">Choose run file <input type="file" id="run-file" accept="application/json,.json" hidden></label>
-          ${ps.length ? `<button type="button" class="btn btn--quiet" id="btn-sample">Show example panels</button>` : ""}
           <button type="button" class="btn btn--quiet" id="btn-paste">Paste JSON</button>
           ${runs.length ? `<button type="button" class="btn btn--quiet" id="btn-clear">Remove all ${runs.length} run${runs.length === 1 ? "" : "s"}</button>` : ""}
           <span class="status" id="import-status"></span>
         </div>
         <div id="paste-box" hidden style="margin-top:10px"><label class="field">Run JSON <textarea id="paste-text"></textarea></label><div class="row" style="margin-top:8px"><button type="button" class="btn btn--primary" id="btn-paste-go">Import</button></div></div>
-      </details>
-      ${runs.length ? `<div class="card"><h2>Runs</h2><table class="table"><thead><tr><th>Run</th><th>Bench</th><th>Best wiring</th><th>Gain</th><th>Panels</th></tr></thead><tbody>
-        ${runs.map((r) => `<tr><td>${esc(r.run_id)}</td><td class="small muted">${esc(r.bench || "")}</td><td>${r.search ? `<b class="pair-${esc(r.search.best)}">${esc(r.search.best)}</b>` : "—"}</td><td>${r.proof ? `+${num(r.proof.gain_pct, 1)}% ± ${num(r.proof.ci95_pct, 1)} (${r.proof.cycle} cycles)` : r.search ? "search only" : "—"}</td><td>${(r.passports || []).map((p) => `<a href="#/p/${encodeURIComponent(p.passport_id)}">${esc(p.passport_id)}</a>`).join(", ")}</td></tr>`).join("")}
-      </tbody></table></div>` : ""}`;
+        ${runs.length ? `<h3 class="small muted" style="margin:16px 0 6px">Runs in this browser</h3><table class="table"><thead><tr><th>Run</th><th>Source</th><th>Notes</th><th>Best wiring</th><th>Gain</th><th>Panels</th></tr></thead><tbody>${runRows}</tbody></table>` : ""}
+      </details>`;
   }
 
   function wireIndex() {
     const status = $("#import-status");
     const ok = (run) => { addRun(run); render(); };
-    const bad = (err) => { status.classList.add("is-bad"); status.textContent = `Could not import: ${err.message || err}`; };
+    const badIn = (el) => (err) => { el.classList.add("is-bad"); el.textContent = `Could not load: ${err.message || err}`; };
+    const bad = badIn(status);
     const importText = (text) => { try { ok(JSON.parse(text)); } catch (err) { bad(err); } };
     $("#run-file").addEventListener("change", (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(importText, bad); });
-    $("#btn-sample").addEventListener("click", () => {
-      status.classList.remove("is-bad"); status.textContent = "Loading…";
-      fetch("data/sample-run.json").then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); }).then(ok).catch((err) => bad(new Error(`${err.message}. The sample loads over http, not from a file:// page.`)));
+    const goDemo = $("#btn-go-demo");
+    if (goDemo) goDemo.addEventListener("click", () => { const d = $("#demo"); if (d) d.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    const sample = $("#btn-sample");
+    if (sample) sample.addEventListener("click", () => {
+      const ds = $("#demo-status");
+      ds.classList.remove("is-bad"); ds.textContent = "Loading…";
+      fetch("data/sample-run.json").then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+        .then((run) => { addRun(run); render(); const d = $("#demo"); if (d) d.scrollIntoView({ block: "start" }); })
+        .catch((err) => badIn(ds)(new Error(`${err.message}. The demo loads over http, not from a file:// page.`)));
     });
+    const demoClear = $("#btn-demo-clear");
+    if (demoClear) demoClear.addEventListener("click", () => { runs = runs.filter((r) => !isSim(r)); saveRuns(); render(); });
     $("#btn-paste").addEventListener("click", () => { $("#paste-box").hidden = !$("#paste-box").hidden; });
     $("#btn-paste-go").addEventListener("click", () => importText($("#paste-text").value));
     const clear = $("#btn-clear");
@@ -128,7 +170,18 @@
 
   // What someone who just scanned a card needs before the numbers: what tested this panel, and where the rest is.
   const PROJECT_URL = "https://mscl741.github.io/HackHarvard/";
-  const passportIntro = () => `<p class="lede passport-intro">This panel was tested by <a href="${PROJECT_URL}">Second String</a>, a bench that grades used solar panels against each other and finds the wiring that wastes the least power. The numbers below were measured, not copied from the label. <a href="#/">See every panel tested so far</a>.</p>`;
+  const passportIntro = (sim) => sim
+    ? `<div class="demo-banner" role="note"><b>Demo panel.</b> This passport comes from a simulated batch made by our panel model, not from a real measurement. <a href="#/">What Second String is</a></div>`
+    : `<p class="lede passport-intro">This panel was tested by <a href="${PROJECT_URL}">Second String</a>, a bench that grades used solar panels against each other and finds the wiring that wastes the least power. The numbers below were measured, not copied from the label. <a href="#/">See every panel tested so far</a>.</p>`;
+  // previous / next panel in the same run, so a reader can walk the batch without going back to the list
+  function batchNav(p) {
+    const batch = p.run && Array.isArray(p.run.passports) ? p.run.passports : [];
+    const i = batch.findIndex((q) => q.passport_id === p.passport_id);
+    if (batch.length < 2 || i < 0) return "";
+    const link = (q, rel, text) => q ? `<a class="pnav__link" rel="${rel}" href="#/p/${encodeURIComponent(q.passport_id)}">${text}</a>` : `<span class="pnav__link is-off">${text}</span>`;
+    const prev = batch[i - 1], next = batch[i + 1];
+    return `<nav class="pnav no-print" aria-label="Panels in this batch">${link(prev, "prev", `← ${prev ? esc(prev.passport_id) : "Previous"}`)}<span class="pnav__pos">Panel ${i + 1} of ${batch.length} in this batch</span>${link(next, "next", `${next ? esc(next.passport_id) : "Next"} →`)}</nav>`;
+  }
   // This panel against the others measured in the same run: relative score bars, this one in ink and the others muted,
   // over the grade bands (C under 75%, B to 90%, A above) so the letter explains itself. Nothing to compare with one panel.
   function batchCard(p) {
@@ -146,28 +199,32 @@
     return `<div class="card batch-card">
         <h2>Against the panels tested with it</h2>
         <ul class="batch">${rows}${scale}</ul>
-        <p class="small muted batch__note">${word ? `<b>Grade ${esc(p.grade)}</b>, ${esc(word)}. ` : ""}Each bar is a panel's short-circuit current as a share of the strongest panel in run ${esc(p.run.run_id)}, all measured at the same instant under the same light.</p>
+        <p class="small muted batch__note">${word ? `<b>Grade ${esc(p.grade)}</b>, ${esc(word)}. ` : ""}Each bar is a panel's short-circuit current as a share of the strongest panel in run ${esc(p.run.run_id)}, all ${isSim(p.run) ? "simulated" : "measured"} at the same instant under the same light.</p>
       </div>`;
   }
 
   function pagePassport(id) {
     const p = passport(id);
-    if (!p) return `<h1 class="page-title">${esc(id)}</h1>${passportIntro()}${emptyNote(`<p class="lede">No passport with this ID has been imported into this browser. <a href="#/">Back to the list.</a></p>`)}`;
+    if (!p) return `<h1 class="page-title">${esc(id)}</h1>${passportIntro(false)}${emptyNote(`<p class="lede">No passport with this ID has been imported into this browser. <a href="#/">Back to the list.</a></p>`)}`;
     const url = location.href;
     const qr = window.qrcode(0, "M"); qr.addData(url); qr.make();
     const flags = (p.flags || []).map((f) => `<li>${esc(flagWord[f] || f)}</li>`).join("");
+    const sim = isSim(p.run);
     return `
-      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← All passports</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print this passport</button></div>
-      ${passportIntro()}
-      <div class="card passport">
+      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← ${sim ? "Back to the demo" : "All passports"}</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print this passport</button></div>
+      ${passportIntro(sim)}
+      ${batchNav(p)}
+      <div class="card passport${sim ? " is-sim" : ""}">
         <div class="passport__visual">
           ${cellSvg({ label: p.passport_id, dim: p.grade === "C" })}
           <div class="passport__qr" aria-label="QR code for this passport">${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}</div>
           <p class="small muted">Scan to open this passport on another phone.</p>
         </div>
         <div>
-          <div class="passport__id">${esc(p.passport_id)}</div>
+          <div class="passport__id">${esc(p.passport_id)}${sim ? ` <span class="tag">Simulated</span>` : ""}</div>
           <div class="passport__grade-line"><span class="passport__grade grade g-${esc(p.grade)}">${esc(p.grade)}</span><span class="muted">${esc(gradeWord[p.grade] || "")}</span></div>
+          ${p.verified && pairingLine(p.verified) ? `<p class="passport__wiring">${pairingLine(p.verified)}</p>` : ""}
+          <h2 class="passport__section">${sim ? "Simulated readings" : "Measurements"}</h2>
           <dl class="facts">
             <div><dt>Short-circuit current</dt><dd>${num(p.isc_ma, 1)} mA</dd></div>
             <div><dt>Open-circuit voltage</dt><dd>${num(p.voc_v, 2)} V</dd></div>
@@ -177,7 +234,6 @@
             <div><dt>Measured</dt><dd class="small">${fmtDate(p.measured_at)}, bench position ${esc(p.panel_label)}, ${esc(p.run_id)}</dd></div>
           </dl>
           ${flags ? `<ul class="flags">${flags}</ul>` : ""}
-          ${p.verified ? `<p style="margin-top:16px">${pairingLine(p.verified)}</p>` : ""}
           <p class="small muted" style="margin-top:14px">A relative score compares panels of the same model measured under the same light at the same instant, which removes light level from the comparison. Rated values from a label: ${p.rated && p.rated.isc_ma ? `${p.rated.isc_ma} mA, ${p.rated.voc_v} V` : "not recorded"}.</p>
         </div>
       </div>
