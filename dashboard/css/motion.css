@@ -1,0 +1,88 @@
+/* Second String dashboard: the motion layer. Loaded after style.css; layout and colour at rest are unchanged.
+   The live trace redraws on every reading and gets no entrance. Charts that redraw only when data changes
+   (bars, curves, wiring, the panel cards) grow or fade in once per change; readouts and the gain numeral
+   cross-blur when their text changes (app.js adds .is-swapping). Transform/opacity/filter only. */
+
+:root {
+  --m-quick: 150ms;
+  --m-fast: 250ms;
+  --m-slow: 420ms;
+  --m-hero: 520ms;
+  --m-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* controls */
+.btn, .seg__btn, .check, .field input[type="range"] {
+  transition: background-color var(--m-quick) ease, border-color var(--m-quick) ease, color var(--m-quick) ease, transform var(--m-quick) ease, box-shadow var(--m-quick) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* a value that changed cross-blurs into its new text */
+@keyframes swap-soft {
+  from { opacity: 0.15; filter: blur(2px); transform: translateY(3px); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+.readout__value.is-swapping, .gain__facts dd.is-swapping, .gain__ci.is-swapping, .gain__sub.is-swapping, .btn--demo.is-swapping, .deck__status.is-swapping {
+  animation: swap-soft var(--m-fast) ease-in-out both;
+}
+/* the gain numeral is the one bold thing on the screen: it lands rather than swaps */
+@keyframes land {
+  from { opacity: 0; filter: blur(6px); transform: translateY(14px) scale(0.97); }
+  60% { filter: blur(0); }
+  to { opacity: 1; transform: none; }
+}
+.gain__number.is-landing { animation: land var(--m-hero) var(--m-ease) both; }
+.gain__number.is-swapping { animation: swap-soft var(--m-fast) ease-in-out both; }
+
+/* panel cards redraw on each grade: they settle in left to right */
+@keyframes settle {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.panel { animation: settle var(--m-fast) var(--m-ease) both; }
+.panel:nth-child(2) { animation-delay: 45ms; }
+.panel:nth-child(3) { animation-delay: 90ms; }
+.panel:nth-child(4) { animation-delay: 135ms; }
+
+/* the maximum-power bars grow from the axis when a sweep or search lands */
+@keyframes grow-bar {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+#bars-chart .bar { transform-box: fill-box; transform-origin: 50% 100%; animation: grow-bar var(--m-slow) var(--m-ease) both; }
+#bars-chart .label, #bars-chart .label--muted { animation: fade var(--m-slow) ease both; animation-delay: 120ms; }
+
+/* I-V curves and the wiring diagram fade in as a unit when they change */
+#curves-chart .series, #curves-chart .marker, #curves-chart .label { animation: fade var(--m-slow) ease both; }
+#curves-chart .marker, #curves-chart .label { animation-delay: 150ms; }
+#wiring-diagram svg { animation: fade var(--m-fast) ease both; }
+
+/* sheets open with a short scale-up; the tooltip appears rather than pops */
+@keyframes sheet-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+dialog.sheet[open] { animation: sheet-in var(--m-fast) var(--m-ease) both; }
+dialog.sheet[open]::backdrop { animation: backdrop-in var(--m-fast) ease both; }
+@keyframes tip-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: none; }
+}
+.tip:not([hidden]) { animation: tip-in var(--m-quick) ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .readout__value.is-swapping, .gain__facts dd.is-swapping, .gain__ci.is-swapping, .gain__sub.is-swapping, .btn--demo.is-swapping, .deck__status.is-swapping,
+  .gain__number.is-swapping, .gain__number.is-landing, .panel, #bars-chart .bar, #bars-chart .label, #bars-chart .label--muted,
+  #curves-chart .series, #curves-chart .marker, #curves-chart .label, #wiring-diagram svg, dialog.sheet[open], dialog.sheet[open]::backdrop, .tip:not([hidden]) {
+    animation: none;
+  }
+  .btn, .seg__btn { transition: none; }
+}

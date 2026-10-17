@@ -9,6 +9,13 @@ const MODE_WORDS = { IDLE: "Idle", RUN: "Running", GRADE: "Grading", SWEEP: "Swe
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+// Set an element's text and, only when it actually changed, replay its entrance from css/motion.css
+// (default: the soft cross-blur; the gain numeral passes "is-landing" for its first appearance).
+function setText(el, text, cls = "is-swapping") {
+  if (el.textContent === text) return;
+  el.textContent = text;
+  el.classList.remove("is-swapping", "is-landing"); void el.offsetWidth; el.classList.add(cls);
+}
 
 // Per-browser conveniences only (passport counter, bench notes, upload URL). Fail quietly in private windows.
 const LS = {
@@ -133,8 +140,8 @@ const handlers = {
 
 // ---------- rendering ----------
 function renderReadouts() {
-  els.modeText.textContent = MODE_WORDS[state.mode] || state.mode;
-  els.pairingText.textContent = state.pairing ? `${state.pairing} (${pairPanels(state.pairing)})` : "—";
+  setText(els.modeText, MODE_WORDS[state.mode] || state.mode);
+  setText(els.pairingText, state.pairing ? `${state.pairing} (${pairPanels(state.pairing)})` : "—");
   els.pairingText.dataset.pair = state.pairing || "";
   els.pumpText.textContent = state.pump == null ? "—" : state.pump ? (state.lastPower > 0.15 ? `On, ${state.lastPower.toFixed(2)} W` : "On, stalled") : "Off";
   document.querySelectorAll(".btn--pair").forEach((b) => b.classList.toggle("is-active", b.dataset.pair === state.pairing));
@@ -142,27 +149,28 @@ function renderReadouts() {
 
 function renderHeadline() {
   const pr = state.proof; const se = state.search;
+  const gainCls = els.gainNumber.classList.contains("is-empty") ? "is-landing" : "is-swapping";
   if (pr) {
     const sign = pr.gain_pct >= 0 ? "+" : "−";
-    els.gainNumber.textContent = `${sign}${Math.abs(pr.gain_pct).toFixed(1)}%`;
+    setText(els.gainNumber, `${sign}${Math.abs(pr.gain_pct).toFixed(1)}%`, gainCls);
     els.gainNumber.classList.remove("is-empty");
-    els.gainCi.textContent = `±${Number(pr.ci95_pct).toFixed(1)} percentage points (95% confidence), ${pr.cycle} ${pr.cycle === 1 ? "cycle" : "cycles"}`;
-    els.gainSub.textContent = pr.kind === "pump"
+    setText(els.gainCi, `±${Number(pr.ci95_pct).toFixed(1)} percentage points (95% confidence), ${pr.cycle} ${pr.cycle === 1 ? "cycle" : "cycles"}`);
+    setText(els.gainSub, pr.kind === "pump"
       ? `More power into our pump on wiring ${pr.best} than on wiring ${pr.base}. Load-dependent; the sweep figure is the claim.`
-      : `More power from wiring ${pr.best} than from wiring ${pr.base}, each at its own maximum power point.`;
+      : `More power from wiring ${pr.best} than from wiring ${pr.base}, each at its own maximum power point.`);
   } else if (se && se.pmax_w) {
     const vals = Object.values(se.pmax_w);
     const worst = Math.min(...vals); const best = se.pmax_w[se.best];
     const gain = worst > 0 ? (best / worst - 1) * 100 : 0;
-    els.gainNumber.textContent = `+${gain.toFixed(1)}%`;
+    setText(els.gainNumber, `+${gain.toFixed(1)}%`, gainCls);
     els.gainNumber.classList.remove("is-empty");
-    els.gainCi.textContent = "From one sweep of each wiring. Press Prove for a confidence interval.";
-    els.gainSub.textContent = `Wiring ${se.best} makes ${best.toFixed(2)} W at its maximum power point; the worst wiring makes ${worst.toFixed(2)} W.`;
+    setText(els.gainCi, "From one sweep of each wiring. Press Prove for a confidence interval.");
+    setText(els.gainSub, `Wiring ${se.best} makes ${best.toFixed(2)} W at its maximum power point; the worst wiring makes ${worst.toFixed(2)} W.`);
   } else {
-    els.gainNumber.textContent = "—";
+    setText(els.gainNumber, "—");
     els.gainNumber.classList.add("is-empty");
-    els.gainCi.textContent = "";
-    els.gainSub.textContent = "Run a search to measure the three wirings.";
+    setText(els.gainCi, "");
+    setText(els.gainSub, "Run a search to measure the three wirings.");
   }
 }
 
@@ -174,18 +182,18 @@ function renderFacts() {
     const worstKey = Object.keys(se.pmax_w).reduce((a, b) => (se.pmax_w[b] < se.pmax_w[a] ? b : a));
     const worst = se.pmax_w[worstKey];
     const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-    els.factBest.textContent = `${se.best}, panels ${pairPanels(se.best)}: ${best.toFixed(2)} W`;
+    setText(els.factBest, `${se.best}, panels ${pairPanels(se.best)}: ${best.toFixed(2)} W`);
     els.factBest.dataset.pair = se.best;
     const pr = state.proof;
-    els.factWorst.textContent = pr && pr.kind === "sweep"
+    setText(els.factWorst, pr && pr.kind === "sweep"
       ? `+${Number(pr.gain_pct).toFixed(1)}% vs ${pr.base} (${pr.cycle} cycles)`
-      : `+${((best / worst - 1) * 100).toFixed(1)}% vs ${worstKey} (${worst.toFixed(2)} W)`;
-    els.factAvg.textContent = `+${((best / avg - 1) * 100).toFixed(1)}% vs the ${avg.toFixed(2)} W average`;
-    els.factPred.textContent = se.predicted ? `${se.predicted}, ${se.match ? "matched by the sweeps" : `but the sweeps chose ${se.best}`}` : "—";
+      : `+${((best / worst - 1) * 100).toFixed(1)}% vs ${worstKey} (${worst.toFixed(2)} W)`);
+    setText(els.factAvg, `+${((best / avg - 1) * 100).toFixed(1)}% vs the ${avg.toFixed(2)} W average`);
+    setText(els.factPred, se.predicted ? `${se.predicted}, ${se.match ? "matched by the sweeps" : `but the sweeps chose ${se.best}`}` : "—");
     els.factPred.dataset.pair = se.predicted || "";
   } else {
-    els.factBest.textContent = "—"; els.factWorst.textContent = "—"; els.factAvg.textContent = "—";
-    els.factPred.textContent = state.predicted ? `${state.predicted}, from the current scores` : "—";
+    setText(els.factBest, "—"); setText(els.factWorst, "—"); setText(els.factAvg, "—");
+    setText(els.factPred, state.predicted ? `${state.predicted}, from the current scores` : "—");
     els.factPred.dataset.pair = state.predicted || "";
   }
 }
@@ -253,7 +261,7 @@ function renderAll() {
 }
 
 function showError(msg) {
-  els.modeText.textContent = `Error: ${msg}`;
+  setText(els.modeText, `Error: ${msg}`);
   els.modeText.style.color = "var(--alert)";
   clearTimeout(state.errorTimer);
   state.errorTimer = setTimeout(() => { els.modeText.style.color = ""; renderReadouts(); }, 6000);
@@ -369,15 +377,15 @@ function renderDemo(why) {
   btn.classList.toggle("is-running", demo.active);
   btn.disabled = !state.link;
   if (demo.active) {
-    btn.textContent = demo.stage === "search" ? "Measuring and searching…" : `Proving, cycle ${demo.cycle} of ${PROOF_CYCLES.sweep}…`;
-    status.textContent = "Stop ends the demo early.";
+    setText(btn, demo.stage === "search" ? "Measuring and searching…" : `Proving, cycle ${demo.cycle} of ${PROOF_CYCLES.sweep}…`);
+    setText(status, "Stop ends the demo early.");
     status.classList.remove("is-bad");
   } else {
-    btn.textContent = "Run the demo";
-    if (why === "done") status.textContent = "Demo finished: grades, best wiring and the proven gain are on screen.";
-    else if (why === "error") { status.textContent = "Demo stopped on an error; see the Mode readout."; status.classList.add("is-bad"); }
-    else if (why === "stopped") status.textContent = "Demo stopped.";
-    else status.textContent = "Grade, search and prove in one go, then upload.";
+    setText(btn, "Run the demo");
+    if (why === "done") setText(status, "Demo finished: grades, best wiring and the proven gain are on screen.");
+    else if (why === "error") { setText(status, "Demo stopped on an error; see the Mode readout."); status.classList.add("is-bad"); }
+    else if (why === "stopped") setText(status, "Demo stopped.");
+    else setText(status, "Grade, search and prove in one go, then upload.");
   }
 }
 
