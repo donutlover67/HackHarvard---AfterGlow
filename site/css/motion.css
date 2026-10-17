@@ -1,36 +1,26 @@
 /* Second String site: the motion layer. Loaded after site.css; nothing here changes layout or colour at rest.
-   Every move answers something the reader did (opened a page, imported a run, grouped panels) and is
-   transform/opacity only, so it stays smooth on a phone. Reduced-motion users get the end states at once. */
+   Transform, opacity and filter only, so it stays smooth on a phone; readers who prefer reduced motion get
+   the end states at once. The moves (entrances, the re-pairing, dust, the strip, route slides) come from
+   motion.js and the rules it relies on further down. */
 
 :root {
   --m-quick: 150ms;
   --m-fast: 260ms;
   --m-slow: 420ms;
-  --m-stagger: 45ms;
+  --m-stagger: 70ms;
   --m-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* controls answer the finger */
-a, .btn, .nav__links a, .pool label, .chip, .field input, .field select, .field textarea {
-  transition: color var(--m-quick) ease, background-color var(--m-quick) ease, border-color var(--m-quick) ease, transform var(--m-quick) ease;
+a, .btn, .nav__links a, .pool label, .chipcell, .field input, .field select, .field textarea {
+  transition: color var(--m-quick) ease, background-color var(--m-quick) ease, border-color var(--m-quick) ease, text-decoration-color var(--m-quick) ease, transform var(--m-quick) ease;
   -webkit-tap-highlight-color: transparent;
 }
 .btn:active { transform: translateY(1px); }
 .pool label:active { transform: scale(0.99); }
+.link-grow::after { transition: transform var(--m-quick) var(--m-ease); }
 .table tbody tr td { transition: background-color var(--m-quick) ease; }
 .table tbody tr:hover td { background: var(--page); }
-
-/* a page enters once, as a whole, when a route opens: heading, lede, then the cards */
-@keyframes enter {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: none; }
-}
-.view > * { animation: enter var(--m-fast) var(--m-ease) both; }
-.view > :nth-child(2) { animation-delay: var(--m-stagger); }
-.view > :nth-child(3) { animation-delay: calc(var(--m-stagger) * 2); }
-.view > :nth-child(4) { animation-delay: calc(var(--m-stagger) * 3); }
-.view > :nth-child(5) { animation-delay: calc(var(--m-stagger) * 4); }
-.view > :nth-child(n + 6) { animation-delay: calc(var(--m-stagger) * 5); }
 
 /* rows arrive in order after an import */
 @keyframes enter-row {
@@ -47,34 +37,17 @@ a, .btn, .nav__links a, .pool label, .chip, .field input, .field select, .field 
 .table tbody tr:nth-child(8) { animation-delay: 175ms; }
 .table tbody tr:nth-child(n + 9) { animation-delay: 200ms; }
 
-/* the passport: the cell settles, then the QR code, then its caption */
-@keyframes settle {
-  from { opacity: 0; transform: translateY(8px) scale(0.985); }
-  to { opacity: 1; transform: none; }
+/* the passport's run comparison: the bars grow from zero in panel order */
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: none; }
 }
-.passport__visual > * { animation: settle var(--m-slow) var(--m-ease) both; }
-.passport__visual > :nth-child(2) { animation-delay: calc(var(--m-stagger) * 2); }
-.passport__visual > :nth-child(3) { animation-delay: calc(var(--m-stagger) * 4); }
-.facts > div { animation: enter var(--m-fast) var(--m-ease) both; }
-.facts > div:nth-child(2) { animation-delay: 30ms; }
-.facts > div:nth-child(3) { animation-delay: 60ms; }
-.facts > div:nth-child(4) { animation-delay: 90ms; }
-.facts > div:nth-child(5) { animation-delay: 120ms; }
-.facts > div:nth-child(6) { animation-delay: 150ms; }
+.batch__bar { transform-origin: left center; animation: grow var(--m-slow) var(--m-ease) both; animation-delay: calc(var(--m-stagger) * 2); }
+.batch__row:nth-child(2) .batch__bar { animation-delay: calc(var(--m-stagger) * 3); }
+.batch__row:nth-child(3) .batch__bar { animation-delay: calc(var(--m-stagger) * 4); }
+.batch__row:nth-child(n + 4) .batch__bar { animation-delay: calc(var(--m-stagger) * 5); }
 
-/* the Array Builder result: the hero number first, then the groupings, then the verdicts */
-#build-result > .card { animation: enter var(--m-fast) var(--m-ease) both; }
-.result-head > .stat { animation: settle var(--m-slow) var(--m-ease) both; }
-.result-head > .stat:nth-child(2) { animation-delay: var(--m-stagger); }
-.result-head > .stat:nth-child(3) { animation-delay: calc(var(--m-stagger) * 2); }
-.groups > .group { animation: enter var(--m-fast) var(--m-ease) both; }
-.groups > .group:nth-child(2) { animation-delay: 40ms; }
-.groups > .group:nth-child(3) { animation-delay: 80ms; }
-.groups > .group:nth-child(4) { animation-delay: 120ms; }
-.groups > .group:nth-child(n + 5) { animation-delay: 160ms; }
-.verdict { animation: enter var(--m-fast) var(--m-ease) both; animation-delay: calc(var(--m-stagger) * 3); }
-
-/* an import that fails says so with a small shake; a good one re-renders the table above */
+/* an import that fails says so with a small shake */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-5px); }
@@ -85,22 +58,7 @@ a, .btn, .nav__links a, .pool label, .chip, .field input, .field select, .field 
 .status.is-bad { display: inline-block; animation: shake 380ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .view > *, .table tbody tr, .passport__visual > *, .facts > div, #build-result > .card, .result-head > .stat, .groups > .group, .verdict, .status.is-bad {
-    animation: none;
-  }
-  a, .btn, .nav__links a, .pool label, .chip, .table tbody tr td { transition: none; }
+  .table tbody tr, .batch__bar, .status.is-bad { animation: none; }
+  a, .btn, .nav__links a, .pool label, .chipcell, .table tbody tr td, .link-grow::after { transition: none; }
   .btn:active, .pool label:active { transform: none; }
-}
-
-/* the passport's run comparison: the bars grow from zero in panel order, after the card has entered */
-@keyframes grow {
-  from { transform: scaleX(0); }
-  to { transform: none; }
-}
-.batch__bar { transform-origin: left center; animation: grow var(--m-slow) var(--m-ease) both; animation-delay: calc(var(--m-stagger) * 4); }
-.batch__row:nth-child(2) .batch__bar { animation-delay: calc(var(--m-stagger) * 5); }
-.batch__row:nth-child(3) .batch__bar { animation-delay: calc(var(--m-stagger) * 6); }
-.batch__row:nth-child(n + 4) .batch__bar { animation-delay: calc(var(--m-stagger) * 7); }
-@media (prefers-reduced-motion: reduce) {
-  .batch__bar { animation: none; }
 }

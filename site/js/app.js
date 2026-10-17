@@ -229,7 +229,7 @@
   function pageBuild() {
     const ps = passports();
     const sel = new Set(LS.get("ss.site.pool", ps.map((p) => p.passport_id)));
-    const items = ps.map((p) => `<label class="${sel.has(p.passport_id) ? "is-on" : ""}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${sel.has(p.passport_id) ? "checked" : ""}> <b>${esc(p.passport_id)}</b> <span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, ${esc(p.grade)}</span></label>`).join("");
+    const items = ps.map((p) => `<label class="${sel.has(p.passport_id) ? "is-on" : ""}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${sel.has(p.passport_id) ? "checked" : ""}>${cellSvg({ label: p.passport_id, dim: p.grade === "C" })}<span class="pool__text"><b>${esc(p.passport_id)}</b><span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, grade ${esc(p.grade)}</span></span></label>`).join("");
     return `
       <h1 class="page-title">Array Builder</h1>
       <p class="lede">Pick a set of passports. The builder groups them into series strings so that no strong panel is held back by a weaker partner, keeps low-voltage panels from sinking a string, and compares the result with wiring them in the order they came.</p>
@@ -265,8 +265,13 @@
     if (ids && ids.length) runBuild();
   }
 
+  // a string is a row of cells joined by wire; weak panels (grade C) are dimmed
+  function chipCell(p, byId) {
+    const weak = !!(byId[p.id] && byId[p.id].grade === "C");
+    return `<span class="chipcell${weak ? " is-weak" : ""}">${cellSvg({ label: p.id, dim: weak })}<span class="chipcell__id">${esc(p.id)}</span></span>`;
+  }
   function groupsHtml(groups, byId) {
-    return `<div class="groups">${groups.map((g, i) => `<div class="group"><span class="muted small">String ${i + 1}</span><span class="group__string">${g.map((p) => `<span class="chip ${byId[p.id] && byId[p.id].grade === "C" ? "is-weak" : ""}">${esc(p.id)}</span>`).join("<span class='muted'>+</span>")}</span><span class="muted small">limited to ${Math.min(...g.map((p) => p.isc_ma)).toFixed(0)} mA</span></div>`).join("")}</div>`;
+    return `<div class="groups">${groups.map((g, i) => `<div class="group"><span class="label">String ${i + 1}</span><span class="group__string">${g.map((p) => chipCell(p, byId)).join('<span class="wire" aria-hidden="true"></span>')}</span><span class="label">limited to ${Math.min(...g.map((p) => p.isc_ma)).toFixed(0)} mA</span></div>`).join("")}</div>`;
   }
 
   function runBuild() {
@@ -304,15 +309,15 @@
     }
     out.innerHTML = `<div class="card">
       <h2>Result</h2>
-      <div class="result-head">
-        <div class="stat is-hero"><b>${res.greedy.pmax.toFixed(2)} W</b><span>matched grouping, estimated maximum power</span></div>
-        ${oneString ? "" : Math.abs(naiveGain) < 0.05 ? `<div class="stat"><b>Same</b><span>as wiring them in the order they came (${res.naive.pmax.toFixed(2)} W): they already match</span></div>` : `<div class="stat"><b>${naiveGain > 0 ? "+" : ""}${naiveGain.toFixed(1)}%</b><span>against wiring them in the order they came (${res.naive.pmax.toFixed(2)} W)</span></div>`}
-        ${oneString ? "" : `<div class="stat"><b>${avgGain > 0 ? "+" : ""}${avgGain.toFixed(1)}%</b><span>against the average grouping (${avg.toFixed(2)} W), what wiring without measuring gets</span></div>`}
-      </div>
-      <h3 class="small muted" style="margin-bottom:8px">Matched grouping</h3>
+      <div class="band"><div class="band__num">${res.greedy.pmax.toFixed(2)} W</div><p class="band__text">matched grouping, estimated maximum power</p></div>
+      ${oneString ? "" : `<div class="stats">
+        ${Math.abs(naiveGain) < 0.05 ? `<div class="stat"><b>Same</b><span>as wiring them in the order they came (${res.naive.pmax.toFixed(2)} W): they already match</span></div>` : `<div class="stat"><b>${naiveGain > 0 ? "+" : ""}${naiveGain.toFixed(1)}%</b><span>against wiring them in the order they came (${res.naive.pmax.toFixed(2)} W)</span></div>`}
+        <div class="stat"><b>${avgGain > 0 ? "+" : ""}${avgGain.toFixed(1)}%</b><span>against the average grouping (${avg.toFixed(2)} W), what wiring without measuring gets</span></div>
+      </div>`}
+      <h3 class="label" style="margin:18px 0 8px">Matched grouping</h3>
       <p class="small muted" style="margin-bottom:8px">How: ${esc(res.greedy.how)}.${res.greedy.lowVoc.length ? ` Low voltage, possibly a failed cell group: ${res.greedy.lowVoc.map(esc).join(", ")}.` : ""}</p>
       ${groupsHtml(res.greedy.groups, byId)}
-      <h3 class="small muted" style="margin:14px 0 8px">As they came</h3>
+      <h3 class="label" style="margin:16px 0 8px">As they came</h3>
       ${groupsHtml(res.naive.groups, byId)}
       ${verdict}${bench}
       <p class="small muted" style="margin-top:12px">Estimates use the same single-diode panel model as the bench, fitted to each passport's short-circuit current and open-circuit voltage, with a bypass diode per panel. Each string carries the current of its weakest panel; strings share one voltage. The builder tries four starting groupings, improves each by swapping panels between strings while the model says it gains power, and keeps the best.</p>
@@ -326,13 +331,20 @@
     const gains = shown.map((r) => Number(r.proof.gain_pct));
     const mean = gains.length ? gains.reduce((a, b) => a + b, 0) / gains.length : null;
     const n = shown.length;
+    // the numeral: the mean over real proof runs; else over simulated ones, said so; else the model's demo batch, said so
+    const model = window.SSFrontData.MODEL_DEMO.gain_pct;
+    const statement = mean == null
+      ? `No bench run is published yet. Our model puts the gain for the demo batch, two of four panels behind 35% film, at ${model}% more power than the worst wiring; that figure is from the model, not a measurement.`
+      : real.length
+        ? `Across ${n} bench run${n === 1 ? "" : "s"}, matching panels by current gave ${mean.toFixed(1)}% more power than the worst wiring of the same panels, measured at each wiring's maximum power point.`
+        : `No bench run is published yet. In our simulated batch with two of four panels behind 35% film, matching gave ${mean.toFixed(1)}% more power than the worst wiring; that figure is from the model, not a measurement.`;
     return `
       <h1 class="page-title">Impact</h1>
       <p class="lede">Numbers here are either measured on our bench or taken from a named source. Anything else is marked as an assumption.</p>
-      <div class="card">
-        <h2>What our bench measured</h2>
-        <p>${mean == null ? "No bench run is published yet; the first one fills this in." : real.length ? `Across ${n} bench run${n === 1 ? "" : "s"}, matching panels by current gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring of the same panels, measured at each wiring's maximum power point.` : `No bench run is published yet. In our simulated batch with two of four panels behind 35% film, matching gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring; that figure is from the model, not a measurement.`}</p>
-        <p class="small muted" style="margin-top:8px">With two of four panels behind 35% film this is deliberately a bad batch. Our model puts the gain for realistic aging (panels at 80%) at about 5–7%, and the gain against the average wiring at about 22% for the film case.</p>
+      <div class="band">
+        <div class="band__num" data-count>+${mean == null ? num(model, 0) : num(mean, 1)}%</div>
+        <p class="band__text">${statement}</p>
+        <p class="band__note">With two of four panels behind 35% film this is deliberately a bad batch. Our model puts the gain for realistic aging (panels at 80%) at about 5–7%, and the gain against the average wiring at about 22% for the film case.</p>
       </div>
       <div class="card">
         <h2>Why reuse matters</h2>
