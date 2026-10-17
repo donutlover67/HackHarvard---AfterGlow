@@ -12,4 +12,5 @@ CLAUDE.local.md
 tools/eval/answers-*.json
 tools/eval/report-*.json
 tools/eval/runs/
-site/data/runs/
+# site/data/runs/ is committed on purpose: GitHub Pages has no upload API, so the public site serves
+# the run files listed in site/data/runs/index.json (docs/website-plan.md, Hosting).

@@ -29,7 +29,24 @@ python3 tools/serve.py
 
 Then open http://localhost:8000/dashboard/ and http://localhost:8000/site/ in Chrome. The dashboard starts on the mock bench (simulated panels, same physics model as the firmware's design) and runs a search; press **Prove** for the confidence interval. **Connect ESP32** uses Web Serial (Chrome or Edge, 115200 baud). The mock bench row at the bottom lets you change the light level and which panels carry film. Data → **Upload run** sends the run's passports to the local server, and the site shows them within a few seconds; **Export passports** writes the same JSON to a file for a site hosted elsewhere.
 
-The site works from any static host too (GitHub Pages serves `site/` as is); without the local API it imports run files by hand.
+The site also runs as a plain static folder with no server behind it; the public copy on GitHub Pages is described next.
+
+## Public site
+
+A passport's QR code encodes the page's own URL, so the passport a judge scans has to be public. [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes `site/` to GitHub Pages on every push to `main`, and on demand from the Actions tab (**Deploy site to GitHub Pages → Run workflow**). The folder becomes the root of the Pages site, so there is no `/site/` in the public URLs:
+
+- https://mscl741.github.io/HackHarvard/ is the passport index; `#/build` is the Array Builder and `#/impact` the impact page.
+- https://mscl741.github.io/HackHarvard/#/p/SS-0001 is one passport, what a QR code opens.
+
+One-time setup, repo admin only: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Until that is set, the workflow fails at its "Configure Pages" step. Then merge to `main` (or run the workflow by hand); a deploy takes about a minute.
+
+The public site has no upload API, so it shows the runs committed to `site/data/runs/`. After the dashboard uploads a run there (or after copying an exported run file in), rebuild the list the site reads:
+
+```bash
+python3 tools/sim/make_runs_index.py
+```
+
+Delete test runs you don't want public before running it, then `git add site/data/runs`, commit with the `site:` prefix and merge to `main`. Why runs are committed, and how to undo that, is in `docs/website-plan.md` under Hosting.
 
 ## Build and test the firmware
 
@@ -44,7 +61,7 @@ Flashing (`pio run -e esp32dev -t upload`) switches relays on real panels, so a 
 
 - Dashboard: working on the mock bench; assigns passport IDs, exports a run as JSON (passports + search + proof) and can POST it to an upload address. Web Serial path written but not yet tested against the ESP32.
 - Firmware: compiles (arduino-esp32 2.0.17, no warnings) and host tests pass. Not yet run on hardware. Relay logic level, sensor addresses and divider ratio must be confirmed in `docs/hardware.md` first.
-- Site: passport pages with QR codes and the Array Builder work from imported run JSON; the impact page is a stub for D. Plan in `docs/website-plan.md`.
+- Site: passport pages with QR codes and the Array Builder work from imported run JSON; the impact page is a stub for D. Plan in `docs/website-plan.md`. A workflow deploys `site/` to GitHub Pages from `main`; a repo admin still has to enable Pages (see Public site).
 - Hardware: being built. Lamp-box brightness test is the gating risk (see `docs/feasibility-report.md`).
 
 ## Team

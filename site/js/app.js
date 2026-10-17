@@ -26,6 +26,9 @@
     return [...map.values()].sort((a, b) => a.passport_id.localeCompare(b.passport_id));
   }
   function passport(id) { return passports().find((p) => p.passport_id === id); }
+  // true until the first pull of runs (the local API, then data/runs/index.json) has finished; empty states say "Loading…" meanwhile
+  let loading = true, loadingShown = false;
+  const emptyNote = (html) => { if (loading) loadingShown = true; return loading ? `<p class="muted">Loading passports…</p>` : html; };
 
   // ---------- pieces ----------
   function cellGlyph({ x = 0, y = 0, w = 120, h = 84, name = "", film = false, dim = false }) {
@@ -65,7 +68,7 @@
       <div class="card">
         <h2>Tested panels</h2>
         ${ps.length ? `<table class="table"><thead><tr><th>Passport</th><th>Grade</th><th class="num">Short-circuit</th><th class="num">Open-circuit</th><th class="num">Score</th><th>Flags</th><th>Measured</th></tr></thead><tbody>${rows}</tbody></table>`
-                    : `<p class="muted">No passports yet. Import a run from the bench dashboard, or load the sample run.</p>`}
+                    : emptyNote(`<p class="muted">No passports yet. Import a run from the bench dashboard, or load the sample run.</p>`)}
       </div>
       <div class="card no-print">
         <h2>Import a run</h2>
@@ -104,7 +107,7 @@
 
   function pagePassport(id) {
     const p = passport(id);
-    if (!p) return `<h1 class="page-title">${esc(id)}</h1><p class="lede">No passport with this ID has been imported into this browser. <a href="#/">Back to the list.</a></p>`;
+    if (!p) return `<h1 class="page-title">${esc(id)}</h1>${emptyNote(`<p class="lede">No passport with this ID has been imported into this browser. <a href="#/">Back to the list.</a></p>`)}`;
     const url = location.href;
     const qr = window.qrcode(0, "M"); qr.addData(url); qr.make();
     const flags = (p.flags || []).map((f) => `<li>${esc(flagWord[f] || f)}</li>`).join("");
@@ -143,7 +146,7 @@
       <p class="lede">Pick a pool of passports. The builder puts panels with similar current in the same series string, so no strong panel is throttled by a weak one, and estimates the power against wiring them in the order they came.</p>
       <div class="card no-print">
         <h2>Pool</h2>
-        ${ps.length ? `<div class="pool" id="pool">${items}</div>` : `<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`}
+        ${ps.length ? `<div class="pool" id="pool">${items}</div>` : emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}
         <div class="row" style="margin-top:14px">
           <label class="field">Panels per string <select id="k"><option value="2">2 (12 V from 6 V panels)</option><option value="3">3</option><option value="4">4</option></select></label>
           <label class="field">Add a panel by hand <span class="row"><input id="add-isc" type="number" placeholder="mA" style="width:90px"><input id="add-voc" type="number" step="0.01" placeholder="V" style="width:80px"><button type="button" class="btn" id="btn-add">Add</button></span></label>
@@ -254,6 +257,7 @@
   function render() {
     const hash = location.hash || "#/";
     const view = $("#view");
+    loadingShown = false;
     let route = "index";
     if (hash.startsWith("#/p/")) { view.innerHTML = pagePassport(decodeURIComponent(hash.slice(4))); route = "index"; }
     else if (hash.startsWith("#/build")) { view.innerHTML = pageBuild(); wireBuild(); route = "build"; }
@@ -263,18 +267,38 @@
     window.scrollTo(0, 0);
   }
   // When tools/serve.py is serving this site, runs uploaded by the dashboard appear on their own.
+  // On a static host (GitHub Pages) there is no API: the site loads the runs committed to data/runs/,
+  // listed in data/runs/index.json (regenerate it with python3 tools/sim/make_runs_index.py).
   let apiTimer = null;
+  const fetchJson = (url) => fetch(url, { cache: "no-store" }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`${url}: ${r.status}`))));
+  function mergeRuns(list) {
+    const before = JSON.stringify(runs.map((r) => r.run_id).sort());
+    list.forEach((run) => { try { addRun(run); } catch (_) { /* skip malformed */ } });
+    return JSON.stringify(runs.map((r) => r.run_id).sort()) !== before;
+  }
+  // the first pull is over, whatever it found: drop the "Loading…" notes and show what there is
+  function settle(changed) {
+    const wasLoading = loading && loadingShown;
+    loading = false;
+    if (changed || wasLoading) render();
+  }
   function pullFromServer(first) {
-    fetch("../api/runs", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+    fetchJson("../api/runs")
       .then((list) => {
-        if (!Array.isArray(list)) return;
-        const before = JSON.stringify(runs.map((r) => r.run_id).sort());
-        list.forEach((run) => { try { addRun(run); } catch (_) { /* skip malformed */ } });
-        if (JSON.stringify(runs.map((r) => r.run_id).sort()) !== before) render();
-        if (first) apiTimer = setInterval(() => pullFromServer(false), 5000);
+        const changed = Array.isArray(list) && mergeRuns(list);
+        if (first) { settle(changed); apiTimer = setInterval(() => pullFromServer(false), 5000); }
+        else if (changed) render();
       })
-      .catch(() => { /* static hosting: no API, import by hand */ });
+      .catch(() => { if (first) pullFromIndex(); });
+  }
+  function pullFromIndex() {
+    fetchJson("data/runs/index.json")
+      .then((index) => {
+        const files = Array.isArray(index) ? index : (index && Array.isArray(index.runs) ? index.runs : []);
+        return Promise.all(files.map((f) => fetchJson(`data/runs/${encodeURIComponent(String(f))}`).catch(() => null)));
+      })
+      .then((list) => settle(mergeRuns(list.filter(Boolean))))
+      .catch(() => settle(false)); // neither the API nor an index: import by hand
   }
 
   window.addEventListener("hashchange", render);

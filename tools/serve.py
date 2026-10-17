@@ -43,6 +43,8 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path.split("?")[0] == "/api/runs":
             runs = []
             for path in sorted(glob.glob(os.path.join(RUNS_DIR, "*.json"))):
+                if os.path.basename(path) == "index.json":
+                    continue  # the run list for static hosting (tools/sim/make_runs_index.py), not a run
                 try:
                     with open(path) as f:
                         runs.append(json.load(f))
@@ -58,8 +60,8 @@ class Handler(SimpleHTTPRequestHandler):
             length = int(self.headers.get("Content-Length", "0"))
             run = json.loads(self.rfile.read(length).decode("utf-8"))
             run_id = run.get("run_id")
-            if not isinstance(run_id, str) or not RUN_ID_RE.match(run_id):
-                raise ValueError("run_id missing or not a plain identifier")
+            if not isinstance(run_id, str) or not RUN_ID_RE.match(run_id) or run_id == "index":
+                raise ValueError("run_id missing, not a plain identifier, or the reserved name index")
             if not isinstance(run.get("passports"), list):
                 raise ValueError("no passports array")
         except (ValueError, UnicodeDecodeError) as exc:
