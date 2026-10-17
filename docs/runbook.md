@@ -8,7 +8,7 @@ Indoor lamps can't light the panels enough for the pump, so record a real run ou
 
 1. Start the server: `python3 tools/serve.py`, then open http://localhost:8000/dashboard/ in Chrome.
 2. **With the bench:** Connect ESP32, then Run the demo. The run uploads itself when the proof ends. Keep a serial capture as a backup recording: `python3 tools/capture.py --seconds 120 --send SEARCH --out logs/outdoor-run.log` (stop it before flashing; never open a serial monitor).
-3. **Without the bench:** measure each panel with a multimeter (short-circuit current on the 10 A range, open-circuit voltage), and if possible the power of each wiring. These readings can be entered by hand in the dashboard (feature in progress; check it is merged), or used to calibrate the simulation, below.
+3. **Without the bench:** measure each panel with a multimeter (short-circuit current on the 10 A range, open-circuit voltage), and if possible the power of each wiring. Type them into the dashboard with **Enter readings by hand** (deck, next to Data): they become real passports marked as hand-entered. The same readings can calibrate the simulation, below.
 4. In the dashboard's Data sheet, write the bench notes (where, when, light, any film) and choose what the array powers (pump, fan, resistor or nothing). Both go into the run.
 
 ## Publish runs to the public site
@@ -26,7 +26,7 @@ Indoor lamps can't light the panels enough for the pump, so record a real run ou
 ## Sunday at the table
 
 1. Laptop on power, `python3 tools/serve.py`, dashboard and site open in Chrome. Phone hotspot ready if the venue Wi-Fi is bad: the dashboard and the local site need no internet; only the public site does.
-2. What runs live depends on the hardware: the bench under the lamps; or the mock bench calibrated to the real panels (Use mock bench, then Simulate measured panels… in the mock bench row at the bottom), labelled as a simulation; or a recorded run played back (feature in progress; check it is merged).
+2. What runs live depends on the hardware: the bench under the lamps; or the mock bench calibrated to the real panels (Use mock bench, then Simulate measured panels… in the mock bench row at the bottom), labelled as a simulation; or a recorded run played back with Data → **Play a recording…** (a `tools/capture.py` log, a messages download or an exported run), shown as "Recording", never as live.
 3. Judges scan a card: it opens that panel's passport on the public site.
 
 ## The pitch in four lines
