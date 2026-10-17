@@ -139,36 +139,53 @@ window.SSMotion = (function () {
     return { setHook(fn) { hook = fn; if (raw >= 0) fn(raw); }, progress: () => Math.max(0, raw), destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); } };
   }
 
-  // ---------- the strip: on fine pointers the section pins and the vertical scroll slides the track sideways ----------
+  // ---------- the strip: on fine pointers the section pins; the first stretch of scroll zooms the wirings in and
+  // settles them, the rest slides them sideways, and each card arrives into place as it reaches the screen ----------
   function strip(view) {
     const section = view.querySelector("[data-strip]");
     const none = { size() {}, destroy() {} };
     if (!section) return none;
     const pin = section.querySelector(".strip__pin");
+    const stage = section.querySelector(".strip__stage") || pin;
     const track = () => section.querySelector(".strip__track");
-    const drive = matchMedia("(min-width: 760px) and (pointer: fine)").matches && !reduced();
-    if (!drive) { section.classList.add("is-row"); return none; }
-    let overflow = 0;
+    const cards = () => [...section.querySelectorAll(".wiring")];
+    const mq = matchMedia("(min-width: 760px) and (pointer: fine)");
+    if (reduced()) { section.classList.add("is-row"); return none; }
+    let overflow = 0, approach = 0;
+    const reset = () => { const t = track(); if (t) t.style.transform = ""; stage.style.transform = ""; stage.style.opacity = ""; cards().forEach((c) => c.style.removeProperty("--arrive")); };
     function update() {
       const t = track(); if (!t || !overflow) return;
-      const p = progressOf(section.getBoundingClientRect(), pin.offsetHeight);
-      t.style.transform = `translate3d(${(-p * overflow).toFixed(1)}px, 0, 0)`;
+      const scrolled = progressOf(section.getBoundingClientRect(), pin.offsetHeight) * (approach + overflow);
+      // the approach: the stage grows from 0.86 to full size and rises into place; then the slide
+      const a = approach ? smooth(Math.min(scrolled, approach) / approach) : 1;
+      const x = Math.max(0, scrolled - approach);
+      stage.style.transform = `translate3d(0, ${((1 - a) * 48).toFixed(1)}px, 0) scale(${(0.86 + 0.14 * a).toFixed(4)})`;
+      stage.style.opacity = (0.4 + 0.6 * a).toFixed(3);
+      t.style.transform = `translate3d(${(-x).toFixed(1)}px, 0, 0)`;
+      // a card still off to the right sits a little lower and quieter until it has come in
+      const vw = innerWidth;
+      cards().forEach((c) => { const r = c.getBoundingClientRect(); c.style.setProperty("--arrive", clamp01((vw - r.left) / (r.width * 0.9)).toFixed(3)); });
     }
+    const row = () => { overflow = 0; section.style.height = ""; pin.style.paddingBlock = ""; section.classList.add("is-row"); };
     function size() {
       const t = track(); if (!t) return;
-      t.style.transform = "";
+      reset();
+      pin.style.paddingBlock = "";
+      if (!mq.matches) { row(); return; }      // a window resized across 760 px, or a touch screen: the swipe row
       section.classList.remove("is-row");
+      // a pin taller than the screen would hide its own bottom: tighten its padding first, and only then give up
+      if (pin.offsetHeight > innerHeight) pin.style.paddingBlock = "40px";
       overflow = Math.max(0, t.scrollWidth - t.clientWidth);
-      // a pin taller than the screen would hide its own bottom: fall back to the swipe row
-      if (!overflow || pin.offsetHeight > innerHeight) { overflow = 0; section.style.height = ""; section.classList.add("is-row"); return; }
-      section.style.height = `${pin.offsetHeight + overflow}px`;
+      approach = Math.round(Math.min(420, innerHeight * 0.45));
+      if (!overflow || pin.offsetHeight > innerHeight) { row(); return; }
+      section.style.height = `${pin.offsetHeight + approach + overflow}px`;
       update();
     }
     const onScroll = rafThrottle(update), onResize = rafThrottle(size);
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onResize);
     size();
-    return { size, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); section.style.height = ""; const t = track(); if (t) t.style.transform = ""; } };
+    return { size, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); section.style.height = ""; pin.style.paddingBlock = ""; reset(); } };
   }
 
   // ---------- dust: the headline gathers out of particles, then the real text takes over ----------
@@ -177,22 +194,26 @@ window.SSMotion = (function () {
   function dust(el, key) {
     if (!el || reduced() || dusted.has(key)) return () => {};
     dusted.add(key);
-    let cancelled = false, canvas = null, stopLoop = null;
-    const show = () => { el.classList.remove("is-dusting"); if (canvas) { canvas.style.opacity = "0"; const c = canvas; canvas = null; setTimeout(() => c.remove(), 300); } removeEventListener("resize", cancel); };
+    let cancelled = false, canvas = null, stopLoop = null, guard = 0;
+    const show = () => { clearTimeout(guard); el.classList.remove("is-dusting"); if (canvas) { canvas.style.opacity = "0"; const c = canvas; canvas = null; setTimeout(() => c.remove(), 300); } removeEventListener("resize", cancel); };
     const cancel = () => { cancelled = true; if (stopLoop) stopLoop(); show(); };
     el.classList.add("is-dusting");
     if (!el.style.position && getComputedStyle(el).position === "static") el.style.position = "relative";
     addEventListener("resize", cancel);
     (async () => {
-      if (document.fonts && document.fonts.status !== "loaded") {
-        await Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 600))]);
+      const cs = getComputedStyle(el);
+      const font = `${cs.fontStyle} ${cs.fontWeight} ${stretchWord(cs.fontStretch)} ${cs.fontSize} ${cs.fontFamily}`;
+      el.getBoundingClientRect();   // a first layout, so the headline's font is requested before we ask whether it is loaded
+      if (document.fonts) {
+        await Promise.race([document.fonts.load(font).catch(() => []), new Promise((r) => setTimeout(r, 600))]);
         if (cancelled) return;
-        if (document.fonts.status !== "loaded") { show(); return; }
+        if (!document.fonts.check(font)) { show(); return; }   // still the fallback face: the particles would gather into the wrong shape
       }
       const box = el.getBoundingClientRect();
       if (!box.width || !box.height) { show(); return; }
+      const lines = [...el.querySelectorAll(".line")];
+      if (lines.some((line) => line.getClientRects().length > 1)) { show(); return; }   // a line that wraps inside itself: no dust
       const dpr = Math.min(win.devicePixelRatio || 1, 2);
-      const cs = getComputedStyle(el);
       // draw each line where it sits, then keep the dark pixels as targets
       const off = document.createElement("canvas");
       off.width = Math.ceil(box.width * dpr); off.height = Math.ceil(box.height * dpr);
@@ -200,11 +221,10 @@ window.SSMotion = (function () {
       if (!o) { show(); return; }
       o.scale(dpr, dpr);
       o.fillStyle = "#000"; o.textBaseline = "alphabetic";
-      o.font = `${cs.fontStyle} ${cs.fontWeight} ${stretchWord(cs.fontStretch)} ${cs.fontSize} ${cs.fontFamily}`;
+      o.font = font;
       if ("letterSpacing" in o) o.letterSpacing = cs.letterSpacing;
       if ("fontStretch" in o) o.fontStretch = stretchWord(cs.fontStretch);
       const ascent = (o.measureText("Hg").fontBoundingBoxAscent || parseFloat(cs.fontSize) * 0.8);
-      const lines = [...el.querySelectorAll(".line")];
       (lines.length ? lines : [el]).forEach((line) => {
         [...line.getClientRects()].forEach((r) => { o.fillText(line.textContent, r.left - box.left, r.top - box.top + ascent); });
       });
@@ -222,6 +242,8 @@ window.SSMotion = (function () {
       const c = canvas.getContext("2d"); c.scale(dpr, dpr);
       const ink = cs.getPropertyValue("--cell").trim() || "#15224a";
       const t0 = performance.now(), travel = 650;
+      // whatever happens to the frames (a hidden tab, a stalled compositor), the words are back within two seconds
+      guard = setTimeout(() => { if (!cancelled) cancel(); }, 1800);
       stopLoop = loop((now) => {
         if (cancelled || !canvas) return false;
         const el0 = now - t0;
@@ -240,6 +262,19 @@ window.SSMotion = (function () {
       });
     })().catch(() => show());
     return cancel;
+  }
+
+  // the second dust line waits transparent until it is well in view, then gathers; a flick past it just shows it
+  function watchDust(view) {
+    const h2 = view.querySelector("h2[data-dust]");
+    if (!h2 || reduced() || dusted.has("h2")) return () => {};
+    // transparent from its first paint, with no colour transition to flash through
+    h2.style.transition = "none"; h2.classList.add("is-dusting"); void h2.offsetWidth; h2.style.transition = "";
+    const go = () => { if (!dusted.has("h2")) dust(h2, "h2"); };
+    const stopIo = observe([h2], go, 0.6);
+    const sweep = () => { if (!dusted.has("h2") && h2.getBoundingClientRect().top < innerHeight * 0.85) go(); };
+    addEventListener("scroll", sweep, { passive: true });
+    return () => { stopIo(); removeEventListener("scroll", sweep); if (!dusted.has("h2")) h2.classList.remove("is-dusting"); };
   }
 
   // ---------- route changes: the view slides along the nav axis ----------
@@ -307,14 +342,14 @@ window.SSMotion = (function () {
       const rp = safe(() => repairing(view));
       stripCtl = safe(() => strip(view));
       safe(() => dust(view.querySelector("h1[data-dust]"), "h1"));
-      safe(() => observe([view.querySelector("h2[data-dust]")], (el) => dust(el, "h2"), 0.6));
+      safe(() => watchDust(view));
       if (rp) safe(() => hero3d(view.querySelector("[data-hero-slot]"), rp));
     }
     // if anything above failed, nothing may stay hidden
     if (!reduced()) setTimeout(() => view.querySelectorAll("[data-in]:not(.is-in)").forEach((el) => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("is-in"); }), 2500);
     return {
       // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new dust line
-      refresh() { safe(() => countUps(view)); if (stripCtl) stripCtl.size(); safe(() => observe([view.querySelector("h2[data-dust]")], (el) => dust(el, "h2"), 0.6)); },
+      refresh() { safe(() => countUps(view)); if (stripCtl) stripCtl.size(); safe(() => watchDust(view)); },
       destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); },
     };
   }

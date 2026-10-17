@@ -10,7 +10,7 @@ window.SSFrontData = (function () {
   const sourceWord = (link) => LINK_WORD[link] || (typeof link === "string" && link ? link : "unlabelled");
   const isReal = (run) => !SIMULATED.includes(run.link);
   const stamp = (x) => (typeof x.measured_at === "string" ? x.measured_at : "");
-  const finite = (x) => Number.isFinite(Number(x));
+  const finite = (x) => (typeof x === "number" || (typeof x === "string" && x.trim() !== "")) && Number.isFinite(Number(x));
 
   // the newest run passing ok; measured runs first whenever one passes
   function newest(runs, ok) {

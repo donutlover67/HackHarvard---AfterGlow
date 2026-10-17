@@ -4,10 +4,10 @@
 
 /* hero: text first on small screens (the two ways in sit in the first screen), slab beside it on large ones */
 .hero { position: relative; }
-.hero__pin { display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot" "diagram" "scroll"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
+.hero__pin { display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot" "diagram" "caption" "scroll"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
 .hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(48vh * 4 / 3)); justify-self: center; }
-.hero__svg, .hero__slot canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero__svg, .hero__slot canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity 400ms ease; }
 .hero__slot canvas { opacity: 0; }
 .hero__slot.has-3d canvas { opacity: 1; }
 .hero__slot.has-3d .hero__svg { opacity: 0; }
@@ -23,10 +23,17 @@
 .rp-glow { fill: var(--surface); opacity: 0; }
 .rp-num { font-size: 58px; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; fill: var(--cell); }
 .rp-label { font-size: 13px; fill: var(--ink-2); }
+.hero__caption { grid-area: caption; display: none; margin-top: -16px; }  /* the svg's own caption is too small on a phone */
 .hero__scroll { grid-area: scroll; text-align: center; display: none; }  /* only where the hero pins */
+@media (max-width: 600px) {
+  .rp-label { display: none; }
+  .rp-num { font-size: 76px; }
+  .rp-cell text { font-size: 20px; }
+  .hero__caption { display: block; }
+}
 @media (min-width: 900px) and (min-height: 700px) {
   .hero { min-height: 200vh; }
-  .hero__pin { position: sticky; top: 0; min-height: 100vh; grid-template-columns: 5fr 6fr; grid-template-areas: "slot text" "diagram diagram" "scroll scroll"; gap: 20px 56px; align-content: center; padding: 48px var(--gutter) 24px; }
+  .hero__pin { position: sticky; top: 0; min-height: 100vh; grid-template-columns: 5fr 6fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 20px 56px; align-content: center; padding: 48px var(--gutter) 24px; }
   .hero__slot { width: min(100%, calc(44vh * 4 / 3)); justify-self: start; align-self: center; }
   .hero__text { padding-right: 24px; }
   .hero__scroll { display: block; }
@@ -50,6 +57,7 @@
 /* the strip: three wirings side by side; a swipe row by default, turned sideways by the scroll on fine pointers */
 .strip { overflow: clip; }
 .strip__pin { padding-block: var(--section); }
+.strip__stage { transform-origin: 50% 42%; }
 .strip__track { display: flex; gap: 20px; margin-top: 32px; padding-inline: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .strip__track::-webkit-scrollbar { display: none; }
 .wiring { flex: 0 0 min(78vw, 520px); scroll-snap-align: start; background: var(--surface); border-radius: var(--radius); padding: 22px 24px 24px; display: grid; gap: 12px; }
@@ -62,6 +70,12 @@
 .wiring__w { font-size: 2.1rem; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.025em; line-height: 1; color: var(--ink-2); }
 .wiring.is-best .wiring__w { color: var(--cell); }
 .strip__note { margin-top: 20px; }
+@media (pointer: fine) {
+  /* the swipe row on a mouse: show it can scroll */
+  .strip.is-row .strip__track { scrollbar-width: thin; scrollbar-color: var(--busbar) transparent; padding-bottom: 10px; }
+  .strip.is-row .strip__track::-webkit-scrollbar { display: block; height: 6px; }
+  .strip.is-row .strip__track::-webkit-scrollbar-thumb { background: var(--busbar); border-radius: 3px; }
+}
 @media (min-width: 760px) and (pointer: fine) {
   /* only while motion.js drives it; it adds .is-row (the swipe row) when it cannot */
   html.has-motion .strip:not(.is-row) .strip__pin { position: sticky; top: 0; }

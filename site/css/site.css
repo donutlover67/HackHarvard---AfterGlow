@@ -7,7 +7,7 @@
 
 :root {
   --cell: #15224a; --cell-deep: #0e1838;
-  --ink: #1d2433; --ink-2: #5b6677; --ink-3: #8a93a3;
+  --ink: #1d2433; --ink-2: #5b6677; --ink-3: #6b7587;
   --busbar: #c6ccd6; --busbar-2: #e0e4ea;
   --page: #e8ecf1; --surface: #fbfcfd;
   --sun: #f2b705;
@@ -44,7 +44,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .title { font-size: var(--title); font-weight: 700; font-stretch: 108%; letter-spacing: -0.015em; line-height: 1.1; color: var(--cell); text-wrap: balance; }
 .page-title { font-size: var(--page-title); font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.025em; line-height: 1; color: var(--cell); margin-bottom: 12px; }
 .lede { font-size: 1.06rem; color: var(--ink-2); max-width: var(--measure); margin-bottom: 24px; }
-.label { font-size: var(--label); font-stretch: 88%; color: var(--ink-3); }
+.label { font-size: var(--label); font-stretch: 88%; color: var(--ink-2); }
 .num-big { font-size: var(--display); font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; line-height: 1; color: var(--cell); }
 .muted { color: var(--ink-2); }
 .small { font-size: 0.88rem; }
@@ -238,4 +238,14 @@ details.tools[open] summary { margin-bottom: 10px; }
   .passport-intro { margin-bottom: 3mm; }
   .batch-card { break-inside: avoid; page-break-inside: avoid; }
   .batch__bar, .batch__track { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+@media print {
+  /* printed passports and cards keep the type metrics they were checked with before the redesign's larger screen type */
+  html { font-size: 16px; }
+  body { line-height: 1.45; }
+  .passport__id { font-size: 1.9rem; }
+  .passport__grade { font-size: 3.2rem; }
+  .facts { gap: 12px 24px; }
+  .facts div { padding-bottom: 8px; }
+  .facts dd { font-size: 1.1rem; }
 }

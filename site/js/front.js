@@ -74,6 +74,7 @@ window.SSFront = (function () {
           <div class="hero__actions"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
         </div>
         ${repairingSvg(gainText(gain))}
+        <p class="hero__caption label">more power than wiring A, once the strong pair shares a string</p>
         <p class="hero__scroll label">scroll</p>
       </div>
     </section>`;
@@ -110,17 +111,17 @@ window.SSFront = (function () {
     return `<div class="strip__track">${cards}</div><p class="wrap strip__note label">${sourceLine(strip, ctx, "Figures")}</p>`;
   }
   const strip = (ctx, s) => `<section class="strip" data-strip data-in>
-      <div class="strip__pin">
+      <div class="strip__pin"><div class="strip__stage">
         <div class="wrap"><h2 class="title">Three ways to wire four panels.</h2></div>
         <div id="front-strip">${stripInner(ctx, s)}</div>
-      </div>
+      </div></div>
     </section>`;
   function gainInner(ctx, g) {
     const proof = g.run && g.run.proof;
     const detail = g.model ? "" : proof && Number.isFinite(Number(proof.ci95_pct)) ? ` ±${ctx.num(proof.ci95_pct, 1)} over ${ctx.esc(proof.cycle)} cycles` : "";
     return `<div class="wrap">
         <div class="band__num" data-count>${gainText(g)}</div>
-        <p class="band__text">more power than the worst wiring of the same panels, measured at each wiring's maximum power point. With normal aging the gain is about 5 to 7%.</p>
+        <p class="band__text">more power than the worst wiring of the same panels, ${g.model ? "" : "measured "}at each wiring's maximum power point. With normal aging the gain is about 5 to 7%.</p>
         <p class="band__note">${g.model ? "A model figure for the demo batch, two of four panels behind 35% film. The first published bench run replaces it." : `${ctx.num(g.pct, 1)}%${detail}, ${fromRun(g, ctx)}.`}</p>
       </div>`;
   }

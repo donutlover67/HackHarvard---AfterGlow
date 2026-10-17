@@ -368,7 +368,9 @@
   // reason: "route" when the hash changed (slide in, start at the top), "data" when runs arrived (redraw in place)
   let motionCtl = null, lastPage = null;
   function render(reason = "route") {
-    const r = window.SSRoutes.parse(location.hash);
+    // routes.js is a separate file: if it is missing or stale (a mixed cache after a deploy), show the front page rather than nothing
+    const R = window.SSRoutes;
+    const r = R ? R.parse(location.hash) : { page: "front", id: null, nav: null };
     const view = $("#view");
     const M = window.SSMotion;
     let inPlace = false;
@@ -398,7 +400,7 @@
     else { if (motionCtl) motionCtl.destroy(); motionCtl = M.mount(view, r.page); }
     };
     // the first paint and in-place refreshes draw at once; later route changes slide along the nav
-    if (M && reason === "route" && lastPage !== null) M.transition(draw, window.SSRoutes.direction(lastPage, r.page));
+    if (M && reason === "route" && lastPage !== null) M.transition(draw, R ? R.direction(lastPage, r.page) : "fwd");
     else draw();
     lastPage = r.page;
   }
@@ -439,7 +441,7 @@
       .catch(() => settle(false)); // neither the API nor an index: import by hand
   }
 
-  if (window.SSMotion) window.SSMotion.init();
+  try { if (window.SSMotion) window.SSMotion.init(); } catch (err) { console.warn("motion off:", err && err.message); }
   window.addEventListener("hashchange", () => render("route"));
   render("route");
   pullFromServer(true);

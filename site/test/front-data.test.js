@@ -33,6 +33,9 @@ test("the newest qualifying run wins and a string gain_pct is read as a number",
 
 test("runs without a usable sweep proof fall back to the model", () => {
   expect(gainFigure([{ ...real, proof: { ...real.proof, gain_pct: "nan" } }]).model).toBe(true);
+  expect(gainFigure([{ ...real, proof: { ...real.proof, gain_pct: null } }]).model).toBe(true);
+  expect(gainFigure([{ ...real, proof: { ...real.proof, gain_pct: "" } }]).model).toBe(true);
+  expect(gainFigure([{ ...real, proof: { ...real.proof, gain_pct: true } }]).model).toBe(true);
   expect(gainFigure([{ ...real, proof: { ...real.proof, kind: "pump" } }]).model).toBe(true);
   expect(gainFigure([{ ...real, proof: undefined }]).model).toBe(true);
 });
@@ -54,6 +57,7 @@ test("the sample run supplies the strip's watts", () => {
 test("a wiring without a finite figure disqualifies the run", () => {
   expect(stripFigures([{ ...sample, search: { pmax_w: { A: 1, B: "x", C: 2 } } }]).model).toBe(true);
   expect(stripFigures([{ ...sample, search: undefined }]).model).toBe(true);
+  expect(stripFigures([{ ...sample, search: { pmax_w: { A: null, B: 2, C: 1 } } }]).model).toBe(true);
 });
 
 test("the best wiring is the run's best, or the largest figure when it names none", () => {

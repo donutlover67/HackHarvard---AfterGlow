@@ -21,6 +21,7 @@ const ctxHostile = { ...ctxSample, passports: [{ ...ctxSample.passports[0], pass
 test("the hero holds the headline and both ways in", () => {
   const html = page(ctxEmpty);
   const hero = html.slice(0, html.indexOf("</section>"));
+  expect(hero).toContain('class="hero__caption');   // the diagram's caption as text, for phones where the svg's is too small
   expect(hero).toContain('href="#/passports"');
   expect(hero).toContain('href="#/build"');
   expect(hero.replace(/<[^>]+>/g, "")).toContain("Used panels still work.");  // the headline is two line spans
@@ -28,6 +29,8 @@ test("the hero holds the headline and both ways in", () => {
 
 test("with nothing published the page says so, offers the example batch and labels the model figures", () => {
   const html = page(ctxEmpty);
+  const band = html.slice(html.indexOf('id="front-gain"'), html.indexOf('id="front-passports"'));
+  expect(band).not.toContain("measured");   // a model figure is never called measured
   expect(html).toContain("No panels published yet");
   expect(html).toContain('id="btn-sample-front"');
   expect(html).toContain("+37%");

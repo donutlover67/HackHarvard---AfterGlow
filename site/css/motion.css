@@ -80,6 +80,11 @@ html.has-motion [data-in]:not(.is-in) .m-part { opacity: 0; transform: translate
 html.reduced [data-hero] { --k: 1; --w: 1; --g: 1; }
 html.reduced .hero__scroll { display: none; }
 
+/* the strip: the stage zooms in as the section docks (motion.js sets its transform), and a card still off to the right
+   sits lower and quieter until it has arrived (--arrive 0..1) */
+.strip__stage { will-change: transform, opacity; }
+.wiring { transform: translateY(calc((1 - var(--arrive, 1)) * 28px)); opacity: calc(0.5 + 0.5 * var(--arrive, 1)); }
+
 /* dust: the headline is transparent while its particles gather, then its colour returns */
 [data-dust] { transition: color 260ms ease; }
 [data-dust].is-dusting { color: transparent; }
