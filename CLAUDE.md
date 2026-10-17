@@ -5,6 +5,7 @@ An ESP32 grades 4 small 6 V solar panels and switches them between the 3 possibl
 ## Source of truth (highest first)
 docs/spec-v2.md > protocol/PROTOCOL.md > docs/hardware.md (wiring as actually built) > code.
 If the code and the spec disagree, stop and say so; don't work around it.
+New to the repo or to your area? Read your section of docs/team-notes.md first: what is built, what to verify first, and the rules per area.
 @protocol/PROTOCOL.md
 
 ## Layout and owners
