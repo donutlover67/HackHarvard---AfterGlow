@@ -78,7 +78,7 @@ class Handler(SimpleHTTPRequestHandler):
                          "index": index_note})
 
     def log_message(self, fmt, *args):
-        if "/api/" in (args[0] if args else ""):
+        if "/api/" in str(args[0] if args else ""):
             super().log_message(fmt, *args)
 
     def _json(self, status, payload):

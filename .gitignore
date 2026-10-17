@@ -14,3 +14,12 @@ tools/eval/report-*.json
 tools/eval/runs/
 # site/data/runs/ is committed on purpose: GitHub Pages has no upload API, so the public site serves
 # the run files listed in site/data/runs/index.json (docs/website-plan.md, Hosting).
+
+# Chalk AI Advisor local files
+tools/chalk_integration/.venv/
+**/__pycache__/
+*.pyc
+.env
+.env.*
+chalk_site_test.json
+chalk_site_online_test.json
