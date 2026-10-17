@@ -67,11 +67,11 @@ window.SSFront = (function () {
   function hero(ctx, gain) {
     return `<section class="hero" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
       <div class="hero__pin">
-        <div class="hero__slot" data-hero-slot>${slabSvg()}</div>
+        <div class="hero__slot grow" data-reveal data-hero-slot>${slabSvg()}</div>
         <div class="hero__text">
-          <h1 class="display" data-dust><span class="line">Used panels</span> <span class="line">still work.</span></h1>
-          <p class="lede">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
-          <div class="hero__actions"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
+          <h1 class="display" data-reveal><span class="line"><span class="line__in">Used panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
+          <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
+          <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
         </div>
         ${repairingSvg(gainText(gain))}
         <p class="hero__caption label">more power than wiring A, once the strong pair shares a string</p>
@@ -137,7 +137,7 @@ window.SSFront = (function () {
         : `<p class="muted">No panels published yet.</p>
            <div class="row fpass__actions"><button type="button" class="btn" id="btn-sample-front">Show example panels</button><span class="label">A simulated batch, not a real measurement.</span><span class="status" id="front-status"></span></div>`;
     return `<div class="wrap">
-        <h2 class="title" data-dust>Every panel gets a passport.</h2>
+        <h2 class="title" data-reveal><span class="line"><span class="line__in">Every panel gets a passport.</span></span></h2>
         <p class="lede">An ID, a QR code and the record of what the bench measured, so the next owner knows what they are buying.</p>
         ${body}
       </div>`;

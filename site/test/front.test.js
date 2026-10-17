@@ -65,9 +65,11 @@ test("while runs are loading the passports section says so", () => {
   expect(page({ ...ctxEmpty, loading: true })).toContain("Loading passports");
 });
 
-test("every section can enter, two lines are dust, the problem numerals count", () => {
+test("every section can enter, the hero intro and the passports heading reveal, the problem numerals count", () => {
   const html = page(ctxSample);
   expect((html.match(/<section[^>]*data-in/g) || []).length).toBeGreaterThanOrEqual(7);
-  expect((html.match(/data-dust/g) || []).length).toBe(2);
+  expect(html).not.toContain("data-dust");
+  expect((html.match(/data-reveal/g) || []).length).toBe(5);          // headline, lede, buttons, slab, passports heading
+  expect((html.match(/class="line__in"/g) || []).length).toBe(3);     // two headline lines and the passports heading
   expect(html).toMatch(/data-count[^>]*>80–88%/);
 });

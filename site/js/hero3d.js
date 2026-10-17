@@ -72,8 +72,8 @@ export function mount(slot, opts = {}) {
   setSun(0);
 
   function size() {
-    const r = slot.getBoundingClientRect();
-    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    // layout size, not the rendered box: the slot scales in during the intro and must not leave a smaller canvas behind
+    const w = Math.max(1, slot.clientWidth), h = Math.max(1, slot.clientHeight);
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.updateProjectionMatrix();
     dirty = true;

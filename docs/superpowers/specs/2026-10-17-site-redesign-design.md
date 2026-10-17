@@ -110,3 +110,7 @@ No dark theme, no new data, no CMS, no analytics, no changes to the dashboard, n
 
 ## Rollout
 Build on this branch with the current site untouched on `main`; preview on the local server at the three widths; the user looks at it; push to `feat/dashboard-and-skeleton` and `main` only on their word, then confirm the live site and re-scan a card.
+
+## Amendments after the build (Sat Oct 17, late)
+- The dust text (motion row 2) was replaced at the user's request: it read as decoration. The headline's lines now rise out of their own masks (760 ms, 110 ms apart), the lede and the buttons rise 260 and 380 ms later, the slab settles in over 900 ms, and the passports heading gets the same masked rise when reached. Everything is visible without script; the hidden state exists only under `html.has-motion`.
+- The horizontal strip (row 3) gained an approach: over the first 405 px of its pinned scroll the wirings grow from 86% to full size and rise into place, then slide; each card arrives as it reaches the screen. On screens too short for the pinned section it tightens its padding first and only then falls back to the swipe row, which shows a thin scrollbar on a mouse.

@@ -1,4 +1,4 @@
-// The motion layer: entrances, count-ups, the hero re-pairing, the dust text, the horizontal strip, route
+// The motion layer: entrances, count-ups, the hero re-pairing, the headline reveal, the horizontal strip, route
 // slides, and (hero3d) the loader for the three.js slab. Transform, opacity, colour and filter only.
 // Readers who prefer reduced motion, or open ?motion=off, get the end states at once; loops pause while
 // the tab is hidden. Nothing here touches the document at load, so bun can test the pure parts.
@@ -87,7 +87,7 @@ window.SSMotion = (function () {
     const stopIo = observe(rest, (el) => el.classList.add("is-in"), 0.2);
     // a fast flick or a throttled frame can carry a section past the observer: anything whose top has entered the viewport shows
     let last = 0;
-    const sweep = () => { const now = Date.now(); if (now - last < 120) return; last = now; rest.forEach((el) => { if (!el.classList.contains("is-in") && el.getBoundingClientRect().top < innerHeight * 0.9) el.classList.add("is-in"); }); };
+    const sweep = () => { const now = Date.now(); if (now - last < 120) return; last = now; rest.forEach((el) => { if (!el.classList.contains("is-in") && el.getBoundingClientRect().top < innerHeight * 0.9) el.classList.add("is-in"); }); view.querySelectorAll("[data-reveal]:not(.is-revealed)").forEach((el) => { if (el.getBoundingClientRect().bottom < innerHeight * 0.6) el.classList.add("is-revealed"); }); };
     addEventListener("scroll", sweep, { passive: true });
     return () => { stopIo(); removeEventListener("scroll", sweep); };
   }
@@ -188,93 +188,30 @@ window.SSMotion = (function () {
     return { size, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); section.style.height = ""; pin.style.paddingBlock = ""; reset(); } };
   }
 
-  // ---------- dust: the headline gathers out of particles, then the real text takes over ----------
-  const dusted = new Set(); // once per page load, by key
-  const stretchWord = (pct) => { const v = parseFloat(pct); if (!Number.isFinite(v)) return "normal"; return v >= 125 ? "extra-expanded" : v >= 118 ? "expanded" : v >= 106 ? "semi-expanded" : v <= 94 ? "semi-condensed" : "normal"; };
-  function dust(el, key) {
-    if (!el || reduced() || dusted.has(key)) return () => {};
-    dusted.add(key);
-    let cancelled = false, canvas = null, stopLoop = null, guard = 0;
-    const show = () => { clearTimeout(guard); el.classList.remove("is-dusting"); if (canvas) { canvas.style.opacity = "0"; const c = canvas; canvas = null; setTimeout(() => c.remove(), 300); } removeEventListener("resize", cancel); };
-    const cancel = () => { cancelled = true; if (stopLoop) stopLoop(); show(); };
-    el.classList.add("is-dusting");
-    if (!el.style.position && getComputedStyle(el).position === "static") el.style.position = "relative";
-    addEventListener("resize", cancel);
-    (async () => {
-      const cs = getComputedStyle(el);
-      const font = `${cs.fontStyle} ${cs.fontWeight} ${stretchWord(cs.fontStretch)} ${cs.fontSize} ${cs.fontFamily}`;
-      el.getBoundingClientRect();   // a first layout, so the headline's font is requested before we ask whether it is loaded
-      if (document.fonts) {
-        await Promise.race([document.fonts.load(font).catch(() => []), new Promise((r) => setTimeout(r, 600))]);
-        if (cancelled) return;
-        if (!document.fonts.check(font)) { show(); return; }   // still the fallback face: the particles would gather into the wrong shape
-      }
-      const box = el.getBoundingClientRect();
-      if (!box.width || !box.height) { show(); return; }
-      const lines = [...el.querySelectorAll(".line")];
-      if (lines.some((line) => line.getClientRects().length > 1)) { show(); return; }   // a line that wraps inside itself: no dust
-      const dpr = Math.min(win.devicePixelRatio || 1, 2);
-      // draw each line where it sits, then keep the dark pixels as targets
-      const off = document.createElement("canvas");
-      off.width = Math.ceil(box.width * dpr); off.height = Math.ceil(box.height * dpr);
-      const o = off.getContext("2d", { willReadFrequently: true });
-      if (!o) { show(); return; }
-      o.scale(dpr, dpr);
-      o.fillStyle = "#000"; o.textBaseline = "alphabetic";
-      o.font = font;
-      if ("letterSpacing" in o) o.letterSpacing = cs.letterSpacing;
-      if ("fontStretch" in o) o.fontStretch = stretchWord(cs.fontStretch);
-      const ascent = (o.measureText("Hg").fontBoundingBoxAscent || parseFloat(cs.fontSize) * 0.8);
-      (lines.length ? lines : [el]).forEach((line) => {
-        [...line.getClientRects()].forEach((r) => { o.fillText(line.textContent, r.left - box.left, r.top - box.top + ascent); });
-      });
-      const data = o.getImageData(0, 0, off.width, off.height).data;
-      const step = Math.max(2, Math.round(2 * dpr));
-      let pts = [];
-      for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) if (data[(y * off.width + x) * 4 + 3] > 128) pts.push([x / dpr, y / dpr]);
-      if (pts.length > 1500) { for (let i = pts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pts[i], pts[j]] = [pts[j], pts[i]]; } pts = pts.slice(0, 1500); }
-      if (!pts.length) { show(); return; }
-      const particles = pts.map(([tx, ty]) => ({ tx, ty, sx: tx + (Math.random() - 0.5) * box.width * 1.6, sy: ty + (Math.random() - 0.5) * box.height * 2.6, delay: Math.random() * 250, size: 1.4 + Math.random() * 1.2 }));
-      canvas = document.createElement("canvas");
-      canvas.className = "dust-canvas"; canvas.setAttribute("aria-hidden", "true");
-      canvas.width = off.width; canvas.height = off.height;
-      el.appendChild(canvas);
-      const c = canvas.getContext("2d"); c.scale(dpr, dpr);
-      const ink = cs.getPropertyValue("--cell").trim() || "#15224a";
-      const t0 = performance.now(), travel = 650;
-      // whatever happens to the frames (a hidden tab, a stalled compositor), the words are back within two seconds
-      guard = setTimeout(() => { if (!cancelled) cancel(); }, 1800);
-      stopLoop = loop((now) => {
-        if (cancelled || !canvas) return false;
-        const el0 = now - t0;
-        c.clearRect(0, 0, box.width, box.height);
-        c.fillStyle = ink;
-        let done = true;
-        for (const p of particles) {
-          const t = clamp01((el0 - p.delay) / travel);
-          if (t < 1) done = false;
-          const e = easeOut(t);
-          c.globalAlpha = Math.min(1, t * 4);
-          c.fillRect(p.sx + (p.tx - p.sx) * e, p.sy + (p.ty - p.sy) * e, p.size, p.size);
-        }
-        if (done) { show(); return false; }
-        return true;
-      });
-    })().catch(() => show());
-    return cancel;
+  // ---------- reveals: headline lines rise out of their masks; the lede, the buttons and the slab follow ----------
+  // The hidden state lives in CSS under html.has-motion only, so a failed script never hides a word.
+  let passportsRevealed = false; // once per page load; a redrawn passports section shows its heading at once
+  const revealNow = (el) => { if (el) el.classList.add("is-revealed"); };
+  function revealHero(view) {
+    const els = [...view.querySelectorAll("[data-hero] [data-reveal]")];
+    if (!els.length) return () => {};
+    if (reduced()) { els.forEach(revealNow); return () => {}; }
+    // one frame in the hidden state so the transition has somewhere to start from; a timer in case no frame comes
+    let done = false;
+    const go = () => { if (done) return; done = true; els.forEach(revealNow); };
+    const raf = requestAnimationFrame(() => requestAnimationFrame(go));
+    const timer = setTimeout(go, 120);
+    return () => { cancelAnimationFrame(raf); clearTimeout(timer); go(); };
   }
-
-  // the second dust line waits transparent until it is well in view, then gathers; a flick past it just shows it
-  function watchDust(view) {
-    const h2 = view.querySelector("h2[data-dust]");
-    if (!h2 || reduced() || dusted.has("h2")) return () => {};
-    // transparent from its first paint, with no colour transition to flash through
-    h2.style.transition = "none"; h2.classList.add("is-dusting"); void h2.offsetWidth; h2.style.transition = "";
-    const go = () => { if (!dusted.has("h2")) dust(h2, "h2"); };
-    const stopIo = observe([h2], go, 0.6);
-    const sweep = () => { if (!dusted.has("h2") && h2.getBoundingClientRect().top < innerHeight * 0.85) go(); };
+  function watchReveal(view) {
+    const h2 = view.querySelector("h2[data-reveal]");
+    if (!h2) return () => {};
+    if (reduced() || passportsRevealed) { revealNow(h2); return () => {}; }
+    const go = () => { passportsRevealed = true; revealNow(h2); };
+    const stopIo = observe([h2], go, 0.5);
+    const sweep = () => { if (!passportsRevealed && h2.getBoundingClientRect().top < innerHeight * 0.85) go(); };
     addEventListener("scroll", sweep, { passive: true });
-    return () => { stopIo(); removeEventListener("scroll", sweep); if (!dusted.has("h2")) h2.classList.remove("is-dusting"); };
+    return () => { stopIo(); removeEventListener("scroll", sweep); };
   }
 
   // ---------- route changes: the view slides along the nav axis ----------
@@ -341,15 +278,18 @@ window.SSMotion = (function () {
     if (page === "front") {
       const rp = safe(() => repairing(view));
       stripCtl = safe(() => strip(view));
-      safe(() => dust(view.querySelector("h1[data-dust]"), "h1"));
-      safe(() => watchDust(view));
+      safe(() => revealHero(view));
+      safe(() => watchReveal(view));
       if (rp) safe(() => hero3d(view.querySelector("[data-hero-slot]"), rp));
     }
     // if anything above failed, nothing may stay hidden
-    if (!reduced()) setTimeout(() => view.querySelectorAll("[data-in]:not(.is-in)").forEach((el) => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("is-in"); }), 2500);
+    if (!reduced()) setTimeout(() => {
+      view.querySelectorAll("[data-in]:not(.is-in)").forEach((el) => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("is-in"); });
+      view.querySelectorAll("[data-reveal]:not(.is-revealed)").forEach((el) => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("is-revealed"); });
+    }, 2500);
     return {
-      // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new dust line
-      refresh() { safe(() => countUps(view)); if (stripCtl) stripCtl.size(); safe(() => watchDust(view)); },
+      // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new heading
+      refresh() { safe(() => countUps(view)); if (stripCtl) stripCtl.size(); safe(() => watchReveal(view)); },
       destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); },
     };
   }

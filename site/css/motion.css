@@ -1,6 +1,6 @@
 /* Second String site: the motion layer. Loaded after site.css; nothing here changes layout or colour at rest.
    Transform, opacity and filter only, so it stays smooth on a phone; readers who prefer reduced motion get
-   the end states at once. The moves (entrances, the re-pairing, dust, the strip, route slides) come from
+   the end states at once. The moves (entrances, the re-pairing, the headline reveal, the strip, route slides) come from
    motion.js and the rules it relies on further down. */
 
 :root {
@@ -85,10 +85,16 @@ html.reduced .hero__scroll { display: none; }
 .strip__stage { will-change: transform, opacity; }
 .wiring { transform: translateY(calc((1 - var(--arrive, 1)) * 28px)); opacity: calc(0.5 + 0.5 * var(--arrive, 1)); }
 
-/* dust: the headline is transparent while its particles gather, then its colour returns */
-[data-dust] { transition: color 260ms ease; }
-[data-dust].is-dusting { color: transparent; }
-.dust-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 260ms ease; }
+/* the hero intro: each headline line rises out of its own mask; the lede and the buttons rise a beat later; the slab settles in.
+   The hidden state exists only under html.has-motion, and motion.js adds .is-revealed one frame after the page draws. */
+.line { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.2em; margin-bottom: -0.2em; }  /* room for descenders inside the mask */
+.line__in { display: inline-block; transition: transform 760ms var(--m-ease); }
+.line:nth-child(2) .line__in { transition-delay: 110ms; }
+html.has-motion [data-reveal]:not(.is-revealed) .line__in { transform: translateY(130%); }  /* past the mask's descender room, so no ascender peeks through */
+.rise { transition: opacity 600ms var(--m-ease), transform 600ms var(--m-ease); transition-delay: var(--d, 0ms); }
+html.has-motion [data-reveal].rise:not(.is-revealed) { opacity: 0; transform: translateY(14px); }
+.grow { transition: opacity 900ms var(--m-ease), transform 900ms var(--m-ease); }
+html.has-motion [data-reveal].grow:not(.is-revealed) { opacity: 0; transform: scale(0.97); }
 
 /* route changes: the view slides along the nav axis, with the View Transitions API or with classes */
 #view { view-transition-name: view; }
@@ -106,8 +112,8 @@ html[data-dir="back"] .view.is-leaving { animation-name: vt-out-back; }
 html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
-  .m-part, [data-dust], .hero__scroll, .dust-canvas { transition: none; }
+  .m-part, .line__in, .rise, .grow, .hero__scroll { transition: none; }
   [data-hero] { --k: 1; --w: 1; --g: 1; }
   ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
 }
-html.reduced .m-part, html.reduced [data-dust] { transition: none; }
+html.reduced .m-part, html.reduced .line__in, html.reduced .rise, html.reduced .grow { transition: none; }
