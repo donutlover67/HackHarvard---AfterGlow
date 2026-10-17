@@ -423,7 +423,8 @@ void setup() {
     else proto::error(Serial, reinterpret_cast<const __FlashStringHelper*>(names[k]));
   }
   loadFactors();
-  // boot state: pairing A, load connected, capacitor discharged once
+  // boot state: pairing A, load connected, capacitor discharged once; set explicitly so a warm restart matches the relays
+  pairing = 'A'; haveSearch = false; busy = false; abortRequested = false;
   relaySet(R_DIS, true); delay(DISCHARGE_MS); relaySet(R_DIS, false); capDischarged = true;
   setPump(true);
   mode = M_RUN;

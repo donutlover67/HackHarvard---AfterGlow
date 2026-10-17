@@ -85,6 +85,24 @@ void test_binner_fits_any_sweep_and_keeps_pmax() {
   TEST_ASSERT_FLOAT_WITHIN(0.3f, a.voc_v, c.voc_v);                 // the last point is kept unmerged
 }
 
+void test_bins_stay_monotonic_with_noisy_voltage() {
+  // 5 mV of sensor noise around every 0.1 V boundary: the binned points must still rise in voltage
+  static RawSample raw[600]; int n = 0;
+  unsigned seed = 12345;
+  for (int k = 0; k < 600; k++) {
+    seed = seed * 1103515245u + 12345u;
+    float noise = ((seed >> 16) % 1000) / 1000.0f * 0.012f - 0.006f;
+    float v = 13.0f * k / 599.0f + noise; if (v < 0) v = 0;
+    raw[n++] = {v, 200.0f * (1.0f - v / 13.2f)};
+  }
+  static SweepPoint ref[80]; int m1 = binSweep(raw, n, 0.1f, ref, 80);
+  for (int k = 1; k < m1; k++) TEST_ASSERT_TRUE_MESSAGE(ref[k].v > ref[k - 1].v, "binSweep produced a backward step");
+  SweepPoint buf[40]; SweepBinner b; b.begin(buf, 40, 0.1f);
+  for (int k = 0; k < n; k++) b.add(raw[k].v, raw[k].i_ma);
+  int m2 = b.finish();
+  for (int k = 1; k < m2; k++) TEST_ASSERT_TRUE_MESSAGE(buf[k].v > buf[k - 1].v, "SweepBinner produced a backward step");
+}
+
 void test_binner_short_sweep_keeps_every_bin() {
   SweepPoint buf[40]; SweepBinner b; b.begin(buf, 40, 0.1f);
   for (int k = 0; k < 30; k++) b.add(0.05f + 0.1f * k, 100.0f);   // one sample per 0.1 V bin
@@ -133,6 +151,7 @@ int main() {
   RUN_TEST(test_running_stats_ci);
   RUN_TEST(test_binner_fits_any_sweep_and_keeps_pmax);
   RUN_TEST(test_binner_short_sweep_keeps_every_bin);
+  RUN_TEST(test_bins_stay_monotonic_with_noisy_voltage);
   RUN_TEST(test_protocol_lines_match_the_protocol);
   return UNITY_END();
 }

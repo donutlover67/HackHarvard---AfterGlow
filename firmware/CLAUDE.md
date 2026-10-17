@@ -7,6 +7,16 @@ The pin map, relay table and procedures are in docs/spec-v2.md §11.2–11.4; do
 ## Arduino Uno R3 build (env `uno`)
 `src/uno/main_uno.cpp` with `include/config_uno.h`; platform atmelavr@5.3.0. Same commands, procedures, interlocks and messages as `src/main.cpp`; the dashboard can't tell the boards apart. Forced differences: 2 KB RAM, so sweeps are binned while they run (`solar::SweepBinner`, 40 points) and messages are printed field by field (`lib/protocol_out`, all text in flash via `F()`), no ArduinoJson; one I2C bus, so the OUT sensor is at 0x42; EEPROM for the box factors; 10-bit ADC against `uno::VCC_V`. The Uno pin map is a proposal until docs/hardware.md confirms it. Keep RAM under about 1.4 KB at build time (stack needs the rest); `pio run -e uno` prints it. A change to a procedure in one build goes into the other too.
 
+## Running the Uno firmware without a board
+`test/host_uno/` compiles the real `src/uno/main_uno.cpp` against a fake Arduino core and a simulated bench (four panels on the single-diode model, the relay network read back from the pins, a sweep capacitor, a pump, lamp-box differences, virtual time) and drives it through a scripted session: grade, search, proof, run, pump, sweep, bad commands, busy rejection, STOP mid-proof, CAL 1–4 with the reference panel moved box to box, CALSAVE, a reboot, PUMPPROOF. It records relay interlock breaches and writes the serial transcript, which `validate.py` checks against the protocol and the physics. Build and run from `firmware/`:
+```
+c++ -std=c++17 -O1 -DARDUINO=10808 -I test/host_uno/fake -I test/host_uno -I include -I lib/solarlogic -I lib/protocol_out test/host_uno/bench.cpp test/host_uno/sim_main.cpp src/uno/main_uno.cpp lib/solarlogic/solarlogic.cpp -o /tmp/uno_sim
+/tmp/uno_sim demo /tmp/demo.jsonl > /tmp/demo.json && python3 test/host_uno/validate.py /tmp/demo.jsonl /tmp/demo.json demo
+```
+Scenarios: `demo`, `missing-out` (no output sensor), `weak-light` (~30 mA: sweeps hit the 4 s timeout), `dark`, `no-film`. All five pass with zero interlock violations. The transcript also plays in the dashboard (Data → Play a recording…). Run it after any change to a procedure; it is not a substitute for the board (timing, I2C, ADC accuracy and relay levels stay hardware questions).
+
+Stack: `binSweep` keeps its 8 KB working buffer static because the ESP32 loop task has only 8 KB of stack; only the ESP32 build links it. On the Uno the deepest measured call chain uses about 450 bytes of the 950 free; `doGrade` has the largest frame (204 bytes).
+
 ## Pins (classic ESP32)
 - I2C `Wire`: SDA 21, SCL 22 — INA219 X1 0x40, X2 0x41, Y1 0x44, Y2 0x45. `Wire1`: SDA 32, SCL 33 — INA219 OUT 0x40.
 - Relays: GPIO16 = stage 1 (K1–K4), GPIO17 = stage 2 (K5–K8), 18 K_SHORT, 19 K_CAP, 23 K_DIS, 25 K_LOAD.

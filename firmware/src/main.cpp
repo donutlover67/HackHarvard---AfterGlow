@@ -466,7 +466,8 @@ void setup() {
     else sendError(String("INA219 ") + names[k] + " not found");
   }
   loadFactors();
-  // boot state: pairing A, pump connected, capacitor discharged once
+  // boot state: pairing A, pump connected, capacitor discharged once; set explicitly so a warm restart matches the relays
+  pairing = 'A'; haveSearch = false; busy = false; abortRequested = false;
   relaySet(R_DIS, true); delay(DISCHARGE_MS); relaySet(R_DIS, false); capDischarged = true;
   setPump(true);
   mode = M_RUN;

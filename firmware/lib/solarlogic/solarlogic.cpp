@@ -8,9 +8,12 @@ int binSweep(const RawSample* raw, int n, float binV, SweepPoint* out, int maxOu
   // samples arrive with rising voltage; walk them and average each bin
   int count = 0;
   int bin = -1; double sumV = 0, sumI = 0; int k = 0;
-  SweepPoint tmp[1024];
+  // Static on purpose: 8 KB on the stack would overflow the ESP32's 8 KB loop task the first time a sweep ran.
+  // Only the ESP32 build calls binSweep (the Uno streams through SweepBinner), so the linker drops this there.
+  static SweepPoint tmp[1024];
   for (int s = 0; s < n; s++) {
     int b = (int)floorf(raw[s].v / binV);
+    if (b < bin) b = bin;   // sensor noise can dip a reading back into the bin below; keep the curve rising
     if (b != bin) {
       if (k > 0 && count < 1024) { tmp[count++] = { (float)(sumV / k), (float)(sumI / k) }; }
       bin = b; sumV = 0; sumI = 0; k = 0;
@@ -34,6 +37,7 @@ void SweepBinner::begin(SweepPoint* buf, int capacity, float binV) {
 
 void SweepBinner::add(float v, float i_ma) {
   long b = (long)floorf(v / binV_);
+  if (b < bin_) b = bin_;   // same rule as binSweep: noise never starts a lower bin
   if (b != bin_) {
     if (k_ > 0) push(sumV_ / k_, sumI_ / k_);
     bin_ = (long)floorf(v / binV_);   // binV_ may have doubled inside push()
