@@ -283,7 +283,8 @@ window.SSMotion = (function () {
     const onVis = (visible) => { if (ctl) ctl.setVisible(visible); };
     const start = () => {
       if (dead || ctl) { connect(); return; }
-      import("./js/hero3d.js").then((mod) => {
+      // a dynamic import in a classic script resolves against this script's URL (site/js/), not the page's
+      import("./hero3d.js").then((mod) => {
         if (dead) return;
         ctl = mod.mount(slot, { touch: matchMedia("(pointer: coarse)").matches });
         hero3dSlots.set(slot, ctl);
