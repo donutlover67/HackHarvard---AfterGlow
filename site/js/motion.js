@@ -87,7 +87,7 @@ window.SSMotion = (function () {
     const stopIo = observe(rest, (el) => el.classList.add("is-in"), 0.2);
     // a fast flick or a throttled frame can carry a section past the observer: anything whose top has entered the viewport shows
     let last = 0;
-    const sweep = () => { const now = Date.now(); if (now - last < 120) return; last = now; rest.forEach((el) => { if (!el.classList.contains("is-in") && el.getBoundingClientRect().top < innerHeight * 0.9) el.classList.add("is-in"); }); view.querySelectorAll("[data-reveal]:not(.is-revealed)").forEach((el) => { if (el.getBoundingClientRect().bottom < innerHeight * 0.6) el.classList.add("is-revealed"); }); };
+    const sweep = () => { const now = Date.now(); if (now - last < 120) return; last = now; rest.forEach((el) => { if (!el.classList.contains("is-in") && el.getBoundingClientRect().top < innerHeight * 0.9) el.classList.add("is-in"); }); view.querySelectorAll("[data-reveal]:not(.is-revealed)").forEach((el) => { if (el.getBoundingClientRect().bottom < innerHeight * 0.6) el.classList.add("is-revealed"); }); view.querySelectorAll(".step:not(.is-lit)").forEach((el) => { if (el.getBoundingClientRect().bottom < innerHeight * 0.3) el.classList.add("is-lit"); }); };
     addEventListener("scroll", sweep, { passive: true });
     return () => { stopIo(); removeEventListener("scroll", sweep); };
   }
@@ -214,6 +214,87 @@ window.SSMotion = (function () {
     return () => { stopIo(); removeEventListener("scroll", sweep); };
   }
 
+  // ---------- the string: one line down the page, drawn by the scroll, a cell travelling at its tip ----------
+  // It runs in the left margin (through the steps' column on a phone), passes behind cards and the band, and
+  // lights a node at every section it reaches. The bench's four steps light one by one as the tip moves through them.
+  const NS = "http://www.w3.org/2000/svg";
+  function spine(view) {
+    const none = { rebuild() {}, destroy() {} };
+    const hero = view.querySelector("[data-hero]");
+    if (!hero || reduced()) { view.querySelectorAll(".step").forEach((s) => s.classList.add("is-lit")); return none; }
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("class", "spine"); svg.setAttribute("aria-hidden", "true"); svg.setAttribute("focusable", "false");
+    const path = document.createElementNS(NS, "path");
+    path.setAttribute("pathLength", "1");
+    const nodesG = document.createElementNS(NS, "g");
+    const bead = document.createElementNS(NS, "polygon");
+    bead.setAttribute("class", "spine__bead");
+    bead.setAttribute("points", "-7,-4 -4,-7 4,-7 7,-4 7,4 4,7 -4,7 -7,4");
+    svg.append(path, nodesG, bead);
+    view.prepend(svg);
+    let samples = [], total = 0, startY = 0, endY = 0, nodes = [], built = false;
+    const steps = [...view.querySelectorAll(".step")];
+    const how = view.querySelector(".how"), howWire = view.querySelector(".string__wire--h path");
+    const docY = (el, frac) => { const r = el.getBoundingClientRect(); return scrollY + r.top + r.height * frac; };
+    const phone = () => matchMedia("(max-width: 760px)").matches;
+    function build() {
+      const wrap = view.querySelector(".problem .wrap"); if (!wrap) return;
+      const w = view.clientWidth, h = view.scrollHeight;
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`); svg.setAttribute("width", w); svg.setAttribute("height", h);
+      const wl = wrap.getBoundingClientRect().left + parseFloat(getComputedStyle(wrap).paddingLeft);   // the content's left edge
+      const x0 = phone() ? wl + 48 : Math.max(12, wl - 30);   // through the step drawings' centre, or 30 px outside the content
+      const amp = phone() ? 0 : 16;
+      const pts = [[x0, hero.offsetTop + hero.offsetHeight - 24]];
+      [".problem .num-big", ".how .title", ".how .string-box", ".strip .title", "#front-gain .band__num", "#front-passports .title", ".teaser__box", ".close__name"].forEach((sel, i) => {
+        const el = view.querySelector(sel); if (!el) return;
+        const y = docY(el, sel.endsWith(".string-box") ? 1 : 0.5);
+        if (y > pts[pts.length - 1][1] + 40) pts.push([x0 + (i % 2 ? amp : -amp) * (sel.startsWith(".how") ? 0 : 1), y]);
+      });
+      let d = `M${pts[0][0]},${pts[0][1]}`;
+      for (let i = 1; i < pts.length; i++) { const [px, py] = pts[i - 1], [x, y] = pts[i]; const my = (py + y) / 2; d += ` C${px},${my} ${x},${my} ${x},${y}`; }
+      path.setAttribute("d", d);
+      total = path.getTotalLength(); startY = pts[0][1]; endY = pts[pts.length - 1][1];
+      samples = []; const N = 240;
+      for (let k = 0; k <= N; k++) { const p = path.getPointAtLength(total * k / N); samples.push([p.y, total * k / N]); }
+      nodesG.textContent = "";
+      nodes = pts.slice(1).map(([x, y]) => { const c = document.createElementNS(NS, "circle"); c.setAttribute("class", "spine__node"); c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", "3.5"); nodesG.appendChild(c); return { c, y }; });
+      built = true;
+      update();
+    }
+    const lenAtY = (y) => { if (!samples.length) return 0; if (y <= samples[0][0]) return 0; for (let i = 1; i < samples.length; i++) { if (samples[i][0] >= y) { const [y0, l0] = samples[i - 1], [y1, l1] = samples[i]; return y1 === y0 ? l1 : l0 + (l1 - l0) * (y - y0) / (y1 - y0); } } return total; };
+    function update() {
+      if (!built || !total) return;
+      // the tip sits 62% down the screen, and drifts to the bottom of it over the last screen so the string can finish
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+      const t = clamp01((scrollY - (maxScroll - innerHeight)) / innerHeight);
+      const tipY = Math.max(startY, Math.min(endY, scrollY + innerHeight * (0.62 + 0.38 * t)));
+      const len = lenAtY(tipY);
+      path.style.strokeDashoffset = (1 - len / total).toFixed(4);
+      const p = path.getPointAtLength(len);
+      bead.setAttribute("transform", `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`);
+      nodes.forEach((n) => n.c.classList.toggle("is-lit", tipY >= n.y - 2));
+      // the four steps: on a wide screen they light in turn as the tip crosses their section, and their rail draws across;
+      // on a phone each lights as the tip reaches its drawing
+      if (how) {
+        const top = how.offsetTop, height = how.offsetHeight || 1;
+        const q = clamp01((tipY - top) / height);
+        steps.forEach((s, i) => {
+          const lit = phone() ? tipY >= docY(s.querySelector(".step__glyph") || s, 0.5) - 14 : q >= (i + 1) / 5;
+          s.classList.toggle("is-lit", lit);
+        });
+        if (howWire) howWire.style.strokeDashoffset = (1 - clamp01(q * 1.25)).toFixed(3);
+      }
+    }
+    const onScroll = rafThrottle(update), onResize = rafThrottle(build);
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onResize);
+    const ro = typeof ResizeObserver === "function" ? new ResizeObserver(onResize) : null;
+    if (ro) ro.observe(view);
+    build();
+    setTimeout(build, 400); // after the fonts
+    return { rebuild: () => build(), destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); if (ro) ro.disconnect(); svg.remove(); } };
+  }
+
   // ---------- route changes: the view slides along the nav axis ----------
   function transition(swap, dir) {
     document.documentElement.dataset.dir = dir === "back" ? "back" : "fwd";
@@ -274,10 +355,11 @@ window.SSMotion = (function () {
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
     safe(() => countUps(view));
-    let stripCtl = null;
+    let stripCtl = null, spineCtl = null;
     if (page === "front") {
       const rp = safe(() => repairing(view));
       stripCtl = safe(() => strip(view));
+      spineCtl = safe(() => spine(view));
       safe(() => revealHero(view));
       safe(() => watchReveal(view));
       if (rp) safe(() => hero3d(view.querySelector("[data-hero-slot]"), rp));
@@ -286,10 +368,11 @@ window.SSMotion = (function () {
     if (!reduced()) setTimeout(() => {
       view.querySelectorAll("[data-in]:not(.is-in)").forEach((el) => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("is-in"); });
       view.querySelectorAll("[data-reveal]:not(.is-revealed)").forEach((el) => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("is-revealed"); });
+      view.querySelectorAll(".step:not(.is-lit)").forEach((el) => { if (el.getBoundingClientRect().bottom < innerHeight * 0.5) el.classList.add("is-lit"); });
     }, 2500);
     return {
       // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new heading
-      refresh() { safe(() => countUps(view)); if (stripCtl) stripCtl.size(); safe(() => watchReveal(view)); },
+      refresh() { safe(() => countUps(view)); if (stripCtl) stripCtl.size(); if (spineCtl) spineCtl.rebuild(); safe(() => watchReveal(view)); },
       destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); },
     };
   }
