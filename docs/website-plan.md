@@ -28,7 +28,7 @@ Two hosts serve the same `site/` folder; there is no build step on either.
 
 **For judges' phones: GitHub Pages.** A QR code encodes the page's own URL, so the passport a judge scans must be public. Pages is live in "Deploy from a branch" mode from `feat/dashboard-and-skeleton` (a repo admin enabled it Sat morning): GitHub publishes the repository root from that branch about a minute after each push, so:
 
-- https://mscl741.github.io/HackHarvard/site/ is the passport index; `#/build` and `#/impact` are the other pages.
+- https://mscl741.github.io/HackHarvard/site/ opens the front page; `#/passports` is the passport index, `#/build` and `#/impact` the other pages.
 - https://mscl741.github.io/HackHarvard/site/#/p/SS-0001 is what a QR code opens.
 - https://mscl741.github.io/HackHarvard/ is the README rendered by Jekyll; `dashboard/` is served over https as well.
 

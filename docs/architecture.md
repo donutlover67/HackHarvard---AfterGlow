@@ -49,7 +49,7 @@ Grading is relative, panel against panel under the same light, which is why no c
                               to feat/dashboard-and-skeleton │
                                                              ▼
                           ┌──────────────────────────────────────────────────┐
-                          │ site/ : passports, QR codes, Array Builder, cards │
+                          │ site/ : front page, passports, builder, cards     │
                           │ local:  http://localhost:8000/site/               │
                           │ public: https://mscl741.github.io/HackHarvard/site/│
                           └──────────────────────────────────────────────────┘
@@ -90,6 +90,6 @@ The single-diode panel model in `tools/sim/pv2s2p.py` is the source of the numbe
 | Change what the board measures or how | `firmware/src/main.cpp` and `firmware/src/uno/main_uno.cpp` (keep them in step) | `pio run -e esp32dev`, `pio run -e uno`, `pio test -e native` |
 | Add or change a message field | Write it in `docs/NOTES.md` first: firmware and dashboard are built by different people against `protocol/PROTOCOL.md` | both builds and the dashboard's `?replay=1` self-test |
 | Change a dashboard chart or control | `dashboard/` | mock mode with a clean console, then `?replay=1` |
-| Change passport pages or the Array Builder | `site/` | load the sample run, every route, phone width |
+| Change the front page, passport pages or the Array Builder | `site/` | `bun test site/test`, the example batch, every route, phone width |
 | Publish real runs | `site/data/runs/`, then commit and push | the public site on a phone |
 | Score the advisor agent | `tools/eval/` | `python3 tools/eval/score.py` |

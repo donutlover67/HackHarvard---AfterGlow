@@ -36,7 +36,7 @@ The site also runs as a plain static folder with no server behind it; the public
 
 A passport's QR code encodes the page's own URL, so the passport a judge scans has to be public. Pages is on, in **"Deploy from a branch"** mode from `feat/dashboard-and-skeleton` (set by a repo admin on Saturday morning): GitHub publishes the whole repository from that branch about a minute after every push to it.
 
-- https://mscl741.github.io/HackHarvard/site/ is the passport index; `#/build` is the Array Builder and `#/impact` the impact page.
+- https://mscl741.github.io/HackHarvard/site/ opens the front page; `#/passports` lists every tested panel, `#/build` is the Array Builder and `#/impact` the impact page.
 - https://mscl741.github.io/HackHarvard/site/#/p/SS-0001 is one passport, what a QR code opens.
 - https://mscl741.github.io/HackHarvard/ is this README; `dashboard/` and `docs/` are served too.
 
@@ -63,7 +63,7 @@ Flashing (`pio run -e esp32dev -t upload`) switches relays on real panels, so a 
 
 - Dashboard: runs the full demo on the mock bench with one button and uploads the run; also takes readings entered by hand, plays recorded sessions, and simulates measured panels, each labelled. Its serial parser passes a replay test with injected faults, but has not met a real board yet.
 - Firmware: the ESP32 and Uno builds compile with no warnings and 8 host tests pass. Not yet run on hardware. The Uno pin map is a proposal; relay logic level, sensor addresses and divider ratio must be confirmed in `docs/hardware.md` first.
-- Site: live on GitHub Pages with passports, QR codes, printable cards, the voltage-balanced Array Builder and phone layouts; it shows only the sample run until real runs are committed. The impact page waits on D's sourced figures.
+- Site: live on GitHub Pages with a front page that explains the bench and shows the gain happening, passports, QR codes, printable cards, the voltage-balanced Array Builder and phone layouts; it shows only the example batch until real runs are committed. The impact page waits on D's sourced figures.
 - Hardware: lamps can't light the panels enough indoors (halogen overheats them), so the plan is an outdoor recording or multimeter readings; the team's ESP32 is a bare module, hence the Uno build. See `docs/runbook.md`.
 
 ## Team
