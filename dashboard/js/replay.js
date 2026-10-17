@@ -126,31 +126,44 @@ export async function buildReplay(base, seed = 2026) {
 // A stand-in for a Web Serial port: open/close, getInfo, a writable that records commands, and a readable
 // that serves the chunks. Between segments it errors the stream and offers a new one, which is what
 // Web Serial does on a non-fatal read error. speed 1 paces reads at 115200 baud; speed 0 does not wait.
-export function replayPort(chunks, { speed = 1 } = {}) {
+// For recordings (js/playback.js): speed may be a function read at every chunk (the speed can change
+// mid-playback), a number in a segment is a pause in recorded milliseconds (divided by the speed), and
+// baud: false turns the baud pacing off when the recording's own timing is used instead.
+export function replayPort(chunks, { speed = 1, baud = true } = {}) {
   const sent = [];
+  const rate = typeof speed === "function" ? speed : () => speed;
   let finish;
+  let cancelled = false;
   const finished = new Promise((r) => { finish = r; });
-  const wait = (ms) => (speed > 0 && ms >= 1 ? new Promise((r) => setTimeout(r, ms)) : Promise.resolve());
+  const wait = (ms) => (rate() > 0 && ms >= 1 ? new Promise((r) => setTimeout(r, ms)) : Promise.resolve());
   const port = {
     readable: null, writable: null, sent, finished,
     getInfo: () => ({}),
     addEventListener() {},
     async open() { port.readable = stream(0); },
-    async close() { port.readable = null; finish(); },
+    async close() { cancelled = true; port.readable = null; finish(); },
   };
   port.writable = new WritableStream({ write(c) { sent.push(new TextDecoder().decode(c)); } });
   function stream(si) {
     let i = 0; let owed = 0;
     return new ReadableStream({
       async pull(ctrl) {
+        while (typeof chunks[si][i] === "number") {
+          const ms = chunks[si][i++];
+          if (rate() > 0) await wait(ms / rate());
+          if (cancelled) return;
+        }
         if (i < chunks[si].length) {
           const c = chunks[si][i++];
-          owed += c.length / (BAUD_BYTES_PER_MS * (speed || 1));
-          if (owed >= 16) { await wait(owed); owed = 0; }   // timers are coarse; wait in batches
-          ctrl.enqueue(c);
+          if (baud) {
+            owed += c.length / (BAUD_BYTES_PER_MS * (rate() || 1));
+            if (owed >= 16) { await wait(owed); owed = 0; }   // timers are coarse; wait in batches
+          }
+          if (!cancelled) ctrl.enqueue(c);
           return;
         }
         await wait(20);
+        if (cancelled) return;
         if (si + 1 < chunks.length) {
           port.readable = stream(si + 1);
           ctrl.error(new DOMException("Framing error (replayed)", "FramingError"));
@@ -160,7 +173,7 @@ export function replayPort(chunks, { speed = 1 } = {}) {
           finish();
         }
       },
-      cancel() { port.readable = null; finish(); },
+      cancel() { cancelled = true; port.readable = null; finish(); },
     });
   }
   return port;

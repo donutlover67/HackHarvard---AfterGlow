@@ -5,13 +5,14 @@ Requirements are in docs/spec-v2.md §9 and §11.6; messages are in protocol/PRO
 
 ## Files
 - `index.html` — the page; `css/style.css` — design tokens and layout.
-- `js/app.js` — state, rendering and controls. `js/charts.js` — SVG charts. `js/mock.js` — a simulated ESP32 that runs the same single-diode model as tools/sim. `js/serial.js` — Web Serial. `js/manual.js` — readings typed in by hand (Enter readings by hand): the firmware's grade, flag and prediction rules in JS, building `grade`/`search` messages that go through the same dispatch(); such runs have `link: "manual"`.
+- `js/app.js` — state, rendering and controls. `js/charts.js` — SVG charts. `js/mock.js` — a simulated ESP32 that runs the same single-diode model as tools/sim. `js/serial.js` — Web Serial. `js/replay.js` — the stand-in port and the ?replay=1 self-test. `js/playback.js` — plays a recorded session from a file (Data, Play a recording…) through that port and SerialLink. `js/manual.js` — readings typed in by hand (Enter readings by hand): the firmware's grade, flag and prediction rules in JS, building `grade`/`search` messages that go through the same dispatch(); such runs have `link: "manual"`.
 
 ## Run and check
 - `python3 -m http.server 8000` from this folder, then open http://localhost:8000 in Chrome (Web Serial needs localhost or https; ES modules don't load from file://).
 - Mock mode (the default when no port is connected) must exercise every message type, so every chart can be checked without hardware.
 - Before saying done: load the page in mock mode, confirm no console errors, and confirm each message type renders.
 - Serial parsing without a board: serve the repo root (`python3 tools/serve.py`) and open `/dashboard/?replay=1` (or `?replay=auto&speed=0`), then press Replay recording. js/replay.js feeds protocol/samples/ plus reset noise, torn lines, garbage and bad fields through SerialLink's own read loop and reports pass/fail on the page and in the console.
+- Playing a recorded run (Data, Play a recording…): a tools/capture.py log, the Download all messages (JSONL) file or an exported run (JSON). Timing follows the messages' `t` at 1×, 4× or as fast as possible. The Link readout says "Recording: <file> (not live)", the run's `link` is "recording", its bench text says it was replayed, and recordings never upload automatically. Mock-bench lines in a JSONL download (from `hello` with fw "mock" to the next real `hello`) are left out.
 
 ## Rules
 - Only Chrome/Edge matter (Web Serial). Don't add polyfills or other browsers.

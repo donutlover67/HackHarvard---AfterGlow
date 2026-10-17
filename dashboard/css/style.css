@@ -359,3 +359,9 @@ body[data-conn="mock"] #btn-mock { background: var(--cell); color: #fff; border-
   .wiring__grid { grid-template-columns: 1fr; }
   .gain__number { font-size: 3.6rem; }
 }
+
+/* Playing a recording (js/playback.js) */
+.playback { align-items: center; border-top: 1px solid var(--busbar); padding-top: 12px; }
+.playback .sheet__status { flex: 1 1 260px; }
+#rec-pick:focus-within { outline: 2px solid var(--cell); outline-offset: 2px; }
+#rec-speed { font: inherit; font-size: 0.88rem; color: var(--ink); border: 1px solid var(--busbar); border-radius: var(--radius); padding: 4px 6px; background: var(--surface); }

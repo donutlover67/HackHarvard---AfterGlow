@@ -5,6 +5,7 @@ import { initLoad, loadNoun } from "./load.js";
 import { SerialLink } from "./serial.js";
 import { buildReplay, replayPort, watchErrors, checkReplay } from "./replay.js";
 import { readEntry, gradeMessage, searchMessage, benchLine } from "./manual.js";
+import { RecordingPlayer, readRecording } from "./playback.js";
 
 const TRACE_WINDOW_MS = 120000;
 const MAX_RAW_LINES = 20000;
@@ -28,7 +29,7 @@ const LS = {
 };
 
 const state = {
-  conn: "none",            // none | mock | serial | manual (readings typed in by hand)
+  conn: "none",            // none | mock | serial | manual (typed in by hand) | recording (a file played by js/playback.js; never live)
   link: null,
   mode: "IDLE",
   pairing: null,
@@ -161,7 +162,7 @@ const handlers = {
     if (demo.active && demo.stage === "proof") { demo.cycle = m.cycle; renderDemo(); }
     if (m.cycle >= (PROOF_CYCLES[m.kind] || PROOF_CYCLES.sweep)) {
       if (demo.active) endDemo("done");
-      if (state.autoUpload) uploadRun();
+      if (state.autoUpload && state.conn !== "recording") uploadRun();   // a replay uploads only when asked (Data, Upload run)
     }
   },
   cal(m) {
@@ -358,6 +359,7 @@ function newRunId() {
 
 function benchDescription() {
   if (state.conn === "manual") return benchLine(state.manualNote || state.benchNotes);   // always says hand-entered
+  if (state.conn === "recording") return `replayed from a recording (${recordingName}), not a live measurement${state.benchNotes ? `; ${state.benchNotes}` : ""}`;
   if (state.benchNotes) return state.benchNotes;
   if (state.conn === "mock" && mock && mock.calib) return `simulated: mock bench calibrated to measured panels (${describeCalibration(mock.calib)})`;
   if (state.conn === "mock" && mock) {
@@ -452,7 +454,7 @@ async function uploadRun() {
     const info = await res.json().catch(() => ({}));
     const siteUrl = info.site ? new URL(info.site, new URL(url, location.href)).href : "";
     status.innerHTML = `Uploaded ${esc(state.runId)}${siteUrl ? ` — <a href="${esc(siteUrl)}" target="_blank" rel="noopener">open the passports</a>` : ""}.`;
-    if (!demo.active) { deck.textContent = `Run uploaded; passports are on the site.`; deck.classList.remove("is-bad"); }
+    if (!demo.active) { deck.textContent = state.conn === "recording" ? "Replayed run uploaded, labelled as a recording; passports are on the site." : "Run uploaded; passports are on the site."; deck.classList.remove("is-bad"); }
   } catch (err) {
     status.classList.add("is-bad");
     status.textContent = `Upload failed: ${err.message || err}. Export the JSON instead.`;
@@ -469,7 +471,7 @@ function setConn(kind, text) {
   document.body.dataset.conn = kind;
   els.connText.textContent = text;
   els.mockBench.hidden = kind !== "mock";
-  document.querySelectorAll("[data-cmd]").forEach((b) => { b.disabled = kind === "none" || kind === "manual"; });
+  document.querySelectorAll("[data-cmd]").forEach((b) => { b.disabled = kind === "none" || kind === "manual" || kind === "recording"; });
   document.querySelectorAll("[data-manual]").forEach((el) => {   // section notes that would be false for typed-in readings
     if (el.dataset.bench == null) el.dataset.bench = el.textContent;
     el.textContent = kind === "manual" ? el.dataset.manual : el.dataset.bench;
@@ -485,6 +487,7 @@ function resetData() {
 }
 
 function startMock() {
+  stopRecording();
   stopSerial();
   mock = new MockBench(onLine);
   mock.light = Number($("mock-light").value);
@@ -507,6 +510,7 @@ function stopMock() {
 // `port` is the replay's stand-in port; without it the browser asks the user to pick the ESP32.
 async function startSerial(port) {
   if (!port && !SerialLink.supported()) { els.connText.textContent = "Web Serial needs Chrome or Edge"; return; }
+  stopRecording();
   stopMock();
   serial = new SerialLink(onLine, (status, detail) => {
     if (status === "connected") setConn("serial", `ESP32 on ${detail}`);
@@ -579,7 +583,7 @@ function useManualReadings() {
   const entry = readEntry(manualFields());
   if (entry.errors.length) { showManualErrors(entry.errors); document.querySelector(`[data-field="${entry.errors[0].field}"]`).focus(); return; }
   state.manualNote = $("manual-note").value.trim(); LS.set("ss.manualNote", state.manualNote);
-  stopMock(); stopSerial();
+  stopRecording(); stopMock(); stopSerial();
   setConn("manual", "Readings entered by hand (no bench)");
   resetData();
   state.factors = [1, 1, 1, 1]; renderCal();            // no lamp box: raw reading = corrected reading
@@ -643,6 +647,65 @@ $("btn-dl-csv").addEventListener("click", () => {
 // re-draw charts when the window changes size
 let resizeTimer = null;
 new ResizeObserver(() => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { renderTraceChart(); renderBarsChart(); renderCurvesChart(); }, 80); }).observe(document.querySelector(".bench"));
+
+// ---------- recordings: a bench session from a file, through the serial parser (js/playback.js) ----------
+// Mock and serial are stopped while a recording plays, and starting either stops the recording. After the file
+// ends its data stays on screen, still labelled as a recording, until another source starts.
+const player = new RecordingPlayer(onLine);
+let recordingName = "";
+const SPEED_WORDS = { 0: "as fast as possible", 1: "1×", 4: "4×" };
+
+async function playRecording(file) {
+  const status = $("rec-status");
+  const deck = $("deck-status");
+  status.classList.remove("is-bad");
+  let rec;
+  try { rec = readRecording(await file.text(), file.name); } catch (err) {
+    status.textContent = err.message || String(err);
+    status.classList.add("is-bad");
+    return null;
+  }
+  stopSerial(); stopMock();
+  state.link = null;                 // commands go nowhere while a recording plays
+  await player.stop();
+  recordingName = file.name;
+  resetData();
+  setConn("recording", `Recording: ${file.name} (not live)`);
+  $("btn-rec-stop").hidden = false;
+  const what = rec.kind === "run" ? `${rec.messages} messages rebuilt from an exported run (no live power in run files)`
+    : `${rec.lines} lines, ${rec.messages} messages${rec.skipped ? `; ${rec.skipped} mock bench lines left out` : ""}`;
+  const words = () => `Playing ${file.name} at ${SPEED_WORDS[player.speed]}: ${what}.`;
+  setText(deck, words()); deck.classList.remove("is-bad");
+  status.textContent = words();
+  player.onSpeed = () => { if (player.playing) { setText(deck, words()); status.textContent = words(); } };
+  await player.play(rec, (why, detail) => {
+    $("btn-rec-stop").hidden = true;
+    const end = why === "done" ? `Recording ${file.name} finished; the data on screen is from it, not live. Recordings are not uploaded automatically.` : `Recording stopped: ${detail}.`;
+    setText(deck, end); deck.classList.toggle("is-bad", why !== "done");
+    status.textContent = end;
+  });
+  if ($("data-sheet").open) $("data-sheet").close();
+  return rec;
+}
+
+function stopRecording() {
+  if (!player.playing) return;
+  player.stop();
+  $("btn-rec-stop").hidden = true;
+  const msg = `Playback of ${recordingName} stopped; the data on screen is from it, not live.`;
+  setText($("deck-status"), msg);
+  $("rec-status").textContent = msg;
+}
+
+player.speed = Number($("rec-speed").value);
+$("rec-speed").addEventListener("change", (e) => { player.speed = Number(e.target.value); if (player.onSpeed) player.onSpeed(); });
+$("rec-file").addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";                // choosing the same file again plays it again
+  if (file) playRecording(file);
+});
+$("btn-rec-stop").addEventListener("click", stopRecording);
+window.secondString.playRecording = playRecording;
 
 // ---------- replay (?replay=1): recorded lines through the real serial path, no board ----------
 // ?replay=auto starts it on load; &speed=0 skips the 115200-baud pacing. Replays never upload runs.
