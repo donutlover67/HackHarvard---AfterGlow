@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "serve",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["tools/serve.py", "--port", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "attach-8020",
+      "url": "http://localhost:8020"
+    }
+  ]
+}

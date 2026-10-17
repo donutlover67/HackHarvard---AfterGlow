@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pio run -e esp32dev)",
+      "Bash(cd firmware && pio run -e esp32dev)",
+      "Bash(pio test -e native*)",
+      "Bash(cd firmware && pio test -e native*)",
+      "Bash(python3 tools/capture.py *)",
+      "Bash(python3 tools/sim/*)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(pio run -e esp32dev -t upload*)",
+      "Bash(cd firmware && pio run -e esp32dev -t upload*)",
+      "Edit(/protocol/**)",
+      "Edit(/firmware/platformio.ini)",
+      "Edit(/CLAUDE.md)"
+    ],
+    "deny": [
+      "Bash(pio device monitor*)",
+      "Bash(cat /dev/tty*)",
+      "Bash(cat /dev/cu*)",
+      "Bash(screen /dev/*)",
+      "Read(/dev/**)",
+      "Bash(pio pkg update*)"
+    ]
+  }
+}

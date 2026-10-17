@@ -1,2 +1,15 @@
 __pycache__/
 *.py[cod]
+
+# build and capture output
+logs/*
+!logs/.gitkeep
+firmware/.pio/
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
+.DS_Store
+tools/eval/answers-*.json
+tools/eval/report-*.json
+tools/eval/runs/
+site/data/runs/

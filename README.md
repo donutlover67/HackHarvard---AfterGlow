@@ -1,83 +1,52 @@
-# Solar Panel Reuse Through Adaptive Wiring
+# Second String
 
-## Project Overview
+Grades used solar panels, then rewires them for the most power. HackHarvard 2026.
 
-End-of-life solar panels can still produce about 80% of their original rated power, but many are discarded because buyers lack an inexpensive, standard way to assess their remaining output. Even when reused panels are available, wiring panels with different current outputs in series can waste power: the lowest-current panel limits the current through the entire string.
+Four small panels sit in lamp boxes. An ESP32 measures every panel's short-circuit current at the same instant and its open-circuit voltage, scores them against each other, predicts which panels belong in series together, then verifies the prediction by sweeping the I-V curve of all three possible pairings with relays and a capacitor. It keeps the best pairing, runs a 12 V pump from it, and proves the gain by alternating the best and worst wirings and measuring each at its maximum power point. A laptop dashboard over USB serial shows the grades, the curves and the gain with a confidence interval.
 
-This project measures used panels, automatically selects a wiring arrangement, and compares its measured output with a baseline arrangement. A water pump demonstrates the load being powered, while a live dashboard shows panel measurements and output power. The system is designed to make reuse easier to evaluate and to demonstrate the benefit of matching panels with similar current in each series string.
+## Why
 
-Microinverters and DC optimizers put a separate power converter on every panel. That cost works against the reason for buying cheap used panels. Research on automatic rewiring has focused on temporary shade across new panels, not on permanently reduced output.
+Panels lose about 0.5–0.75% of their output a year, so after 25 years most still make 80–88% of their rating, and panels retired early for upgrades often make 70–95%. Yet most retired US panels are landfilled and about 1% are reused. One reason is testing: a lab flash test plus imaging costs €16–31 per panel against roughly €50 for a new one, and there is no agreed cheap retest yet. The other problem is mismatch: in a series string every panel carries the same current, so the weakest panel limits the string. Manufacturers sort new panels into current classes to avoid this; used panels arrive in mixed batches with no data. We measure that data in place, cheaply, and verify the wiring automatically.
 
-## How It Works
+With two of four panels at 50% output, the best pairing makes about 38–41% more maximum power than the worst and about 22–24% more than the average of the three; with realistic aging (80% panels) the gain is about 5–7%. We report the measured number, not the idealized 50%.
 
-The prototype is designed around four panels arranged as two series pairs, with the pairs connected in parallel. A single panel does not provide enough voltage for the pump system, so series pairs provide the needed voltage while parallel wiring combines their output current.
+## Repository
 
-1. **Measure each panel.** Relays and an INA219 sensor measure each panel's short-circuit current and open-circuit voltage.
-2. **Compare panel current.** The system calculates a relative current score for each panel.
-3. **Try every pairing.** Four panels can be split into two unordered pairs in exactly three ways. Relays test each arrangement, and the system selects the one with the highest measured output power.
-4. **Show the comparison.** An ESP32-hosted web dashboard displays panel measurements, the active pairing, live output power for the optimized and baseline pairings, and the measured percentage gain.
-5. **Run the load.** The panels power a water pump during the demonstration. The pump is a visible demonstration of power use; the power measurements, rather than pump speed, support the comparison.
+| Folder | What | Owner |
+|---|---|---|
+| `dashboard/` | The laptop dashboard: plain HTML, CSS and ES modules, hand-drawn SVG charts, Web Serial, a built-in mock bench. No build step, works offline. | C |
+| `firmware/` | ESP32 firmware (PlatformIO, Arduino framework): grading, pairing relays, I-V sweeps, proof cycles, serial JSON. Pure logic in `lib/solarlogic` with host tests. | B |
+| `protocol/` | The serial contract (`PROTOCOL.md`) and sample messages (`samples/*.jsonl`) that both sides are built against. | B |
+| `docs/` | `spec-v2.md` (the full project description), `hardware.md` (wiring as built), `feasibility-report.md`, `NOTES.md` (cross-area requests). | A, D |
+| `tools/` | `capture.py` (bounded serial capture for logs) and `sim/` (the single-diode model behind the numbers above; regenerates the protocol samples). | B |
+| `solar_pairing/` | An earlier Python stand-in from before the spec rewrite. Superseded by `dashboard/`. | — |
 
-## Why Pairing Matters
-
-In a series string, every panel carries the same current. A panel with lower current capability therefore limits the current of the other panel in that string. In parallel, the strings share voltage and their currents add, so pairing panels with similar current can increase the combined output.
-
-For illustration, suppose two panels produce 1.0 unit of current and two produce 0.5 units, and each panel contributes 1 unit of voltage in its series pair. Pairing each high-current panel with a low-current panel gives two strings limited to 0.5 units of current, for 2 units of power. Pairing the high-current panels together and the low-current panels together gives strings carrying 1.0 and 0.5, for 3 units of power, 50% more. Real hardware may show a smaller gain; the prototype measures and reports the actual result instead of assuming this ideal gain.
-
-## Panel Measurements
-
-### Short-circuit current
-
-Short-circuit current is the current produced when a panel's positive and negative terminals are connected through a very low resistance. It is measured in milliamps and changes with the light reaching the panel and the condition of its cells. Yellowed protective material, dirt, or electrically disconnected cell sections can reduce it.
-
-For this measurement, a relay connects the panel through the INA219 sensor's 0.1-ohm shunt resistor. The sensor measures the voltage across the resistor and calculates current using `current = voltage / 0.1 ohm`. At 0.3 A, the resistor drops 0.03 V, so it is effectively a short for the panel. A solar panel is current-limited by the available light.
-
-### Open-circuit voltage
-
-Open-circuit voltage is the voltage measured while no load current flows. It is measured in volts and generally changes less with light than short-circuit current. A voltage substantially below the other panels can indicate a failed cell group: bypass diodes may route current around failed groups, reducing a panel's voltage by roughly one-third to one-half.
-
-For this measurement, a relay disconnects the panel from the rest of the circuit while leaving it connected to the sensor's high-impedance voltage input, which draws very little current.
-
-### Relative current score
-
-The score used to match panels is:
-
-```text
-relative current score = panel short-circuit current / highest panel short-circuit current * 100%
-```
-
-All panels are measured within about one second under the same light. Comparing them at the same time helps account for changing light intensity, since current is proportional to illumination. This comparison assumes panels are the same model. If they are not, compare each measured current with that panel's rated short-circuit current on its label instead.
-
-The comparison also assumes the panels receive similar light. Check for position-related differences by swapping two panels and confirming that the readings follow the panels rather than their positions. Independently, flag a panel whose open-circuit voltage is more than 20% below the others as a possible failed-cell-group case.
-
-## Measuring the Gain
-
-The system measures power in watts at the combined output. It alternates the optimized and arbitrary baseline pairings every few seconds, using the same panels, light, and load for both. Alternation helps ensure that changing light affects both arrangements similarly.
-
-Report the average percentage difference in measured output power over many alternation cycles. The pump demonstrates the load in use; the power chart is the evidence for the wiring comparison. If the pump is powered by a battery instead of directly from the panels, disclose that during the demo because pump speed would then not track the panels' instantaneous output.
-
-## Demonstrating Reduced-Output Panels
-
-To simulate panels with reduced output, cover two panels evenly with window tint film rated to pass a known percentage of light, such as 50%. This should reduce short-circuit current by approximately the corresponding percentage; verify the actual reduction with the sensor before the demonstration.
-
-Avoid covering only part of a panel with cardboard. Blocking a subset of cells can activate bypass diodes and behave like temporary shade rather than a uniform reduction representative of panel aging. As an optional additional test, place a 1-5 ohm resistor in series with one panel to simulate resistance from a corroded connection.
-
-## Dashboard
-
-The ESP32 hosts a web page over Wi-Fi. The dashboard is intended to show:
-
-- Each panel's short-circuit current, open-circuit voltage, and relative current score
-- The currently selected panel pairing
-- A live chart of output power in watts for the optimized and arbitrary pairings
-- The measured percentage gain of the optimized pairing over the baseline
-
-## Run the dashboard
-
-The ESP32, relays, INA219, and pump are not in this repository. `solar_pairing` is a local stand-in: it measures four panels, tries all three pairings, alternates the optimized pairing with position wiring, and serves the dashboard.
+## Run the demo laptop
 
 ```bash
-python3 -m solar_pairing.server --host 0.0.0.0 --port 8765
-python3 -m unittest discover -s tests
+python3 tools/serve.py
 ```
 
-Open `http://127.0.0.1:8765`. The default setup puts 50% tint on panels B and D, which makes position wiring the mismatched case. The pump indicator follows panel power. It is not driven by a separate battery.
+Then open http://localhost:8000/dashboard/ and http://localhost:8000/site/ in Chrome. The dashboard starts on the mock bench (simulated panels, same physics model as the firmware's design) and runs a search; press **Prove** for the confidence interval. **Connect ESP32** uses Web Serial (Chrome or Edge, 115200 baud). The mock bench row at the bottom lets you change the light level and which panels carry film. Data → **Upload run** sends the run's passports to the local server, and the site shows them within a few seconds; **Export passports** writes the same JSON to a file for a site hosted elsewhere.
+
+The site works from any static host too (GitHub Pages serves `site/` as is); without the local API it imports run files by hand.
+
+## Build and test the firmware
+
+```bash
+cd firmware && pio test -e native      # host tests for the logic
+cd firmware && pio run -e esp32dev     # compile for the ESP32
+```
+
+Flashing (`pio run -e esp32dev -t upload`) switches relays on real panels, so a person does it. Capture serial output with `python3 tools/capture.py --seconds 20 --out logs/serial.log`; never open a serial monitor from an agent session.
+
+## Status
+
+- Dashboard: working on the mock bench; assigns passport IDs, exports a run as JSON (passports + search + proof) and can POST it to an upload address. Web Serial path written but not yet tested against the ESP32.
+- Firmware: compiles (arduino-esp32 2.0.17, no warnings) and host tests pass. Not yet run on hardware. Relay logic level, sensor addresses and divider ratio must be confirmed in `docs/hardware.md` first.
+- Site: passport pages with QR codes and the Array Builder work from imported run JSON; the impact page is a stub for D. Plan in `docs/website-plan.md`.
+- Hardware: being built. Lamp-box brightness test is the gating risk (see `docs/feasibility-report.md`).
+
+## Team
+
+Four people: A hardware and wiring, B firmware and protocol, C dashboard and data, D light, water, story and Devpost. Working rules for people and for Claude Code sessions are in `CLAUDE.md`.
