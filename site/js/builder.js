@@ -95,8 +95,8 @@ window.SSBuilder = (function () {
   // the matched grouping: polish four starting points by swaps, keep the best by the model
   function matched(panels, k) {
     const pw = stringCache(panels, k);
-    const starts = [["voltage-balanced", balanced(panels, k)], ["voltage-balanced, current-matched", balancedMatched(panels, k)],
-      ["sort by current", sortByCurrent(panels, k)], ["low-voltage packed", packed(panels, k)]];
+    const starts = [["matched by current, low-voltage panels spread across strings", balanced(panels, k)], ["low-voltage panels spread across strings, each with the panels closest to it in current", balancedMatched(panels, k)],
+      ["sorted by current", sortByCurrent(panels, k)], ["low-voltage panels kept together in the last strings", packed(panels, k)]];
     let best = null;
     const noPolish = panels.length > POLISH_LIMIT;
     starts.forEach(([how, g]) => {

@@ -59,7 +59,7 @@
   const gradeWord = { A: "strong: within 10% of the best panel in its batch", B: "usable: 75–90% of the best panel", C: "weak: under 75% of the best panel" };
   const flagWord = { weak: "Weak output: under 75% of the strongest panel measured with it.", low_voc: "Open-circuit voltage well below the others: possibly a failed cell group.", dark: "Almost no current: no light, or disconnected." };
   const fmtDay = (iso) => { const d = new Date(typeof iso === "string" || typeof iso === "number" ? iso : NaN); return isNaN(d) ? esc(typeof iso === "string" ? iso : "unknown") : d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); };
-  const fmtDate = (iso) => { const d = new Date(typeof iso === "string" || typeof iso === "number" ? iso : NaN); return isNaN(d) ? esc(typeof iso === "string" ? iso : "unknown") : d.toLocaleString(); };
+  const fmtDate = (iso) => { const d = new Date(typeof iso === "string" || typeof iso === "number" ? iso : NaN); return isNaN(d) ? esc(typeof iso === "string" ? iso : "unknown") : d.toLocaleString([], { dateStyle: "medium", timeStyle: "short" }); };
   function pairingLine(v) {
     if (!v || !v.pmax_w || typeof v.pmax_w !== "object") return "";
     const watts = Object.values(v.pmax_w).map(Number).filter(Number.isFinite);
@@ -84,25 +84,26 @@
     </tr>`).join("");
     return `
       <h1 class="page-title">Panel passports</h1>
-      <p class="lede">Every panel we test gets an ID and a QR code. The passport records what the bench measured, how the panel compares with the panels measured next to it, and which wiring its batch did best in.</p>
+      <p class="lede">Second String grades used solar panels against each other and wires them so no good panel is wasted on a weak partner. Every panel we test gets a passport: an ID, a QR code and this record of what the bench measured.</p>
       <div class="card">
         <div class="row" style="justify-content:space-between;align-items:baseline"><h2>Tested panels</h2>${ps.length ? `<a class="small no-print" href="#/print">Print cards for all ${ps.length}</a>` : ""}</div>
-        ${ps.length ? `<table class="table"><thead><tr><th>Passport</th><th>Grade</th><th class="num">Short-circuit</th><th class="num">Open-circuit</th><th class="num">Score</th><th>Flags</th><th>Measured</th></tr></thead><tbody>${rows}</tbody></table>`
-                    : emptyNote(`<p class="muted">No passports yet. Import a run from the bench dashboard, or load the sample run.</p>`)}
+        ${ps.length ? `<table class="table"><thead><tr><th>Passport</th><th>Grade</th><th class="num">Current</th><th class="num">Voltage</th><th class="num">Score</th><th>Flags</th><th>Measured</th></tr></thead><tbody>${rows}</tbody></table>
+          <p class="legend">Current is the short-circuit current and voltage the open-circuit voltage, measured for every panel at the same instant. Score is a panel's current as a share of the strongest panel tested with it: A within 10%, B 75–90%, C under 75%.</p>`
+                    : emptyNote(`<p class="muted">No panels published yet.</p><div class="row no-print" style="margin-top:10px"><button type="button" class="btn" id="btn-sample">Show example panels</button><span class="small muted">A simulated batch, not a real measurement.</span></div>`)}
       </div>
-      <div class="card no-print">
-        <h2>Import a run</h2>
+      <details class="card tools no-print">
+        <summary>Add a run <span class="muted small">(for the team)</span></summary>
         <p class="muted small">On the bench dashboard, open Data and press “Export passports (JSON)”. Drop that file here, or paste its contents.</p>
         <div class="row" style="margin-top:10px">
           <label class="btn">Choose run file <input type="file" id="run-file" accept="application/json,.json" hidden></label>
-          <button type="button" class="btn" id="btn-sample">Load the sample run</button>
+          ${ps.length ? `<button type="button" class="btn btn--quiet" id="btn-sample">Show example panels</button>` : ""}
           <button type="button" class="btn btn--quiet" id="btn-paste">Paste JSON</button>
           ${runs.length ? `<button type="button" class="btn btn--quiet" id="btn-clear">Remove all ${runs.length} run${runs.length === 1 ? "" : "s"}</button>` : ""}
           <span class="status" id="import-status"></span>
         </div>
         <div id="paste-box" hidden style="margin-top:10px"><label class="field">Run JSON <textarea id="paste-text"></textarea></label><div class="row" style="margin-top:8px"><button type="button" class="btn btn--primary" id="btn-paste-go">Import</button></div></div>
-      </div>
-      ${runs.length ? `<div class="card"><h2>Runs</h2><table class="table"><thead><tr><th>Run</th><th>Bench</th><th>Best wiring</th><th>Measured gain</th><th>Panels</th></tr></thead><tbody>
+      </details>
+      ${runs.length ? `<div class="card"><h2>Runs</h2><table class="table"><thead><tr><th>Run</th><th>Bench</th><th>Best wiring</th><th>Gain</th><th>Panels</th></tr></thead><tbody>
         ${runs.map((r) => `<tr><td>${esc(r.run_id)}</td><td class="small muted">${esc(r.bench || "")}</td><td>${r.search ? `<b class="pair-${esc(r.search.best)}">${esc(r.search.best)}</b>` : "—"}</td><td>${r.proof ? `+${num(r.proof.gain_pct, 1)}% ± ${num(r.proof.ci95_pct, 1)} (${r.proof.cycle} cycles)` : r.search ? "search only" : "—"}</td><td>${(r.passports || []).map((p) => `<a href="#/p/${encodeURIComponent(p.passport_id)}">${esc(p.passport_id)}</a>`).join(", ")}</td></tr>`).join("")}
       </tbody></table></div>` : ""}`;
   }
@@ -156,13 +157,13 @@
     const qr = window.qrcode(0, "M"); qr.addData(url); qr.make();
     const flags = (p.flags || []).map((f) => `<li>${esc(flagWord[f] || f)}</li>`).join("");
     return `
-      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← All passports</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print</button></div>
+      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← All passports</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print this passport</button></div>
       ${passportIntro()}
       <div class="card passport">
         <div class="passport__visual">
           ${cellSvg({ label: p.passport_id, dim: p.grade === "C" })}
           <div class="passport__qr" aria-label="QR code for this passport">${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}</div>
-          <p class="small muted">Scan to open this passport.</p>
+          <p class="small muted">Scan to open this passport on another phone.</p>
         </div>
         <div>
           <div class="passport__id">${esc(p.passport_id)}</div>
@@ -171,9 +172,9 @@
             <div><dt>Short-circuit current</dt><dd>${num(p.isc_ma, 1)} mA</dd></div>
             <div><dt>Open-circuit voltage</dt><dd>${num(p.voc_v, 2)} V</dd></div>
             <div><dt>Relative current score</dt><dd>${num(p.score_pct, 0)}% <span class="small muted">of the strongest panel in its batch (${num(p.reference && p.reference.strongest_isc_ma, 0)} mA)</span></dd></div>
-            <div><dt>Raw reading, box factor</dt><dd class="small">${num(p.isc_raw_ma, 1)} mA × ${num(p.reference && p.reference.box_factor, 2)}</dd></div>
+            ${p.reference && Number.isFinite(Number(p.reference.box_factor)) && Math.abs(Number(p.reference.box_factor) - 1) > 0.005 ? `<div><dt>Before the lamp-box correction</dt><dd class="small">${num(p.isc_raw_ma, 1)} mA × ${num(p.reference.box_factor, 2)}</dd></div>` : ""}
             <div><dt>Light during the test</dt><dd class="small">${esc(p.reference && p.reference.light || "not recorded")}</dd></div>
-            <div><dt>Measured</dt><dd class="small">${fmtDate(p.measured_at)}, run ${esc(p.run_id)}, position ${esc(p.panel_label)}</dd></div>
+            <div><dt>Measured</dt><dd class="small">${fmtDate(p.measured_at)}, bench position ${esc(p.panel_label)}, ${esc(p.run_id)}</dd></div>
           </dl>
           ${flags ? `<ul class="flags">${flags}</ul>` : ""}
           ${p.verified ? `<p style="margin-top:16px">${pairingLine(p.verified)}</p>` : ""}
@@ -224,7 +225,7 @@
     const items = ps.map((p) => `<label class="${sel.has(p.passport_id) ? "is-on" : ""}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${sel.has(p.passport_id) ? "checked" : ""}> <b>${esc(p.passport_id)}</b> <span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, ${esc(p.grade)}</span></label>`).join("");
     return `
       <h1 class="page-title">Array Builder</h1>
-      <p class="lede">Pick a pool of passports. The builder puts panels with similar current in the same series string, so no strong panel is throttled by a weak one, and spreads panels with low open-circuit voltage (a possible failed cell group) across strings, so no string sits below the array's voltage. It estimates the power against wiring them in the order they came.</p>
+      <p class="lede">Pick a set of passports. The builder groups them into series strings so that no strong panel is held back by a weaker partner, keeps low-voltage panels from sinking a string, and compares the result with wiring them in the order they came.</p>
       <div class="card no-print">
         <h2>Pool</h2>
         ${ps.length ? `<div class="pool" id="pool">${items}</div>` : emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}
@@ -274,7 +275,10 @@
     const avg = res.brute ? res.brute.average : res.sampledAverage;
     const avgGain = (res.greedy.pmax / avg - 1) * 100;
     let verdict = "";
-    if (res.brute) {
+    const oneString = res.brute && res.brute.count === 1;
+    if (oneString) {
+      verdict = `<div class="verdict">${res.n} panels make one string, so there is only one way to wire them.</div>`;
+    } else if (res.brute) {
       verdict = res.brute.greedyIsBest
         ? `<div class="verdict is-good">Checked against all ${res.brute.count} possible groupings: the matched grouping is the best one. Worst grouping: ${res.brute.worst.pmax.toFixed(2)} W.</div>`
         : `<div class="verdict is-bad">Checked against all ${res.brute.count} groupings: a better grouping exists, ${res.brute.best.pmax.toFixed(2)} W. The matched grouping is a heuristic; the bench verifies by measuring.</div>`;
@@ -295,33 +299,36 @@
       <h2>Result</h2>
       <div class="result-head">
         <div class="stat is-hero"><b>${res.greedy.pmax.toFixed(2)} W</b><span>matched grouping, estimated maximum power</span></div>
-        <div class="stat"><b>+${naiveGain.toFixed(1)}%</b><span>against wiring in the order they came (${res.naive.pmax.toFixed(2)} W)</span></div>
-        <div class="stat"><b>+${avgGain.toFixed(1)}%</b><span>against the average grouping (${avg.toFixed(2)} W), what wiring without measuring gets</span></div>
+        ${oneString ? "" : Math.abs(naiveGain) < 0.05 ? `<div class="stat"><b>Same</b><span>as wiring them in the order they came (${res.naive.pmax.toFixed(2)} W): they already match</span></div>` : `<div class="stat"><b>${naiveGain > 0 ? "+" : ""}${naiveGain.toFixed(1)}%</b><span>against wiring them in the order they came (${res.naive.pmax.toFixed(2)} W)</span></div>`}
+        ${oneString ? "" : `<div class="stat"><b>${avgGain > 0 ? "+" : ""}${avgGain.toFixed(1)}%</b><span>against the average grouping (${avg.toFixed(2)} W), what wiring without measuring gets</span></div>`}
       </div>
       <h3 class="small muted" style="margin-bottom:8px">Matched grouping</h3>
-      <p class="small muted" style="margin-bottom:8px">Method: ${esc(res.greedy.how)}${/no swap search/.test(res.greedy.how) ? " (the best of four starting points by the panel model)" : " (the best of four starting points, each improved by swaps the panel model scores)"}.${res.greedy.lowVoc.length ? ` Low open-circuit voltage, possibly a failed cell group: ${res.greedy.lowVoc.map(esc).join(", ")}.` : ""}</p>
+      <p class="small muted" style="margin-bottom:8px">How: ${esc(res.greedy.how)}.${res.greedy.lowVoc.length ? ` Low voltage, possibly a failed cell group: ${res.greedy.lowVoc.map(esc).join(", ")}.` : ""}</p>
       ${groupsHtml(res.greedy.groups, byId)}
       <h3 class="small muted" style="margin:14px 0 8px">As they came</h3>
       ${groupsHtml(res.naive.groups, byId)}
       ${verdict}${bench}
-      <p class="small muted" style="margin-top:12px">Estimates use the same single-diode panel model as the bench, fitted to each passport's short-circuit current and open-circuit voltage, with a bypass diode per panel. Each string carries the current of its weakest panel; strings share one voltage.</p>
+      <p class="small muted" style="margin-top:12px">Estimates use the same single-diode panel model as the bench, fitted to each passport's short-circuit current and open-circuit voltage, with a bypass diode per panel. Each string carries the current of its weakest panel; strings share one voltage. The builder tries four starting groupings, improves each by swapping panels between strings while the model says it gains power, and keeps the best.</p>
     </div>`;
   }
 
   function pageImpact() {
-    const proofs = runs.filter((r) => r.proof && r.proof.kind === "sweep").map((r) => r.proof);
-    const gains = proofs.map((p) => Number(p.gain_pct));
+    const withProof = runs.filter((r) => r.proof && r.proof.kind === "sweep");
+    const real = withProof.filter((r) => !["mock", "sample"].includes(r.link));
+    const shown = real.length ? real : withProof;
+    const gains = shown.map((r) => Number(r.proof.gain_pct));
     const mean = gains.length ? gains.reduce((a, b) => a + b, 0) / gains.length : null;
+    const n = shown.length;
     return `
       <h1 class="page-title">Impact</h1>
       <p class="lede">Numbers here are either measured on our bench or taken from a named source. Anything else is marked as an assumption.</p>
       <div class="card">
-        <h2>Measured on our bench</h2>
-        <p>${mean != null ? `Across ${proofs.length} proof run${proofs.length === 1 ? "" : "s"}, matching panels by current gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring of the same panels, measured at each wiring's maximum power point.` : "No proof runs imported yet. Import a run with a proof to fill this in."}</p>
+        <h2>What our bench measured</h2>
+        <p>${mean == null ? "No bench run is published yet; the first one fills this in." : real.length ? `Across ${n} bench run${n === 1 ? "" : "s"}, matching panels by current gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring of the same panels, measured at each wiring's maximum power point.` : `No bench run is published yet. In our simulated batch with two of four panels behind 35% film, matching gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring; that figure is from the model, not a measurement.`}</p>
         <p class="small muted" style="margin-top:8px">With two of four panels behind 35% film this is deliberately a bad batch. Our model puts the gain for realistic aging (panels at 80%) at about 5–7%, and the gain against the average wiring at about 22% for the film case.</p>
       </div>
       <div class="card">
-        <h2>Why reuse matters (sources)</h2>
+        <h2>Why reuse matters</h2>
         <ul class="small" style="padding-left:1.2em;display:grid;gap:6px">
           <li>Panels lose about 0.5–0.75% of output a year (NREL fleet study, median 0.75%/yr; literature median 0.5%/yr). After 25 years most still make 80–88% of their rating.</li>
           <li>Panels retired early, for upgrades or damage, often still produce 70–95% of their rating (NREL).</li>
@@ -330,8 +337,8 @@
         </ul>
       </div>
       <div class="card">
-        <h2>Assumptions still to settle</h2>
-        <p class="small muted">Panels diverted per tested batch and any carbon figure need a stated scenario (how many panels a bench grades per hour, what fraction pass, what they displace). D to write, with sources, before the submission.</p>
+        <h2>What we don't claim yet</h2>
+        <p class="small muted">How many panels a bench keeps out of landfill, and any carbon figure, depend on a scenario: panels graded per hour, the share that pass, what they displace. We will publish those numbers only with the scenario and a source next to them.</p>
       </div>`;
   }
 
