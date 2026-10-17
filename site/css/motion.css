@@ -104,3 +104,16 @@ a, .btn, .nav__links a, .pool label, .chip, .field input, .field select, .field 
 @media (prefers-reduced-motion: reduce) {
   .batch__bar { animation: none; }
 }
+
+/* ---------- scroll reveals, after hhuh.io: fade up out of a slight blur as a block scrolls in ---------- */
+.reveal { opacity: 0; transform: translateY(40px); filter: blur(6px); transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1), filter 1s cubic-bezier(0.2, 0.8, 0.2, 1); transition-delay: var(--d, 0s); }
+.reveal.is-in { opacity: 1; transform: none; filter: none; }
+.view > .reveal { animation: none; }   /* the reveal replaces the page-enter animation for these blocks */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+  .ticker__track, .hero__cell, .hero__sun, .hero__sky, .hero--full .hero__title, .hero--full .hero__actions, .hero__cue i::after { animation: none; }
+}
+@media print {
+  .reveal { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+}

@@ -76,21 +76,45 @@
 
   // ---------- pages ----------
   // The front page: what Second String is, then the real tested panels, then the demo, kept apart.
+  // The front page opens like hhuh.io: a full-screen hero with solar cells drifting at their own depth, a ticker of
+  // sourced facts, then the story told as you scroll (a paragraph that lights up, numbers that count up, the steps).
+  const decoCell = (cls, depth, film) => `<svg class="hero__cell ${cls}" data-depth="${depth}" viewBox="0 0 120 84" aria-hidden="true">${cellGlyph({ x: 1, y: 1, w: 118, h: 82, film })}</svg>`;
+  const TICKER = ["Most panels still make 80–88% of their rating after 25 years", "About 83% of retired US panels are headed to landfill", "Lab-testing one used panel: €16–31", "1.2% of retired US panels are reused", "+37% more power from matched wiring (simulated)"];
   const heroHtml = () => `
-      <section class="hero">
-        <h1 class="hero__title">Most retired solar panels still work. Second String proves which ones, and wires them so none is wasted.</h1>
-        <p class="hero__lede">Used panels usually keep about 80% of their output, but they go to landfill because testing them in a lab costs almost as much as a new panel. And when weak and strong panels share a series string, the weak one sets the current for both. Second String measures used panels cheaply, grades them against each other, and finds the wiring that gets the most power out of a mixed batch.</p>
-        <ol class="steps">
-          <li class="step"><b class="step__n">1</b><div><h2>Measure</h2><p>A small bench reads every panel's short-circuit current at the same instant, plus its open-circuit voltage, under the same light.</p></div></li>
-          <li class="step"><b class="step__n">2</b><div><h2>Grade</h2><p>Each panel is scored against the strongest one tested with it and gets a passport: an ID, a QR code and its numbers.</p></div></li>
-          <li class="step"><b class="step__n">3</b><div><h2>Wire</h2><p>Panels with similar current go in series together, so no strong panel is held back. The bench checks by measuring every wiring.</p></div></li>
-        </ol>
-        <div class="row hero__actions no-print">
-          <button type="button" class="btn btn--primary" id="btn-go-demo">Try the demo</button>
-          <a class="btn" href="#/build">Open the Array Builder</a>
-          <a class="btn btn--quiet" href="#/impact">Why it matters</a>
+      <section class="hero hero--full" data-noreveal>
+        <div class="hero__sky" aria-hidden="true">
+          <span class="hero__sun" data-depth="0.12"></span>
+          ${decoCell("c1", 0.32, false)}${decoCell("c2", 0.18, true)}${decoCell("c3", 0.45, false)}${decoCell("c4", 0.26, true)}${decoCell("c5", 0.38, false)}
         </div>
-      </section>`;
+        <div class="hero__inner">
+          <h1 class="hero__title">Most retired solar panels still work.<span>We prove which ones, and wire them so none is wasted.</span></h1>
+          <div class="row hero__actions no-print">
+            <button type="button" class="btn btn--sun" id="btn-go-demo">Try the demo</button>
+            <a class="btn btn--ghost" href="#/build">Open the Array Builder</a>
+            <a class="btn btn--ghost" href="#/impact">Why it matters</a>
+          </div>
+        </div>
+        <button type="button" class="hero__cue no-print" id="btn-cue" aria-label="Scroll to the story"><span>Scroll</span><i></i></button>
+      </section>
+      <div class="ticker" data-noreveal aria-hidden="true"><div class="ticker__track">${[...TICKER, ...TICKER].map((t) => `<span class="ticker__item">${esc(t)}</span>`).join("")}</div></div>
+      <section class="story" id="story">
+        <h2 class="display">The problem</h2>
+        <p class="scrub" data-scrub data-scrub-hl="^(80%|landfill|weak|Second|String|most)">Used panels usually keep about 80% of their output, but they go to landfill because testing them in a lab costs almost as much as a new panel. And when weak and strong panels share a series string, the weak one sets the current for both. Second String measures used panels cheaply, grades them against each other, and finds the wiring that gets the most power out of a mixed batch.</p>
+        <div class="stats">
+          <div class="stat-big"><b data-count="80" data-suffix="%">80%</b><span>of its rating a typical panel still makes after 25 years (NREL)</span></div>
+          <div class="stat-big"><b data-count="83" data-suffix="%">83%</b><span>of retired US panels headed to landfill in NREL's baseline</span></div>
+          <div class="stat-big"><b data-count="37" data-prefix="+" data-suffix="%">+37%</b><span>more power from the same four panels, wired by Second String <em>(simulated)</em></span></div>
+        </div>
+      </section>
+      <section class="how">
+        <h2 class="display">How it works</h2>
+        <ol class="steps">
+          <li class="step"><b class="step__n">1</b><div><h3>Measure</h3><p>A small bench reads every panel's short-circuit current at the same instant, plus its open-circuit voltage, under the same light.</p></div></li>
+          <li class="step"><b class="step__n">2</b><div><h3>Grade</h3><p>Each panel is scored against the strongest one tested with it and gets a passport: an ID, a QR code and its numbers.</p></div></li>
+          <li class="step"><b class="step__n">3</b><div><h3>Wire</h3><p>Panels with similar current go in series together, so no strong panel is held back. The bench checks by measuring every wiring.</p></div></li>
+        </ol>
+      </section>
+      <h2 class="display display--panels">The panels</h2>`;
 
   function panelTable(ps) {
     const rows = ps.map((p) => `<tr>
@@ -150,6 +174,8 @@
     $("#run-file").addEventListener("change", (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(importText, bad); });
     const goDemo = $("#btn-go-demo");
     if (goDemo) goDemo.addEventListener("click", () => { const d = $("#demo"); if (d) d.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    const cue = $("#btn-cue");
+    if (cue) cue.addEventListener("click", () => { const st = $("#story"); if (st) st.scrollIntoView({ behavior: "smooth", block: "start" }); });
     const sample = $("#btn-sample");
     if (sample) sample.addEventListener("click", () => {
       const ds = $("#demo-status");
@@ -514,7 +540,8 @@
       $("#btn-reset").addEventListener("click", () => { LS.del("ss.site.runs"); LS.del("ss.site.pool"); location.reload(); });
     }
     document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("is-on", a.dataset.route === route));
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
+    if (window.SSMotion) window.SSMotion.refresh(route);
   }
   // When tools/serve.py is serving this site, runs uploaded by the dashboard appear on their own.
   // On a static host (GitHub Pages) there is no API: the site loads the runs committed to data/runs/,
