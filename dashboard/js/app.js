@@ -40,7 +40,12 @@ const state = {
   uploadUrl: LS.get("ss.uploadUrl", ""),
   runId: null,
   runAt: null,
+  autoUpload: LS.get("ss.autoUpload", true),
 };
+
+// The one-button demo: SEARCH, then PROOF once the search result arrives, then upload.
+const PROOF_CYCLES = { sweep: 20, pump: 10 };
+const demo = { active: false, stage: null, cycle: 0 };
 
 const tip = makeTip($("tip"));
 const els = {
@@ -103,10 +108,16 @@ const handlers = {
     state.search = m;
     state.proof = null;          // a new search resets the proof
     renderBarsChart(); renderHeadline(); renderFacts(); renderRunLine();
+    if (demo.active && demo.stage === "search") { demo.stage = "proof"; demo.cycle = 0; renderDemo(); sendCommand("PROOF"); }
   },
   proof(m) {
     state.proof = m;
     renderHeadline(); renderFacts(); renderRunLine();
+    if (demo.active && demo.stage === "proof") { demo.cycle = m.cycle; renderDemo(); }
+    if (m.cycle >= (PROOF_CYCLES[m.kind] || PROOF_CYCLES.sweep)) {
+      if (demo.active) endDemo("done");
+      if (state.autoUpload) uploadRun();
+    }
   },
   cal(m) {
     if (Array.isArray(m.factors)) state.factors = m.factors;
@@ -115,6 +126,7 @@ const handlers = {
   },
   error(m) {
     showError(m.msg || "error");
+    if (demo.active) endDemo("error");
   },
   log() {},
 };
@@ -339,8 +351,39 @@ function renderPassportInputs() {
   $("upload-url").value = state.uploadUrl;
 }
 
+function startDemo() {
+  if (!state.link || demo.active) return;
+  demo.active = true; demo.stage = "search"; demo.cycle = 0;
+  renderDemo();
+  sendCommand("SEARCH");
+}
+
+function endDemo(why) {
+  demo.active = false; demo.stage = null;
+  renderDemo(why);
+}
+
+function renderDemo(why) {
+  const btn = $("btn-demo");
+  const status = $("deck-status");
+  btn.classList.toggle("is-running", demo.active);
+  btn.disabled = !state.link;
+  if (demo.active) {
+    btn.textContent = demo.stage === "search" ? "Measuring and searching…" : `Proving, cycle ${demo.cycle} of ${PROOF_CYCLES.sweep}…`;
+    status.textContent = "Stop ends the demo early.";
+    status.classList.remove("is-bad");
+  } else {
+    btn.textContent = "Run the demo";
+    if (why === "done") status.textContent = "Demo finished: grades, best wiring and the proven gain are on screen.";
+    else if (why === "error") { status.textContent = "Demo stopped on an error; see the Mode readout."; status.classList.add("is-bad"); }
+    else if (why === "stopped") status.textContent = "Demo stopped.";
+    else status.textContent = "Grade, search and prove in one go, then upload.";
+  }
+}
+
 async function uploadRun() {
   const status = $("upload-status");
+  const deck = $("deck-status");
   status.classList.remove("is-bad");
   if (!state.runId) { status.textContent = "Nothing to upload yet."; return; }
   // default: the local server from tools/serve.py, when this page is served by it
@@ -353,9 +396,11 @@ async function uploadRun() {
     const info = await res.json().catch(() => ({}));
     const siteUrl = info.site ? new URL(info.site, new URL(url, location.href)).href : "";
     status.innerHTML = `Uploaded ${esc(state.runId)}${siteUrl ? ` — <a href="${esc(siteUrl)}" target="_blank" rel="noopener">open the passports</a>` : ""}.`;
+    if (!demo.active) { deck.textContent = `Run uploaded; passports are on the site.`; deck.classList.remove("is-bad"); }
   } catch (err) {
     status.classList.add("is-bad");
     status.textContent = `Upload failed: ${err.message || err}. Export the JSON instead.`;
+    if (!demo.active) { deck.textContent = "Run not uploaded; export it from Data."; deck.classList.add("is-bad"); }
   }
 }
 
@@ -369,6 +414,7 @@ function setConn(kind, text) {
   els.connText.textContent = text;
   els.mockBench.hidden = kind !== "mock";
   document.querySelectorAll("[data-cmd]").forEach((b) => { b.disabled = kind === "none"; });
+  if (demo.active) endDemo("stopped"); else renderDemo();
   $("btn-mock").textContent = kind === "mock" ? "Stop mock bench" : "Use mock bench";
   $("btn-connect").textContent = kind === "serial" ? "Disconnect" : "Connect ESP32";
 }
@@ -426,7 +472,13 @@ async function sendCommand(cmd) {
 }
 
 // ---------- controls ----------
-document.querySelectorAll("[data-cmd]").forEach((b) => b.addEventListener("click", () => sendCommand(b.dataset.cmd)));
+document.querySelectorAll("[data-cmd]").forEach((b) => b.addEventListener("click", () => {
+  if (b.dataset.cmd === "STOP" && demo.active) endDemo("stopped");
+  sendCommand(b.dataset.cmd);
+}));
+$("btn-demo").addEventListener("click", startDemo);
+$("auto-upload").checked = state.autoUpload;
+$("auto-upload").addEventListener("change", (e) => { state.autoUpload = e.target.checked; LS.set("ss.autoUpload", state.autoUpload); });
 $("btn-connect").addEventListener("click", () => { if (state.conn === "serial") { stopSerial(); setConn("none", "Not connected"); } else startSerial(); });
 $("btn-mock").addEventListener("click", () => { if (state.conn === "mock") { stopMock(); setConn("none", "Not connected"); } else startMock(); });
 $("btn-cal").addEventListener("click", () => $("cal-sheet").showModal());

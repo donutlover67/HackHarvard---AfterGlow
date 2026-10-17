@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Write site/data/runs/index.json: the list of run files the site loads when there is no upload API.
 
-    python3 tools/sim/make_runs_index.py
+    python3 tools/sim/make_runs_index.py [--include-mock]
 
-On the demo laptop tools/serve.py answers GET /api/runs, so the site never reads this file there.
+Runs uploaded from the dashboard's mock bench (link == "mock") are left out unless --include-mock is given,
+so rehearsal data never becomes a public passport. On the demo laptop tools/serve.py answers GET /api/runs, so the site never reads this file there.
 On GitHub Pages there is no API: the site fetches data/runs/index.json and loads every file it lists.
 Run this after adding or deleting a run in site/data/runs/, check the list it prints, then commit the
 folder (see docs/website-plan.md, Hosting). Plain Python, no dependencies.
@@ -18,8 +19,9 @@ INDEX = os.path.join(RUNS_DIR, "index.json")
 
 
 def main():
+    include_mock = "--include-mock" in sys.argv[1:]
     os.makedirs(RUNS_DIR, exist_ok=True)
-    files, skipped = [], 0
+    files, skipped, mock = [], 0, 0
     for name in sorted(os.listdir(RUNS_DIR)):
         if not name.endswith(".json") or name == "index.json":
             continue
@@ -32,6 +34,11 @@ def main():
             print(f"skipping {name}: {exc}", file=sys.stderr)
             skipped += 1
             continue
+        # runs from the dashboard's mock bench are rehearsal data, not passports for real panels
+        if run.get("link") == "mock" and not include_mock:
+            print(f"  {name}: mock bench run, left out (pass --include-mock to list it)")
+            mock += 1
+            continue
         files.append(name)
         ids = ", ".join(str(p.get("passport_id", "?")) for p in run["passports"] if isinstance(p, dict))
         print(f"  {name}: {len(run['passports'])} passports ({ids}), measured {run.get('measured_at', 'unknown')}")
@@ -39,6 +46,7 @@ def main():
         json.dump({"runs": files}, f, indent=1)
         f.write("\n")
     tail = f", {skipped} skipped (fix or delete them, then rerun)" if skipped else ""
+    tail += f", {mock} mock-bench run{'' if mock == 1 else 's'} left out" if mock else ""
     print(f"wrote {os.path.relpath(INDEX)}: {len(files)} run file{'' if len(files) == 1 else 's'}{tail}")
     return 1 if skipped else 0
 

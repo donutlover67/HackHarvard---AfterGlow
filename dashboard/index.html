@@ -97,9 +97,13 @@
 
   <footer class="deck">
     <div class="deck__row">
+      <div class="deck__group" aria-label="Demo">
+        <button type="button" class="btn btn--primary btn--demo" id="btn-demo">Run the demo</button>
+        <span class="deck__status" id="deck-status"></span>
+      </div>
       <div class="deck__group" aria-label="Measure">
         <button type="button" class="btn" data-cmd="GRADE">Grade</button>
-        <button type="button" class="btn btn--primary" data-cmd="SEARCH">Search</button>
+        <button type="button" class="btn" data-cmd="SEARCH">Search</button>
         <button type="button" class="btn" data-cmd="PROOF">Prove</button>
         <button type="button" class="btn" data-cmd="STOP">Stop</button>
       </div>
@@ -168,6 +172,7 @@
       </div>
       <label class="field field--wide">Bench notes <input id="bench-notes" placeholder="lamp boxes, 35% film on panels 2 and 4"></label>
       <label class="field field--wide">Upload to <input id="upload-url" placeholder="empty = this laptop's server (tools/serve.py), or a full https://…/api/runs address" spellcheck="false"></label>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="auto-upload" checked> Upload automatically when a proof finishes</label>
       <p id="run-line">No run yet. Press Grade or Search.</p>
       <div class="sheet__actions">
         <button type="button" class="btn btn--primary" id="btn-export-passports">Export passports (JSON)</button>
