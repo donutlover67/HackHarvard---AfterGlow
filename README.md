@@ -15,10 +15,11 @@ With two of four panels at 50% output, the best pairing makes about 38–41% mor
 | Folder | What | Owner |
 |---|---|---|
 | `dashboard/` | The laptop dashboard: plain HTML, CSS and ES modules, hand-drawn SVG charts, Web Serial, a built-in mock bench. No build step, works offline. | C |
-| `firmware/` | ESP32 firmware (PlatformIO, Arduino framework): grading, pairing relays, I-V sweeps, proof cycles, serial JSON. Pure logic in `lib/solarlogic` with host tests. | B |
+| `firmware/` | Firmware for an ESP32 DevKit or an Arduino Uno R3 (PlatformIO, Arduino framework): grading, pairing relays, I-V sweeps, proof cycles, serial JSON. Both builds speak the same protocol. Pure logic in `lib/solarlogic` with host tests. | B |
+| `site/` | The passport site: a page and QR code per panel, the Array Builder, the impact page, printable cards. Public on GitHub Pages. | C |
 | `protocol/` | The serial contract (`PROTOCOL.md`) and sample messages (`samples/*.jsonl`) that both sides are built against. | B |
-| `docs/` | `spec-v2.md` (the full project description), `hardware.md` (wiring as built), `feasibility-report.md`, `NOTES.md` (cross-area requests). | A, D |
-| `tools/` | `capture.py` (bounded serial capture for logs) and `sim/` (the single-diode model behind the numbers above; regenerates the protocol samples). | B |
+| `docs/` | Start with `architecture.md` (how it all fits). `spec-v2.md` (the full project description), `hardware.md` (wiring as built), `runbook.md` (demo day), `NOTES.md` (cross-area requests); `docs/README.md` lists the rest. | A, C, D |
+| `tools/` | `serve.py` (the demo laptop's server), `capture.py` (bounded serial capture), `sim/` (the single-diode model behind the numbers above), `eval/` (the Panel Advisor eval). See `tools/README.md`. | B, C |
 | `solar_pairing/` | An earlier Python stand-in from before the spec rewrite. Superseded by `dashboard/`. | — |
 
 ## Run the demo laptop
@@ -60,10 +61,10 @@ Flashing (`pio run -e esp32dev -t upload`) switches relays on real panels, so a 
 
 ## Status
 
-- Dashboard: working on the mock bench; assigns passport IDs, exports a run as JSON (passports + search + proof) and can POST it to an upload address. Web Serial path written but not yet tested against the ESP32.
-- Firmware: compiles (arduino-esp32 2.0.17, no warnings) and host tests pass. Not yet run on hardware. Relay logic level, sensor addresses and divider ratio must be confirmed in `docs/hardware.md` first.
-- Site: passport pages with QR codes and the Array Builder work from imported run JSON; the impact page is a stub for D. Plan in `docs/website-plan.md`. A workflow deploys `site/` to GitHub Pages from `main`; a repo admin still has to enable Pages (see Public site).
-- Hardware: being built. Lamp-box brightness test is the gating risk (see `docs/feasibility-report.md`).
+- Dashboard: runs the full demo on the mock bench with one button and uploads the run; also takes readings entered by hand, plays recorded sessions, and simulates measured panels, each labelled. Its serial parser passes a replay test with injected faults, but has not met a real board yet.
+- Firmware: the ESP32 and Uno builds compile with no warnings and 8 host tests pass. Not yet run on hardware. The Uno pin map is a proposal; relay logic level, sensor addresses and divider ratio must be confirmed in `docs/hardware.md` first.
+- Site: live on GitHub Pages with passports, QR codes, printable cards, the voltage-balanced Array Builder and phone layouts; it shows only the sample run until real runs are committed. The impact page waits on D's sourced figures.
+- Hardware: lamps can't light the panels enough indoors (halogen overheats them), so the plan is an outdoor recording or multimeter readings; the team's ESP32 is a bare module, hence the Uno build. See `docs/runbook.md`.
 
 ## Team
 
