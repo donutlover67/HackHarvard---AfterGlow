@@ -9,17 +9,20 @@
     GET  /api/runs   every stored run as a JSON array  (the site loads this on its own when present)
 
 No dependencies, works offline. Static hosting (GitHub Pages) serves the same folders without the API;
-there the site falls back to importing run files by hand.
+there the site reads the runs listed in site/data/runs/index.json, which this server rewrites after every upload.
 """
 import argparse
 import glob
 import json
 import os
 import re
+import subprocess
+import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RUNS_DIR = os.path.join(ROOT, "site", "data", "runs")
+INDEX_SCRIPT = os.path.join(ROOT, "tools", "sim", "make_runs_index.py")
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,80}$")
 
 
@@ -69,8 +72,10 @@ class Handler(SimpleHTTPRequestHandler):
         os.makedirs(RUNS_DIR, exist_ok=True)
         with open(os.path.join(RUNS_DIR, f"{run_id}.json"), "w") as f:
             json.dump(run, f, indent=1)
+        index_note = refresh_index()
         self._json(201, {"ok": True, "run_id": run_id, "passports": len(run["passports"]),
-                         "site": "/site/#/", "stored": f"site/data/runs/{run_id}.json"})
+                         "site": "/site/#/", "stored": f"site/data/runs/{run_id}.json",
+                         "index": index_note})
 
     def log_message(self, fmt, *args):
         if "/api/" in (args[0] if args else ""):
@@ -83,6 +88,17 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+
+def refresh_index():
+    """Rewrite site/data/runs/index.json after an upload, so the run files and the list the public site reads never
+    drift apart. Mock-bench runs stay out of it, exactly as when the script is run by hand. Returns its summary line."""
+    try:
+        done = subprocess.run([sys.executable, INDEX_SCRIPT], capture_output=True, text=True, timeout=20)
+        lines = (done.stdout or "").strip().splitlines()
+        return lines[-1] if lines else f"index script exited {done.returncode}"
+    except (OSError, subprocess.SubprocessError) as exc:
+        return f"index not refreshed: {exc}"
 
 
 def main():
