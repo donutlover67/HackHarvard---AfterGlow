@@ -303,3 +303,30 @@ a.btn--primary { color: #fff; }
 @media print {
   .hero { display: none; }
 }
+
+/* ---------- automatic Array Builder, Impact demo ---------- */
+.need-field { font-size: 0.95rem; color: var(--ink); font-weight: 600; gap: 8px; max-width: 460px; }
+.need-field select { font-size: 1rem; font-weight: 500; padding: 9px 11px; }
+.build-auto { margin: -2px 0 16px; color: var(--ink-2); }
+.build-auto b { color: var(--ink); }
+details.adjust summary, details.impact-edit summary { cursor: pointer; font-weight: 700; color: var(--cell); }
+details.adjust[open] summary { margin-bottom: 6px; }
+.impact-main { border-left: 4px solid var(--pair-a); }
+.impact-hero { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin: 14px 0 18px; padding: 18px 20px; background: var(--cell); border-radius: var(--radius); color: rgba(255,255,255,0.85); }
+.impact-hero b { font-size: 3.2rem; line-height: 1; font-weight: 700; font-stretch: 110%; color: var(--sun); }
+.impact-hero span { font-size: 1.05rem; max-width: 34ch; }
+.impact-bars { display: grid; gap: 14px; margin-bottom: 14px; }
+.impact-bar { display: grid; grid-template-columns: minmax(0, 15rem) 1fr 5.5rem; gap: 14px; align-items: center; }
+.impact-bar__label { font-size: 0.92rem; color: var(--ink-2); }
+.impact-bar__track { height: 22px; background: var(--page); border-radius: var(--radius); overflow: hidden; }
+.impact-bar__fill { display: block; height: 100%; background: var(--pair-b); border-radius: var(--radius); transition: width 300ms ease-out; }
+.impact-bar__fill.is-base { background: var(--busbar); }
+.impact-bar > b { text-align: right; font-size: 1.1rem; }
+.impact-edit { margin-top: 12px; }
+.impact-table input { width: 6.5em; text-align: right; font: inherit; border: 1px solid var(--rule); border-radius: var(--radius); padding: 4px 6px; background: var(--surface); }
+@media (max-width: 760px) {
+  .impact-bar { grid-template-columns: 1fr auto; }
+  .impact-bar__label { grid-column: 1 / -1; }
+  .impact-hero b { font-size: 2.6rem; }
+}
+@media (prefers-reduced-motion: reduce) { .impact-bar__fill { transition: none; } }

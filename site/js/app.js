@@ -275,33 +275,59 @@
       ${sheets.length ? sheets.join("") : `<div class="card">${emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}</div>`}`;
   }
 
+  // What the panels will power decides the string length: the fewest panels in series whose working voltage
+  // (about 0.82 x the summed open-circuit voltage, the same rule as tools/eval) reaches the load's minimum.
+  const NEEDS = [
+    { id: "12v", min: 9, text: "A 12 V load, like a small pump or fan" },
+    { id: "18v", min: 14, text: "An 18 V tool-battery charger" },
+    { id: "24v", min: 19, text: "A 24 V system, like an electric-fence energizer" },
+    { id: "custom", min: null, text: "I'll choose the string length myself" },
+  ];
+  const VMP_RATIO = 0.82;
+  function stringLength(panels, need, customK) {
+    if (!need.min) return customK;
+    const vocs = panels.map((p) => p.voc_v).sort((a, b) => a - b);
+    const med = vocs.length ? vocs[Math.floor(vocs.length / 2)] : 6.8;
+    return Math.max(1, Math.ceil(need.min / (VMP_RATIO * med) - 1e-9));
+  }
+
   function pageBuild() {
     const ps = passports();
-    const sel = new Set(LS.get("ss.site.pool", ps.map((p) => p.passport_id)));
-    const items = ps.map((p) => `<label class="${sel.has(p.passport_id) ? "is-on" : ""}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${sel.has(p.passport_id) ? "checked" : ""}> <b>${esc(p.passport_id)}</b> <span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, ${esc(p.grade)}</span></label>`).join("");
+    const off = new Set(LS.get("ss.site.excluded", []));
+    const needId = LS.get("ss.site.need", "12v");
+    const items = ps.map((p) => `<label class="${off.has(p.passport_id) ? "" : "is-on"}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${off.has(p.passport_id) ? "" : "checked"}> <b>${esc(p.passport_id)}</b>${isSim(p.run) ? ` <span class="tag">Simulated</span>` : ""} <span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, ${esc(p.grade)}</span></label>`).join("");
     return `
       <h1 class="page-title">Array Builder</h1>
-      <p class="lede">Pick a set of passports. The builder groups them into series strings so that no strong panel is held back by a weaker partner, keeps low-voltage panels from sinking a string, and compares the result with wiring them in the order they came.</p>
-      <div class="card no-print">
-        <h2>Pool</h2>
-        ${ps.length ? `<div class="pool" id="pool">${items}</div>` : emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}
-        <div class="row" style="margin-top:14px">
-          <label class="field">Panels per string <select id="k"><option value="2">2 (12 V from 6 V panels)</option><option value="3">3</option><option value="4">4</option></select></label>
-          <label class="field">Add a panel by hand <span class="row"><input id="add-isc" type="number" placeholder="mA" style="width:90px"><input id="add-voc" type="number" step="0.01" placeholder="V" style="width:80px"><button type="button" class="btn" id="btn-add">Add</button></span></label>
-          <button type="button" class="btn btn--primary" id="btn-group">Group them</button>
-        </div>
+      <p class="lede">Tell it what the panels will power. The builder takes every tested panel, works out how many go in each series string, groups them so no strong panel is held back by a weaker partner, and shows how much more power that wiring gives. It updates on its own whenever something changes.</p>
+      <div class="card no-print need-card">
+        <label class="field need-field">What will the panels power?
+          <select id="need">${NEEDS.map((n) => `<option value="${n.id}" ${n.id === needId ? "selected" : ""}>${esc(n.text)}</option>`).join("")}</select>
+        </label>
+        ${ps.length ? "" : emptyNote(`<div class="row" style="margin-top:12px"><span class="muted">No panels to group yet.</span><button type="button" class="btn btn--primary" id="btn-build-demo">Load the demo panels</button><span class="small muted">A simulated batch, not a real measurement.</span></div>`)}
       </div>
-      <div id="build-result"></div>`;
+      <div id="build-result"></div>
+      <details class="card no-print adjust">
+        <summary>Adjust <span class="muted small">(optional: leave panels out, set the string length, add a panel by hand)</span></summary>
+        ${ps.length ? `<h3 class="small muted" style="margin:10px 0 8px">Panels included</h3><div class="pool" id="pool">${items}</div>` : ""}
+        <div class="row" style="margin-top:14px">
+          <label class="field">Panels per string <select id="k"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
+          <label class="field">Add a panel by hand <span class="row"><input id="add-isc" type="number" placeholder="mA" style="width:90px"><input id="add-voc" type="number" step="0.01" placeholder="V" style="width:80px"><button type="button" class="btn" id="btn-add">Add</button></span></label>
+        </div>
+        <p class="small muted" style="margin-top:8px" id="k-note"></p>
+      </details>`;
   }
 
   const extraPanels = [];
   function wireBuild() {
     const pool = $("#pool");
     if (pool) pool.addEventListener("change", () => {
-      const ids = [...pool.querySelectorAll("[data-pool]:checked")].map((c) => c.dataset.pool);
-      LS.set("ss.site.pool", ids);
+      const off = [...pool.querySelectorAll("[data-pool]:not(:checked)")].map((c) => c.dataset.pool);
+      LS.set("ss.site.excluded", off);
       pool.querySelectorAll("label").forEach((l) => l.classList.toggle("is-on", l.querySelector("input").checked));
+      runBuild();
     });
+    $("#need").addEventListener("change", () => { LS.set("ss.site.need", $("#need").value); runBuild(); });
+    $("#k").addEventListener("change", () => { $("#need").value = "custom"; LS.set("ss.site.need", "custom"); runBuild(); });
     $("#btn-add").addEventListener("click", () => {
       const isc = Number($("#add-isc").value), voc = Number($("#add-voc").value);
       if (!(isc > 0 && voc > 0)) return;
@@ -309,9 +335,12 @@
       $("#add-isc").value = ""; $("#add-voc").value = "";
       runBuild();
     });
-    $("#btn-group").addEventListener("click", runBuild);
-    const ids = LS.get("ss.site.pool", null);
-    if (ids && ids.length) runBuild();
+    const demo = $("#btn-build-demo");
+    if (demo) demo.addEventListener("click", () => {
+      fetch("data/sample-run.json").then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); }).then((run) => { addRun(run); render(); })
+        .catch((err) => { $("#build-result").innerHTML = `<div class="card"><p class="status is-bad">Could not load the demo: ${esc(err.message)}</p></div>`; });
+    });
+    runBuild();
   }
 
   function groupsHtml(groups, byId) {
@@ -322,11 +351,24 @@
     const out = $("#build-result");
     const ps = passports();
     const byId = Object.fromEntries(ps.map((p) => [p.passport_id, p]));
-    const chosen = [...document.querySelectorAll("[data-pool]:checked")].map((c) => byId[c.dataset.pool]).filter(Boolean).map((p) => ({ id: p.passport_id, isc_ma: Number(p.isc_ma), voc_v: Number(p.voc_v) }));
-    const panels = [...chosen, ...extraPanels];
-    const k = Number($("#k").value);
+    const off = new Set(LS.get("ss.site.excluded", []));
+    const chosen = ps.filter((p) => !off.has(p.passport_id) && Number(p.isc_ma) > 0 && Number(p.voc_v) > 0).map((p) => ({ id: p.passport_id, isc_ma: Number(p.isc_ma), voc_v: Number(p.voc_v) }));
+    const pool = [...chosen, ...extraPanels];
+    const need = NEEDS.find((n) => n.id === $("#need").value) || NEEDS[0];
+    const k = stringLength(pool, need, Number($("#k").value));
+    if (need.min) $("#k").value = String(Math.min(6, k));
+    const vocs = pool.map((p) => p.voc_v).sort((a, b) => a - b);
+    const medVoc = vocs.length ? vocs[Math.floor(vocs.length / 2)] : 0;
+    $("#k-note").textContent = need.min ? `Worked out from the load: ${k} panel${k === 1 ? "" : "s"} per string reach about ${(VMP_RATIO * k * medVoc).toFixed(1)} V working voltage, the fewest that clear ${need.min} V. Changing it here switches to choosing it yourself.` : "You are choosing the string length.";
+    if (!pool.length) { out.innerHTML = ""; return; }
+    if (pool.length < k) { out.innerHTML = `<div class="card"><p class="status is-bad">${pool.length} panel${pool.length === 1 ? "" : "s"} can't make a ${k}-panel string. Add panels or pick a smaller load.</p></div>`; return; }
+    // every string needs exactly k panels: leave out the weakest extras and say so
+    const keep = Math.floor(pool.length / k) * k;
+    const leftIds = new Set([...pool].sort((a, b) => b.isc_ma - a.isc_ma).slice(keep).map((p) => p.id));
+    const panels = pool.filter((p) => !leftIds.has(p.id));
     const res = window.SSBuilder.analyze(panels, k);
     if (res.error) { out.innerHTML = `<div class="card"><p class="status is-bad">${esc(res.error)}</p></div>`; return; }
+    const autoLine = `<p class="build-auto">Grouped automatically: <b>${panels.length} panels</b> into <b>${panels.length / k} string${panels.length / k === 1 ? "" : "s"} of ${k}</b>${need.min ? ` for ${esc(need.text.charAt(0).toLowerCase() + need.text.slice(1))}` : ""}.${leftIds.size ? ` Left out, as the weakest extra${leftIds.size === 1 ? "" : "s"} that can't fill a string: ${[...leftIds].map(esc).join(", ")}.` : ""}</p>`;
     const naiveGain = (res.greedy.pmax / res.naive.pmax - 1) * 100;
     const avg = res.brute ? res.brute.average : res.sampledAverage;
     const avgGain = (res.greedy.pmax / avg - 1) * 100;
@@ -349,10 +391,11 @@
       const keyOf = (groups) => groups.map((g) => g.map((p) => pos[p.id]).sort().join("+")).sort().join(", ");
       const letter = Object.keys(PAIR_PANELS).find((L) => PAIR_PANELS[L] === keyOf(res.greedy.groups));
       const agree = letter === run.search.best;
-      bench = `<div class="verdict ${agree ? "is-good" : "is-bad"}">Bench check: these four panels were measured on the bench in run ${esc(run.run_id)}. The builder's grouping is wiring <b class="pair-${esc(letter)}">${esc(letter)}</b>; the bench measured wiring <b class="pair-${esc(run.search.best)}">${esc(run.search.best)}</b> as best (${Object.entries(run.search.pmax_w || {}).map(([L, w]) => `${L} ${num(w, 2)} W`).join(", ")}). ${agree ? "They agree." : "They disagree: trust the measurement."}</div>`;
+      bench = `<div class="verdict ${agree ? "is-good" : "is-bad"}">${isSim(run) ? `Check against the simulated run ${esc(run.run_id)}: our model swept all three wirings of these four panels.` : `Bench check: these four panels were measured on the bench in run ${esc(run.run_id)}.`} The builder's grouping is wiring <b class="pair-${esc(letter)}">${esc(letter)}</b>; the ${isSim(run) ? "model" : "bench"} measured wiring <b class="pair-${esc(run.search.best)}">${esc(run.search.best)}</b> as best (${Object.entries(run.search.pmax_w || {}).map(([L, w]) => `${L} ${num(w, 2)} W`).join(", ")}). ${agree ? "They agree." : isSim(run) ? "They disagree." : "They disagree: trust the measurement."}</div>`;
     }
     out.innerHTML = `<div class="card">
-      <h2>Result</h2>
+      <h2>Recommended wiring</h2>
+      ${autoLine}
       <div class="result-head">
         <div class="stat is-hero"><b>${res.greedy.pmax.toFixed(2)} W</b><span>matched grouping, estimated maximum power</span></div>
         ${oneString ? "" : Math.abs(naiveGain) < 0.05 ? `<div class="stat"><b>Same</b><span>as wiring them in the order they came (${res.naive.pmax.toFixed(2)} W): they already match</span></div>` : `<div class="stat"><b>${naiveGain > 0 ? "+" : ""}${naiveGain.toFixed(1)}%</b><span>against wiring them in the order they came (${res.naive.pmax.toFixed(2)} W)</span></div>`}
@@ -368,6 +411,47 @@
     </div>`;
   }
 
+  // The Impact page's demo batch: the four panels in the Chalk advisor's sample (tools/chalk_integration/
+  // panel_passports.py on feat/bea-chalk-integration), editable in this browser.
+  const CHALK_DEMO = [{ id: "A", isc_ma: 350, voc_v: 6.2 }, { id: "B", isc_ma: 320, voc_v: 6.1 }, { id: "C", isc_ma: 180, voc_v: 6.0 }, { id: "D", isc_ma: 160, voc_v: 5.9 }];
+  function impactPanels() {
+    const saved = LS.get("ss.site.impact", null);
+    const ok = Array.isArray(saved) && saved.length === 4 && saved.every((q) => q && Number(q.isc_ma) > 0 && Number(q.voc_v) > 0);
+    return (ok ? saved : CHALK_DEMO).map((q, i) => ({ id: CHALK_DEMO[i].id, isc_ma: Number(q.isc_ma), voc_v: Number(q.voc_v) }));
+  }
+  // one system = all four in a single series string, the way a mixed batch is usually wired without testing;
+  // the controller's wiring = the Array Builder's grouping into two series pairs in parallel (what the bench switches between)
+  function renderImpact() {
+    const out = $("#impact-result");
+    if (!out) return;
+    const M = window.SSModel;
+    const ps = impactPanels();
+    const asIs = M.arrayPmax([ps.map((q) => M.panel(q.isc_ma, q.voc_v))]).p;
+    const res = window.SSBuilder.analyze(ps, 2);
+    const linked = res.greedy.pmax;
+    const gain = asIs > 0 ? (linked / asIs - 1) * 100 : 0;
+    const max = Math.max(asIs, linked, 1e-9);
+    const pairs = res.greedy.groups.map((g) => g.map((q) => q.id).join(" + ")).join(" and ");
+    out.innerHTML = `
+      <div class="impact-hero"><b>${gain >= 0 ? "+" : ""}${gain.toFixed(0)}%</b><span>more power from the same panels when the controller links them</span></div>
+      <div class="impact-bars">
+        <div class="impact-bar"><span class="impact-bar__label">Wired as they are, one string of all four</span><span class="impact-bar__track"><span class="impact-bar__fill is-base" style="width:${(asIs / max) * 100}%"></span></span><b>${asIs.toFixed(2)} W</b></div>
+        <div class="impact-bar"><span class="impact-bar__label">Linked by the controller: ${esc(pairs)}, the pairs in parallel</span><span class="impact-bar__track"><span class="impact-bar__fill" style="width:${(linked / max) * 100}%"></span></span><b>${linked.toFixed(2)} W</b></div>
+      </div>
+      <p class="small muted">Maximum power of each wiring from our single-diode panel model, with a bypass diode per panel. Wiring all four in parallel would give about the same power as the controller's wiring, but only one panel's voltage (about 5 V), too low for a 12 V load; that is why the panels go in series pairs.${res.brute && res.brute.worst ? ` The worst way to make two pairs gives ${res.brute.worst.pmax.toFixed(2)} W.` : ""}</p>`;
+  }
+  function wireImpact() {
+    renderImpact();
+    document.querySelectorAll(".imp-in").forEach((inp) => inp.addEventListener("input", () => {
+      const ps = impactPanels();
+      document.querySelectorAll(".imp-in").forEach((el) => { const v = Number(el.value); if (v > 0) ps[Number(el.dataset.i)][el.dataset.f] = v; });
+      LS.set("ss.site.impact", ps);
+      renderImpact();
+    }));
+    const reset = $("#btn-imp-reset");
+    if (reset) reset.addEventListener("click", () => { LS.del("ss.site.impact"); render(); });
+  }
+
   function pageImpact() {
     const withProof = runs.filter((r) => r.proof && r.proof.kind === "sweep");
     const real = withProof.filter((r) => !["mock", "sample"].includes(r.link));
@@ -375,12 +459,23 @@
     const gains = shown.map((r) => Number(r.proof.gain_pct));
     const mean = gains.length ? gains.reduce((a, b) => a + b, 0) / gains.length : null;
     const n = shown.length;
+    const rowsIn = impactPanels().map((q, i) => `<tr><td><b>${esc(q.id)}</b></td><td class="num"><input class="imp-in" type="number" min="1" step="1" data-i="${i}" data-f="isc_ma" value="${q.isc_ma}" aria-label="Panel ${esc(q.id)} short-circuit current in mA"> mA</td><td class="num"><input class="imp-in" type="number" min="0.1" step="0.1" data-i="${i}" data-f="voc_v" value="${q.voc_v}" aria-label="Panel ${esc(q.id)} open-circuit voltage in volts"> V</td></tr>`).join("");
     return `
       <h1 class="page-title">Impact</h1>
-      <p class="lede">Numbers here are either measured on our bench or taken from a named source. Anything else is marked as an assumption.</p>
+      <p class="lede">Numbers here are either measured on our bench, simulated by our panel model and labelled so, or taken from a named source.</p>
+      <div class="card impact-main">
+        <h2>The same four panels, wired two ways <span class="tag">Simulated</span></h2>
+        <p class="muted">A mixed batch from our Chalk advisor's demo data: two strong panels and two weakened ones. Wired as they are, as one system, the weakest panels set the current for everything. Linked by the Second String controller, panels with similar current share a string.</p>
+        <div id="impact-result"></div>
+        <details class="impact-edit no-print">
+          <summary>Edit the demo panels</summary>
+          <table class="table impact-table"><thead><tr><th>Panel</th><th class="num">Short-circuit current</th><th class="num">Open-circuit voltage</th></tr></thead><tbody>${rowsIn}</tbody></table>
+          <div class="row" style="margin-top:8px"><button type="button" class="btn btn--quiet" id="btn-imp-reset">Back to the Chalk demo values</button></div>
+        </details>
+      </div>
       <div class="card">
         <h2>What our bench measured</h2>
-        <p>${mean == null ? "No bench run is published yet; the first one fills this in." : real.length ? `Across ${n} bench run${n === 1 ? "" : "s"}, matching panels by current gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring of the same panels, measured at each wiring's maximum power point.` : `No bench run is published yet. In our simulated batch with two of four panels behind 35% film, matching gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring; that figure is from the model, not a measurement.`}</p>
+        <p>${mean == null ? "No bench run is published yet; the first one fills this in." : real.length ? `Across ${n} bench run${n === 1 ? "" : "s"}, matching panels by current gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring of the same panels, measured at each wiring's maximum power point.` : "No bench run is published yet; the first one fills this in. Until then, the comparison above is simulated."}</p>
         <p class="small muted" style="margin-top:8px">With two of four panels behind 35% film this is deliberately a bad batch. Our model puts the gain for realistic aging (panels at 80%) at about 5–7%, and the gain against the average wiring at about 22% for the film case.</p>
       </div>
       <div class="card">
@@ -407,7 +502,7 @@
     try {
       if (hash.startsWith("#/p/")) { view.innerHTML = pagePassport(safeDecode(hash.slice(4))); route = "index"; }
       else if (hash.startsWith("#/build")) { view.innerHTML = pageBuild(); wireBuild(); route = "build"; }
-      else if (hash.startsWith("#/impact")) { view.innerHTML = pageImpact(); route = "impact"; }
+      else if (hash.startsWith("#/impact")) { view.innerHTML = pageImpact(); wireImpact(); route = "impact"; }
       else if (hash.startsWith("#/print")) { view.innerHTML = pagePrint(); route = "index"; }
       else { view.innerHTML = pageIndex(); wireIndex(); }
     } catch (err) {
