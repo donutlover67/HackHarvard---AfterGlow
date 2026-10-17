@@ -91,3 +91,16 @@ a, .btn, .nav__links a, .pool label, .chip, .field input, .field select, .field 
   a, .btn, .nav__links a, .pool label, .chip, .table tbody tr td { transition: none; }
   .btn:active, .pool label:active { transform: none; }
 }
+
+/* the passport's run comparison: the bars grow from zero in panel order, after the card has entered */
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: none; }
+}
+.batch__bar { transform-origin: left center; animation: grow var(--m-slow) var(--m-ease) both; animation-delay: calc(var(--m-stagger) * 4); }
+.batch__row:nth-child(2) .batch__bar { animation-delay: calc(var(--m-stagger) * 5); }
+.batch__row:nth-child(3) .batch__bar { animation-delay: calc(var(--m-stagger) * 6); }
+.batch__row:nth-child(n + 4) .batch__bar { animation-delay: calc(var(--m-stagger) * 7); }
+@media (prefers-reduced-motion: reduce) {
+  .batch__bar { animation: none; }
+}

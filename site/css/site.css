@@ -149,3 +149,41 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .pcard { background: #fff; border-color: var(--ink-3); }
   .pcard__body { grid-template-columns: 38mm 1fr; }
 }
+
+/* passport context: what the page is, and this panel against the others in its run */
+.passport-intro { margin-bottom: 16px; }
+.batch { list-style: none; padding: 0; display: grid; gap: 8px; margin-top: 4px; max-width: 720px; }
+.batch__row { display: grid; grid-template-columns: 5.5em 1fr 3em 1.6em; gap: 10px; align-items: center; font-size: 0.92rem; }
+.batch__id { overflow-wrap: anywhere; text-decoration: none; font-weight: 600; }
+.batch__row.is-me .batch__id { color: var(--cell); font-weight: 700; }
+.batch__pct { text-align: right; color: var(--ink-2); }
+.batch__row.is-me .batch__pct { color: var(--ink); font-weight: 600; }
+.batch__track { position: relative; height: 12px; background: var(--page); border-radius: var(--radius); }
+/* the grade cutoffs at 75% and 90% cross every track */
+.batch__track::before, .batch__track::after { content: ""; position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--ink-3); opacity: 0.6; }
+.batch__track::before { left: 75%; }
+.batch__track::after { left: 90%; }
+.batch__bar { display: block; height: 100%; background: var(--busbar); border-radius: var(--radius); }
+.batch__row.is-me .batch__bar { background: var(--cell); }
+.batch__scale { font-size: 0.74rem; color: var(--ink-3); margin-top: -4px; }
+.batch__bands { display: flex; }
+.batch__bands span { text-align: center; }
+.batch__note { margin-top: 12px; max-width: 70ch; }
+.batch__note b { color: var(--ink); }
+@media (max-width: 760px) {
+  /* on a phone the reader has just scanned the card: keep the cell and the QR on one row so the ID and grade show sooner */
+  .passport__visual { grid-template-columns: 1fr 1fr; align-items: center; gap: 12px 16px; }
+  .passport__visual > p { grid-column: 1 / -1; }
+}
+@media print {
+  /* a printed passport is one page: print viewports are ~725px wide, so undo the phone layout the 760px query applies */
+  .passport { grid-template-columns: 52mm 1fr; gap: 6mm; }
+  .passport.card, .batch-card { padding: 0; }
+  .card + .batch-card { margin-top: 5mm; }
+  .passport__visual { grid-template-columns: 1fr; gap: 3mm; }
+  .passport__visual > p { grid-column: auto; }
+  .facts { grid-template-columns: repeat(2, 1fr); }
+  .passport-intro { margin-bottom: 3mm; }
+  .batch-card { break-inside: avoid; page-break-inside: avoid; }
+  .batch__bar, .batch__track { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
