@@ -69,9 +69,9 @@ Costs: `git add -A` sweeps mock runs into a commit (step 2 is the guard), and tw
 ## Array Builder algorithm
 
 - Input: passports with `isc_ma`, `voc_v`; string length k (2 for a 12 V load from 6 V panels); optional target voltage.
-- Greedy: sort by `isc_ma` descending, cut into groups of k. Each string's current is its minimum `isc_ma`; the array sits at the lowest string voltage. Estimated string power = min(Isc) × ΣVoc × FF, with FF from the bench sweeps (about 0.69) or the single-diode model in `dashboard/js/mock.js`.
+- Matched grouping (`site/js/builder.js`, the same logic as `tools/eval/advisor_voltage.py`): match current within a string, balance voltage across strings. Each string's current is roughly its minimum `isc_ma`, and strings share one voltage, so a string with a failed-cell-group panel (Voc under 0.8 × the pool's median) sits below the others. The builder spreads those panels as evenly as possible across strings, gives the healthy strings the strongest panels, and also starts from plain sort-by-`isc_ma` and two other groupings; from each start it swaps pairs of panels between strings while the single-diode model (`site/js/model.js`, the same as `dashboard/js/mock.js`) says the swap gains power, and keeps the best. Plain sort by current lost up to 20.8% on batches with two low-voltage panels in one string; see `tools/eval/README.md` for the scores.
 - Naive grouping: the order the passports were entered (how an installer would wire a mixed batch).
-- Self-check: for N ≤ 8 enumerate all groupings (N=8, k=2: 105 matchings) and confirm greedy equals the best. For N=4 the bench's `search` message is the real-world check.
+- Self-check: for N ≤ 8 enumerate all groupings (N=8, k=2: 105 matchings) and confirm the matched grouping equals the best. For N=4 the bench's `search` message is the real-world check.
 - Also show the gain against the average grouping, the honest number for "wiring without measuring".
 
 ## Agent and eval
@@ -85,7 +85,7 @@ Costs: `git add -A` sweeps mock runs into a commit (step 2 is the guard), and tw
 
 1. ~~Dashboard: assign passport IDs, build the passport JSON per run, add "Upload run" and "Export passports".~~ Done Fri evening (Data sheet in the dashboard).
 2. ~~Site skeleton: passport page from JSON, QR codes, index of tested panels.~~ Done Fri evening: `site/`, hash-routed static pages, runs imported from the dashboard's export or `site/data/sample-run.json`.
-3. ~~Array Builder page with the brute-force self-check and the bench comparison.~~ Done Fri evening. Headless check: on 60 random 8-panel batches the greedy grouping equalled the brute-force best in 55 and lost 0.01% power on average, so "sort by current" is a safe heuristic to pitch, and the bench measurement is the verification.
+3. ~~Array Builder page with the brute-force self-check and the bench comparison.~~ Done Fri evening. Headless check: on 60 random 8-panel batches the greedy grouping equalled the brute-force best in 55 and lost 0.01% power on average, so "sort by current" is a safe heuristic to pitch, and the bench measurement is the verification. Sat: replaced by the voltage-balanced grouping above, after the eval harness showed sort by current failing on batches with a failed-cell-group panel (40 of 67 right; the new grouping gets 65 of 67).
 4. Impact page with sourced numbers (D writes, C wires; Sat afternoon).
 5. Advisor agent + eval (Sat afternoon, only if 1–3 are done; this is where the sponsor prizes are).
 6. Photon front door (stretch; Sat evening at the earliest).
