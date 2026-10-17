@@ -33,12 +33,13 @@ The site also runs as a plain static folder with no server behind it; the public
 
 ## Public site
 
-A passport's QR code encodes the page's own URL, so the passport a judge scans has to be public. [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes `site/` to GitHub Pages on every push to `main`, and on demand from the Actions tab (**Deploy site to GitHub Pages → Run workflow**). The folder becomes the root of the Pages site, so there is no `/site/` in the public URLs:
+A passport's QR code encodes the page's own URL, so the passport a judge scans has to be public. Pages is on, in **"Deploy from a branch"** mode from `feat/dashboard-and-skeleton` (set by a repo admin on Saturday morning): GitHub publishes the whole repository from that branch about a minute after every push to it.
 
-- https://mscl741.github.io/HackHarvard/ is the passport index; `#/build` is the Array Builder and `#/impact` the impact page.
-- https://mscl741.github.io/HackHarvard/#/p/SS-0001 is one passport, what a QR code opens.
+- https://mscl741.github.io/HackHarvard/site/ is the passport index; `#/build` is the Array Builder and `#/impact` the impact page.
+- https://mscl741.github.io/HackHarvard/site/#/p/SS-0001 is one passport, what a QR code opens.
+- https://mscl741.github.io/HackHarvard/ is this README; `dashboard/` and `docs/` are served too.
 
-One-time setup, repo admin only: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Until that is set, the workflow fails at its "Configure Pages" step. Then merge to `main` (or run the workflow by hand); a deploy takes about a minute.
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) is the other mode. With Source set to **GitHub Actions** (Settings → Pages → Build and deployment, repo admin only) it publishes `site/` as the root of the Pages site on every push to `main`, so the URLs lose the `/site/` part. While a branch is the source, GitHub rejects deployments from any other branch, so the workflow only reads the Pages configuration and skips the deploy with a notice. Switching modes changes every passport URL; don't switch after QR codes have been printed.
 
 The public site has no upload API, so it shows the runs committed to `site/data/runs/`. After the dashboard uploads a run there (or after copying an exported run file in), rebuild the list the site reads:
 
@@ -46,7 +47,7 @@ The public site has no upload API, so it shows the runs committed to `site/data/
 python3 tools/sim/make_runs_index.py
 ```
 
-Delete test runs you don't want public before running it, then `git add site/data/runs`, commit with the `site:` prefix and merge to `main`. Why runs are committed, and how to undo that, is in `docs/website-plan.md` under Hosting.
+Delete test runs you don't want public before running it, then `git add site/data/runs`, commit with the `site:` prefix and push to the branch Pages publishes (`feat/dashboard-and-skeleton` today; `main` if the source is ever switched to GitHub Actions). Why runs are committed, and how to undo that, is in `docs/website-plan.md` under Hosting.
 
 ## Build and test the firmware
 

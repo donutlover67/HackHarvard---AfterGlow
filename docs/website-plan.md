@@ -26,18 +26,19 @@ Two hosts serve the same `site/` folder; there is no build step on either.
 
 **At the table: the demo laptop.** `python3 tools/serve.py` (stdlib Python, no dependencies) serves `dashboard/` and `site/` and stores what the dashboard uploads at `POST /api/runs` as `site/data/runs/<run_id>.json`. The site polls `GET /api/runs` every 5 s, so a new run shows on the passports page within seconds, with no internet.
 
-**For judges' phones: GitHub Pages.** A QR code encodes the page's own URL, so the passport a judge scans must be public. `.github/workflows/pages.yml` publishes `site/` with GitHub's own Pages actions (checkout, configure-pages, upload-pages-artifact, deploy-pages) on every push to `main` and from the Actions tab (Run workflow). `site/` is the root of the Pages site:
+**For judges' phones: GitHub Pages.** A QR code encodes the page's own URL, so the passport a judge scans must be public. Pages is live in "Deploy from a branch" mode from `feat/dashboard-and-skeleton` (a repo admin enabled it Sat morning): GitHub publishes the repository root from that branch about a minute after each push, so:
 
-- https://mscl741.github.io/HackHarvard/ is the passport index; `#/build` and `#/impact` are the other pages.
-- https://mscl741.github.io/HackHarvard/#/p/SS-0001 is what a QR code opens.
+- https://mscl741.github.io/HackHarvard/site/ is the passport index; `#/build` and `#/impact` are the other pages.
+- https://mscl741.github.io/HackHarvard/site/#/p/SS-0001 is what a QR code opens.
+- https://mscl741.github.io/HackHarvard/ is the README rendered by Jekyll; `dashboard/` is served over https as well.
 
-One-time step, repo admin only: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Until then the workflow fails at "Configure Pages". The work sits on `feat/dashboard-and-skeleton`; nothing is public until it is merged into `main`. Show and print passports from the public URL, not from localhost, or the QR codes point at a page phones cannot open.
+`.github/workflows/pages.yml` is the other mode: with Source set to GitHub Actions it publishes `site/` as the root (no `/site/` in the URLs) on every push to `main`, using GitHub's checkout, configure-pages, upload-pages-artifact and deploy-pages actions. While a branch is the source, GitHub rejects deployments from any other branch ("not allowed to deploy to github-pages due to environment protection rules"), so the workflow first reads the Pages configuration and skips the deploy with a notice instead of failing. Switching modes is an admin's choice at Settings → Pages → Build and deployment → Source; it changes every passport URL, so never switch after QR codes have been printed. Show and print passports from the public URL, not from localhost, or the QR codes point at a page phones cannot open.
 
 **Runs on the public site.** Pages is static: there is no `/api/runs`. The site asks `../api/runs` first and, when that fails (404 on Pages, connection refused with no local server), loads `data/runs/index.json` and every run file it lists; the empty states read "Loading passports…" until that first pull is over. Decision, Fri night: **run files are committed**, so `site/data/runs/` is no longer in `.gitignore`. A public passport page with no data defeats the QR code, and importing a file by hand on a judge's phone is not realistic. To publish runs:
 
 1. Upload from the dashboard (Data → Upload run) with `tools/serve.py` running, or copy an exported run file into `site/data/runs/`.
 2. Delete test runs that should not be public, then `python3 tools/sim/make_runs_index.py`. It prints every run it lists and rewrites `index.json`.
-3. `git add site/data/runs`, commit with the `site:` prefix, merge into `main`, push. Pages redeploys in about a minute.
+3. `git add site/data/runs`, commit with the `site:` prefix, push to `feat/dashboard-and-skeleton` (the branch Pages publishes; keep `main` in step by fast-forwarding it). Pages redeploys in about a minute.
 
 Costs: `git add -A` sweeps mock runs into a commit (step 2 is the guard), and two people adding runs at once conflict on `index.json` (rerun the script). To reverse the decision, add `site/data/runs/*.json` and `!site/data/runs/index.json` to `.gitignore`, commit the empty index, and import runs by hand on whichever laptop shows the passports. A sponsor host (Modal, Daytona) stays optional, only if a mentor sets it up in minutes.
 
