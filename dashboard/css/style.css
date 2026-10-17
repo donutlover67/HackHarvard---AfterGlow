@@ -360,6 +360,37 @@ body[data-conn="mock"] #btn-mock { background: var(--cell); color: #fff; border-
   .gain__number { font-size: 3.6rem; }
 }
 
+/* ---------- UI refresh (look only: no markup, script or protocol changes) ----------
+   One obvious action, quieter secondary controls, readable labels, and the two-minute power trace
+   moved to a full-width band under the sweeps instead of a tall empty column. */
+:root { --ink-3: #687184; --radius: 6px; }
+.bench {
+  grid-template-areas:
+    "gain panels"
+    "curves wiring"
+    "trace trace";
+  grid-template-rows: auto auto auto;
+}
+.trace .chart { min-height: 240px; flex: none; height: 240px; }
+.curves .chart { min-height: 280px; }
+.section-head h2 { font-size: 1.08rem; }
+.readout__label, .gain__facts dt, .panel__rows .k, .deck__label { color: var(--ink-3); }
+/* hovering the button while the demo runs turned it navy on navy (.btn--primary:hover); keep its text readable */
+.btn--demo.is-running:hover { background: var(--page); color: var(--cell); border-color: var(--cell); }
+
+/* control deck: Run the demo leads; the bench's manual controls step back */
+.deck { padding: 14px var(--gutter) 16px; }
+.btn--demo { font-size: 1rem; padding: 10px 20px; min-width: 170px; }
+.deck__group[aria-label="Measure"] .btn,
+.deck__group[aria-label="Wiring"] .btn,
+.deck__group[aria-label="Pump"] .btn { font-size: 0.84rem; padding: 5px 10px; }
+.deck__group[aria-label="Pump"] .btn { border-color: transparent; color: var(--ink-2); }
+.deck__group[aria-label="Pump"] .btn:hover { border-color: var(--busbar); }
+
+@media (max-width: 1100px) {
+  .bench { grid-template-areas: "gain" "panels" "wiring" "curves" "trace"; }
+}
+
 /* Playing a recording (js/playback.js) */
 .playback { align-items: center; border-top: 1px solid var(--busbar); padding-top: 12px; }
 .playback .sheet__status { flex: 1 1 260px; }
