@@ -58,6 +58,7 @@
   const cellSvg = (opts) => `<svg class="cell-svg" viewBox="0 0 120 84" role="img" aria-label="${esc(opts.label || "panel")}">${cellGlyph({ ...opts, x: 1, y: 1, w: 118, h: 82 })}</svg>`;
   const gradeWord = { A: "strong: within 10% of the best panel in its batch", B: "usable: 75–90% of the best panel", C: "weak: under 75% of the best panel" };
   const flagWord = { weak: "Weak output: under 75% of the strongest panel measured with it.", low_voc: "Open-circuit voltage well below the others: possibly a failed cell group.", dark: "Almost no current: no light, or disconnected." };
+  const fmtDay = (iso) => { const d = new Date(typeof iso === "string" || typeof iso === "number" ? iso : NaN); return isNaN(d) ? esc(typeof iso === "string" ? iso : "unknown") : d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); };
   const fmtDate = (iso) => { const d = new Date(typeof iso === "string" || typeof iso === "number" ? iso : NaN); return isNaN(d) ? esc(typeof iso === "string" ? iso : "unknown") : d.toLocaleString(); };
   function pairingLine(v) {
     if (!v || !v.pmax_w || typeof v.pmax_w !== "object") return "";
@@ -85,7 +86,7 @@
       <h1 class="page-title">Panel passports</h1>
       <p class="lede">Every panel we test gets an ID and a QR code. The passport records what the bench measured, how the panel compares with the panels measured next to it, and which wiring its batch did best in.</p>
       <div class="card">
-        <h2>Tested panels</h2>
+        <div class="row" style="justify-content:space-between;align-items:baseline"><h2>Tested panels</h2>${ps.length ? `<a class="small no-print" href="#/print">Print cards for all ${ps.length}</a>` : ""}</div>
         ${ps.length ? `<table class="table"><thead><tr><th>Passport</th><th>Grade</th><th class="num">Short-circuit</th><th class="num">Open-circuit</th><th class="num">Score</th><th>Flags</th><th>Measured</th></tr></thead><tbody>${rows}</tbody></table>`
                     : emptyNote(`<p class="muted">No passports yet. Import a run from the bench dashboard, or load the sample run.</p>`)}
       </div>
@@ -154,6 +155,41 @@
           <p class="small muted" style="margin-top:14px">A relative score compares panels of the same model measured under the same light at the same instant, which removes light level from the comparison. Rated values from a label: ${p.rated && p.rated.isc_ma ? `${p.rated.isc_ma} mA, ${p.rated.voc_v} V` : "not recorded"}.</p>
         </div>
       </div>`;
+  }
+
+  // #/print: one card per passport, four to a sheet (two columns, two rows); each sheet is one printed page.
+  // The QR encodes the passport page's own URL, built the way pagePassport sees it (location.href on that page).
+  function pagePrint() {
+    const ps = passports();
+    const base = location.origin + location.pathname;
+    const card = (p) => {
+      const url = `${base}#/p/${encodeURIComponent(p.passport_id)}`;
+      const qr = window.qrcode(0, "M"); qr.addData(url); qr.make();
+      return `<article class="pcard">
+        <div class="pcard__top">
+          ${cellSvg({ label: p.passport_id, dim: p.grade === "C" })}
+          <div class="pcard__id">${esc(p.passport_id)}</div>
+          <span class="pcard__grade grade g-${esc(p.grade)}">${esc(p.grade)}</span>
+        </div>
+        <div class="pcard__body">
+          <div class="pcard__qr" aria-label="QR code for passport ${esc(p.passport_id)}">${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}</div>
+          <dl class="pcard__facts">
+            <div><dt>Short-circuit current</dt><dd>${num(p.isc_ma, 1)} mA</dd></div>
+            <div><dt>Open-circuit voltage</dt><dd>${num(p.voc_v, 2)} V</dd></div>
+            <div><dt>Relative score</dt><dd>${num(p.score_pct, 0)}%</dd></div>
+            <div><dt>Measured</dt><dd class="small">${fmtDay(p.measured_at)}</dd></div>
+          </dl>
+        </div>
+        <p class="pcard__foot small muted">Second String passport, scan for the full record.<br><span class="pcard__url">${esc(url)}</span></p>
+      </article>`;
+    };
+    const sheets = [];
+    for (let i = 0; i < ps.length; i += 4) sheets.push(`<section class="sheet" aria-label="Sheet ${sheets.length + 1}">${ps.slice(i, i + 4).map(card).join("")}</section>`);
+    return `
+      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← All passports</a>${sheets.length ? `<button type="button" class="btn btn--primary" onclick="window.print()">Print</button>` : ""}</div>
+      <h1 class="page-title no-print">Passport cards</h1>
+      <p class="lede no-print">One card per tested panel, four to a sheet${sheets.length ? ` (${ps.length} card${ps.length === 1 ? "" : "s"}, ${sheets.length} sheet${sheets.length === 1 ? "" : "s"})` : ""}. Print, cut along the borders and put each card next to its panel; the QR code opens that panel's passport.</p>
+      ${sheets.length ? sheets.join("") : `<div class="card">${emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}</div>`}`;
   }
 
   function pageBuild() {
@@ -282,6 +318,7 @@
       if (hash.startsWith("#/p/")) { view.innerHTML = pagePassport(safeDecode(hash.slice(4))); route = "index"; }
       else if (hash.startsWith("#/build")) { view.innerHTML = pageBuild(); wireBuild(); route = "build"; }
       else if (hash.startsWith("#/impact")) { view.innerHTML = pageImpact(); route = "impact"; }
+      else if (hash.startsWith("#/print")) { view.innerHTML = pagePrint(); route = "index"; }
       else { view.innerHTML = pageIndex(); wireIndex(); }
     } catch (err) {
       // never leave a blank page on a judge's phone: say what happened and offer the one fix that always works
