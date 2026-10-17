@@ -5,7 +5,7 @@ Requirements are in docs/spec-v2.md §9 and §11.6; messages are in protocol/PRO
 
 ## Files
 - `index.html` — the page; `css/style.css` — design tokens and layout.
-- `js/app.js` — state, rendering and controls. `js/charts.js` — SVG charts. `js/mock.js` — a simulated ESP32 that runs the same single-diode model as tools/sim. `js/serial.js` — Web Serial.
+- `js/app.js` — state, rendering and controls. `js/charts.js` — SVG charts. `js/mock.js` — a simulated ESP32 that runs the same single-diode model as tools/sim. `js/serial.js` — Web Serial. `js/manual.js` — readings typed in by hand (Enter readings by hand): the firmware's grade, flag and prediction rules in JS, building `grade`/`search` messages that go through the same dispatch(); such runs have `link: "manual"`.
 
 ## Run and check
 - `python3 -m http.server 8000` from this folder, then open http://localhost:8000 in Chrome (Web Serial needs localhost or https; ES modules don't load from file://).
