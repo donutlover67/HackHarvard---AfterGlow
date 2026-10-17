@@ -1,4 +1,4 @@
-// Second String site: passport index, passport pages with QR codes, the Array Builder, an impact stub.
+// Second String site: the front page, the passport index, passport pages with QR codes, the Array Builder, the impact page.
 // Plain script, hash-routed, no build step; works from a static host or a local http.server.
 (function () {
   const $ = (sel, root) => (root || document).querySelector(sel);
@@ -108,27 +108,34 @@
       </tbody></table></div>` : ""}`;
   }
 
+  // the simulated example batch; status is the element that reports progress and errors, if any
+  function loadSample(status) {
+    const say = (text, bad) => { if (!status) return; status.classList.toggle("is-bad", !!bad); status.textContent = text; };
+    say("Loading…", false);
+    return fetch("data/sample-run.json")
+      .then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+      .then((run) => { addRun(run); say("", false); render("data"); })
+      .catch((err) => say(`Could not import: ${err.message || err}. The sample loads over http, not from a file:// page.`, true));
+  }
+
   function wireIndex() {
     const status = $("#import-status");
-    const ok = (run) => { addRun(run); render(); };
+    const ok = (run) => { addRun(run); render("data"); };
     const bad = (err) => { status.classList.add("is-bad"); status.textContent = `Could not import: ${err.message || err}`; };
     const importText = (text) => { try { ok(JSON.parse(text)); } catch (err) { bad(err); } };
     $("#run-file").addEventListener("change", (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(importText, bad); });
-    $("#btn-sample").addEventListener("click", () => {
-      status.classList.remove("is-bad"); status.textContent = "Loading…";
-      fetch("data/sample-run.json").then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); }).then(ok).catch((err) => bad(new Error(`${err.message}. The sample loads over http, not from a file:// page.`)));
-    });
+    $("#btn-sample").addEventListener("click", () => loadSample(status));
     $("#btn-paste").addEventListener("click", () => { $("#paste-box").hidden = !$("#paste-box").hidden; });
     $("#btn-paste-go").addEventListener("click", () => importText($("#paste-text").value));
     const clear = $("#btn-clear");
-    if (clear) clear.addEventListener("click", () => { if (confirm("Remove every imported run from this browser?")) { runs = []; saveRuns(); render(); } });
+    if (clear) clear.addEventListener("click", () => { if (confirm("Remove every imported run from this browser?")) { runs = []; saveRuns(); render("data"); } });
     document.body.addEventListener("dragover", (e) => { e.preventDefault(); });
     document.body.addEventListener("drop", (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) f.text().then(importText, bad); }, { once: true });
   }
 
   // What someone who just scanned a card needs before the numbers: what tested this panel, and where the rest is.
   const PROJECT_URL = "https://mscl741.github.io/HackHarvard/";
-  const passportIntro = () => `<p class="lede passport-intro">This panel was tested by <a href="${PROJECT_URL}">Second String</a>, a bench that grades used solar panels against each other and finds the wiring that wastes the least power. The numbers below were measured, not copied from the label. <a href="#/">See every panel tested so far</a>.</p>`;
+  const passportIntro = () => `<p class="lede passport-intro">This panel was tested by <a href="${PROJECT_URL}">Second String</a>, a bench that grades used solar panels against each other and finds the wiring that wastes the least power. The numbers below were measured, not copied from the label. <a href="#/passports">See every panel tested so far</a>.</p>`;
   // This panel against the others measured in the same run: relative score bars, this one in ink and the others muted,
   // over the grade bands (C under 75%, B to 90%, A above) so the letter explains itself. Nothing to compare with one panel.
   function batchCard(p) {
@@ -152,12 +159,12 @@
 
   function pagePassport(id) {
     const p = passport(id);
-    if (!p) return `<h1 class="page-title">${esc(id)}</h1>${passportIntro()}${emptyNote(`<p class="lede">No passport with this ID has been imported into this browser. <a href="#/">Back to the list.</a></p>`)}`;
+    if (!p) return `<h1 class="page-title">${esc(id)}</h1>${passportIntro()}${emptyNote(`<p class="lede">No passport with this ID has been imported into this browser. <a href="#/passports">Back to the list.</a></p>`)}`;
     const url = location.href;
     const qr = window.qrcode(0, "M"); qr.addData(url); qr.make();
     const flags = (p.flags || []).map((f) => `<li>${esc(flagWord[f] || f)}</li>`).join("");
     return `
-      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← All passports</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print this passport</button></div>
+      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/passports">← All passports</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print this passport</button></div>
       ${passportIntro()}
       <div class="card passport">
         <div class="passport__visual">
@@ -213,10 +220,10 @@
     const sheets = [];
     for (let i = 0; i < ps.length; i += 4) sheets.push(`<section class="sheet" aria-label="Sheet ${sheets.length + 1}">${ps.slice(i, i + 4).map(card).join("")}</section>`);
     return `
-      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/">← All passports</a>${sheets.length ? `<button type="button" class="btn btn--primary" onclick="window.print()">Print</button>` : ""}</div>
+      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/passports">← All passports</a>${sheets.length ? `<button type="button" class="btn btn--primary" onclick="window.print()">Print</button>` : ""}</div>
       <h1 class="page-title no-print">Passport cards</h1>
       <p class="lede no-print">One card per tested panel, four to a sheet${sheets.length ? ` (${ps.length} card${ps.length === 1 ? "" : "s"}, ${sheets.length} sheet${sheets.length === 1 ? "" : "s"})` : ""}. Print, cut along the borders and put each card next to its panel; the QR code opens that panel's passport.</p>
-      ${sheets.length ? sheets.join("") : `<div class="card">${emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}</div>`}`;
+      ${sheets.length ? sheets.join("") : `<div class="card">${emptyNote(`<p class="muted">No passports yet. <a href="#/passports">Add a run first.</a></p>`)}</div>`}`;
   }
 
   function pageBuild() {
@@ -228,7 +235,7 @@
       <p class="lede">Pick a set of passports. The builder groups them into series strings so that no strong panel is held back by a weaker partner, keeps low-voltage panels from sinking a string, and compares the result with wiring them in the order they came.</p>
       <div class="card no-print">
         <h2>Pool</h2>
-        ${ps.length ? `<div class="pool" id="pool">${items}</div>` : emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}
+        ${ps.length ? `<div class="pool" id="pool">${items}</div>` : emptyNote(`<p class="muted">No passports yet. <a href="#/passports">Add a run first.</a></p>`)}
         <div class="row" style="margin-top:14px">
           <label class="field">Panels per string <select id="k"><option value="2">2 (12 V from 6 V panels)</option><option value="3">3</option><option value="4">4</option></select></label>
           <label class="field">Add a panel by hand <span class="row"><input id="add-isc" type="number" placeholder="mA" style="width:90px"><input id="add-voc" type="number" step="0.01" placeholder="V" style="width:80px"><button type="button" class="btn" id="btn-add">Add</button></span></label>
@@ -343,17 +350,22 @@
   }
 
   // ---------- router ----------
-  function render() {
-    const hash = location.hash || "#/";
+  // The front page proper arrives with the redesign; until then #/ shows the headline and the two ways in.
+  function pageFront() {
+    return `<section class="hero"><h1 class="display">Used panels still work.</h1><p class="row"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></p></section>`;
+  }
+  // reason: "route" when the hash changed (start at the top), "data" when runs arrived (redraw in place)
+  function render(reason = "route") {
+    const r = window.SSRoutes.parse(location.hash);
     const view = $("#view");
     loadingShown = false;
-    let route = "index";
     try {
-      if (hash.startsWith("#/p/")) { view.innerHTML = pagePassport(safeDecode(hash.slice(4))); route = "index"; }
-      else if (hash.startsWith("#/build")) { view.innerHTML = pageBuild(); wireBuild(); route = "build"; }
-      else if (hash.startsWith("#/impact")) { view.innerHTML = pageImpact(); route = "impact"; }
-      else if (hash.startsWith("#/print")) { view.innerHTML = pagePrint(); route = "index"; }
-      else { view.innerHTML = pageIndex(); wireIndex(); }
+      if (r.page === "passport") view.innerHTML = pagePassport(r.id);
+      else if (r.page === "build") { view.innerHTML = pageBuild(); wireBuild(); }
+      else if (r.page === "impact") view.innerHTML = pageImpact();
+      else if (r.page === "print") view.innerHTML = pagePrint();
+      else if (r.page === "passports") { view.innerHTML = pageIndex(); wireIndex(); }
+      else view.innerHTML = pageFront();
     } catch (err) {
       // never leave a blank page on a judge's phone: say what happened and offer the one fix that always works
       console.error(err);
@@ -362,8 +374,9 @@
         <div class="row" style="margin-top:10px"><button type="button" class="btn" id="btn-reset">Remove imported runs and reload</button></div></div>`;
       $("#btn-reset").addEventListener("click", () => { LS.del("ss.site.runs"); LS.del("ss.site.pool"); location.reload(); });
     }
-    document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("is-on", a.dataset.route === route));
-    window.scrollTo(0, 0);
+    document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("is-on", a.dataset.route === r.nav));
+    document.body.dataset.page = r.page;
+    if (reason === "route") window.scrollTo(0, 0);
   }
   // When tools/serve.py is serving this site, runs uploaded by the dashboard appear on their own.
   // On a static host (GitHub Pages) there is no API: the site loads the runs committed to data/runs/,
@@ -379,14 +392,14 @@
   function settle(changed) {
     const wasLoading = loading && loadingShown;
     loading = false;
-    if (changed || wasLoading) render();
+    if (changed || wasLoading) render("data");
   }
   function pullFromServer(first) {
     fetchJson("../api/runs")
       .then((list) => {
         const changed = Array.isArray(list) && mergeRuns(list);
         if (first) { settle(changed); apiTimer = setInterval(() => pullFromServer(false), 5000); }
-        else if (changed) render();
+        else if (changed) render("data");
       })
       .catch(() => { if (first) pullFromIndex(); });
   }
@@ -402,8 +415,8 @@
       .catch(() => settle(false)); // neither the API nor an index: import by hand
   }
 
-  window.addEventListener("hashchange", render);
-  render();
+  window.addEventListener("hashchange", () => render("route"));
+  render("route");
   pullFromServer(true);
-  window.secondStringSite = { addRun, passports, runs: () => runs };
+  window.secondStringSite = { addRun, passports, runs: () => runs, loadSample };
 })();
