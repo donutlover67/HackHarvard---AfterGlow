@@ -27,6 +27,41 @@ int binSweep(const RawSample* raw, int n, float binV, SweepPoint* out, int maxOu
   return maxOut;
 }
 
+void SweepBinner::begin(SweepPoint* buf, int capacity, float binV) {
+  buf_ = buf; cap_ = capacity < 2 ? 2 : capacity; n_ = 0; binV_ = binV > 0 ? binV : 0.1f;
+  bin_ = -1; sumV_ = 0; sumI_ = 0; k_ = 0;
+}
+
+void SweepBinner::add(float v, float i_ma) {
+  long b = (long)floorf(v / binV_);
+  if (b != bin_) {
+    if (k_ > 0) push(sumV_ / k_, sumI_ / k_);
+    bin_ = (long)floorf(v / binV_);   // binV_ may have doubled inside push()
+    sumV_ = 0; sumI_ = 0; k_ = 0;
+  }
+  sumV_ += v; sumI_ += i_ma; k_++;
+}
+
+int SweepBinner::finish() {
+  if (k_ > 0) push(sumV_ / k_, sumI_ / k_);
+  k_ = 0; sumV_ = 0; sumI_ = 0;
+  return n_;
+}
+
+void SweepBinner::push(float v, float i) {
+  if (n_ >= cap_) compact();
+  buf_[n_++] = {v, i};
+}
+
+void SweepBinner::compact() {
+  // average pairs (0,1), (2,3), ...; an odd last point is kept as it is
+  int m = 0;
+  for (int j = 0; j + 1 < n_; j += 2) buf_[m++] = {(buf_[j].v + buf_[j + 1].v) / 2, (buf_[j].i_ma + buf_[j + 1].i_ma) / 2};
+  if (n_ % 2) buf_[m++] = buf_[n_ - 1];
+  n_ = m;
+  binV_ *= 2;
+}
+
 SweepStats analyzeSweep(const SweepPoint* pts, int n) {
   SweepStats st{0, 0, 0, 0, 0, 0, n};
   if (n <= 0) return st;
