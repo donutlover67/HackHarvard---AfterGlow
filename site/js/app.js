@@ -282,6 +282,27 @@
     const panels = [...chosen, ...extraPanels];
     const k = Number($("#k").value);
     const res = window.SSBuilder.analyze(panels, k);
+
+    // Share a four-panel Array Builder result with Chalk AI Advisor.
+    // Preserve the original passport IDs and grouping.
+    if (!res.error && panels.length === 4 && k === 2) {
+      LS.set("ss.chalk.builderSelection", {
+        panels: panels.map(p => ({
+          id: p.id,
+          isc_ma: p.isc_ma,
+          voc_v: p.voc_v
+        })),
+        groups: res.greedy.groups.map(
+          group => group.map(p => p.id)
+        ),
+        estimated_pmax_w: res.greedy.pmax,
+        method: res.greedy.how,
+        source: "ARRAY_BUILDER_MODEL"
+      });
+    } else {
+      LS.del("ss.chalk.builderSelection");
+    }
+
     if (res.error) { out.innerHTML = `<div class="card"><p class="status is-bad">${esc(res.error)}</p></div>`; return; }
     const naiveGain = (res.greedy.pmax / res.naive.pmax - 1) * 100;
     const avg = res.brute ? res.brute.average : res.sampledAverage;
@@ -317,6 +338,17 @@
       <h3 class="label" style="margin:18px 0 8px">Matched grouping</h3>
       <p class="small muted" style="margin-bottom:8px">How: ${esc(res.greedy.how)}.${res.greedy.lowVoc.length ? ` Low voltage, possibly a failed cell group: ${res.greedy.lowVoc.map(esc).join(", ")}.` : ""}</p>
       ${groupsHtml(res.greedy.groups, byId)}
+      ${panels.length === 4 && k === 2
+        ? `<div style="margin-top:16px">
+             <a class="btn btn--primary"
+                href="advisor.html?from=builder">
+               Explain with Chalk AI →
+             </a>
+           </div>`
+        : `<p class="small muted" style="margin-top:12px">
+             The current Chalk prototype supports four panels,
+             arranged two per string.
+           </p>`}
       <h3 class="label" style="margin:16px 0 8px">As they came</h3>
       ${groupsHtml(res.naive.groups, byId)}
       ${verdict}${bench}

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Advisor | Second String</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="nav__name" href="./">Second String</a>
+    <nav class="nav__links">
+      <a href="./#/">Passports</a>
+      <a href="./#/build">Array Builder</a>
+      <a href="./#/impact">Impact</a>
+      <a class="is-on" href="advisor.html">AI Advisor</a>
+    </nav>
+  </header>
+
+  <main class="view">
+    <h1 class="page-title">AI Solar Panel Advisor</h1>
+    <p class="lede">
+      Ask questions about solar panel reuse, wiring and
+      electrical limitations using Chalk-powered analysis.
+    </p>
+
+    <div class="card">
+      <h2>Panel measurements</h2>
+      <p class="muted small">
+        Load the team's sample run or choose a run JSON file.
+        This prototype analyzes exactly four panels.
+      </p>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="load-sample">
+          Load sample run
+        </button>
+        <label class="btn">
+          Choose run JSON
+          <input type="file" id="run-file"
+                 accept=".json,application/json" hidden>
+        </label>
+      </div>
+
+      <p id="data-status" class="status"
+         style="margin-top:12px">No run loaded yet.</p>
+      <div id="panel-list" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h2>Ask the advisor</h2>
+
+      <label class="field" for="question">
+        Your question
+        <textarea id="question">Which panels should be paired together, and why?</textarea>
+      </label>
+
+      <label class="field" for="mode"
+             style="margin-top:12px">
+        Processing mode
+        <select id="mode">
+          <option value="auto">Auto (online with fallback)</option>
+          <option value="online">Online — Chalk AI</option>
+          <option value="offline">Offline — rule-based</option>
+        </select>
+      </label>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn btn--primary" id="ask">
+          Ask AI Advisor
+        </button>
+        <span id="request-status" class="status"></span>
+      </div>
+    </div>
+
+    <div class="card" id="answer-card" hidden>
+      <h2>Advisor response</h2>
+      <p id="pairing"></p>
+      <p id="answer" style="white-space:pre-wrap;margin-top:12px"></p>
+      <p id="source" class="small muted"
+         style="margin-top:16px"></p>
+      <ul id="warnings" class="small"
+          style="margin-top:12px;padding-left:20px"></ul>
+    </div>
+  </main>
+
+  <script src="js/chalk-advisor.js"></script>
+</body>
+</html>
