@@ -332,7 +332,8 @@ details.adjust[open] summary { margin-bottom: 6px; }
 @media (prefers-reduced-motion: reduce) { .impact-bar__fill { transition: none; } }
 
 /* ---------- front page, after hhuh.io: full-screen hero, ticker, scroll story ---------- */
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }   /* full-width sections use 100vw, which includes a desktop scrollbar's width: clip that sliver instead of scrolling sideways */
+body { overflow-x: clip; }
 .nav { transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .nav__name { display: inline-flex; align-items: center; }
 /* the sun fills clockwise as you scroll down the page */
