@@ -1,0 +1,20 @@
+# Dashboard
+
+Plain HTML + CSS + ES modules, no build step and no framework. Charts are drawn by hand in SVG (`js/charts.js`); there is no charting library. The only vendored asset is the Archivo variable font (OFL) in `vendor/fonts/`. Everything must work offline in Chrome.
+Requirements are in docs/spec-v2.md §9 and §11.6; messages are in protocol/PROTOCOL.md.
+
+## Files
+- `index.html` — the page; `css/style.css` — design tokens and layout.
+- `js/app.js` — state, rendering and controls. `js/charts.js` — SVG charts. `js/mock.js` — a simulated ESP32 that runs the same single-diode model as tools/sim. `js/serial.js` — Web Serial.
+
+## Run and check
+- `python3 -m http.server 8000` from this folder, then open http://localhost:8000 in Chrome (Web Serial needs localhost or https; ES modules don't load from file://).
+- Mock mode (the default when no port is connected) must exercise every message type, so every chart can be checked without hardware.
+- Before saying done: load the page in mock mode, confirm no console errors, and confirm each message type renders.
+
+## Rules
+- Only Chrome/Edge matter (Web Serial). Don't add polyfills or other browsers.
+- Ignore malformed lines and unknown message types instead of crashing; the firmware will print partial lines on reset.
+- Never invent message fields. If a field you need is missing, write the request to docs/NOTES.md and stop.
+- Labels must stay honest: the gain is "at maximum power (I-V sweep)"; pump power is labelled "power into our pump".
+- Keep the visual language: panels are drawn as silicon cells, colour follows the pairing (A gold, B blue, C green) and never the rank, numbers use tabular figures in ink colours, no uppercase labels, no cards with drop shadows.

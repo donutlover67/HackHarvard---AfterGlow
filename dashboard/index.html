@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Second String</title>
+  <meta name="description" content="Grades used solar panels and rewires them for the most power. Live bench dashboard.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-conn="none">
+  <header class="plate">
+    <div class="plate__name">
+      <h1>Second String</h1>
+      <p>Grades used solar panels, then rewires them for the most power. Four panels, two series pairs in parallel.</p>
+    </div>
+    <div class="plate__state" aria-live="polite">
+      <div class="readout">
+        <span class="readout__label">Link</span>
+        <span class="readout__value" id="conn-text">Not connected</span>
+      </div>
+      <div class="readout">
+        <span class="readout__label">Mode</span>
+        <span class="readout__value" id="mode-text">Idle</span>
+      </div>
+      <div class="readout">
+        <span class="readout__label">Wiring now</span>
+        <span class="readout__value" id="pairing-text">—</span>
+      </div>
+      <div class="readout">
+        <span class="readout__label">Pump</span>
+        <span class="readout__value" id="pump-text">—</span>
+      </div>
+    </div>
+    <div class="plate__links">
+      <button type="button" class="btn" id="btn-connect">Connect ESP32</button>
+      <button type="button" class="btn btn--quiet" id="btn-mock">Use mock bench</button>
+    </div>
+  </header>
+
+  <main class="bench">
+    <section class="gain" aria-labelledby="gain-title">
+      <h2 id="gain-title" class="visually-hidden">Measured gain</h2>
+      <div class="gain__block">
+        <div class="gain__number" id="gain-number">—</div>
+        <div class="gain__ci" id="gain-ci"></div>
+        <div class="gain__sub" id="gain-sub">Run a search to measure the three wirings.</div>
+      </div>
+      <dl class="gain__facts">
+        <div><dt>Best wiring</dt><dd id="fact-best">—</dd></div>
+        <div><dt>Against the worst</dt><dd id="fact-worst">—</dd></div>
+        <div><dt>Against the average of all three, which is what wiring without measuring gets</dt><dd id="fact-avg">—</dd></div>
+        <div><dt>Prediction from the grades</dt><dd id="fact-pred">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="panels" aria-labelledby="panels-title">
+      <div class="section-head">
+        <h2 id="panels-title">Panels, graded under the same light</h2>
+        <p id="panels-note">Short-circuit current for all four at the same instant, then open-circuit voltage.</p>
+      </div>
+      <div class="panel-row" id="panel-row"></div>
+    </section>
+
+    <section class="trace" aria-labelledby="trace-title">
+      <div class="section-head">
+        <h2 id="trace-title">Output power, last two minutes</h2>
+        <p>Power into our pump, from the combined output. The line changes colour when the relays change the wiring.</p>
+      </div>
+      <div class="chart" id="trace-chart"></div>
+    </section>
+
+    <section class="wiring" aria-labelledby="wiring-title">
+      <div class="section-head">
+        <h2 id="wiring-title">Wiring and maximum power</h2>
+        <p>Three ways to make two pairs. Maximum power from an I-V sweep of each.</p>
+      </div>
+      <div class="wiring__grid">
+        <div class="chart chart--diagram" id="wiring-diagram"></div>
+        <div class="chart" id="bars-chart"></div>
+      </div>
+    </section>
+
+    <section class="curves" aria-labelledby="curves-title">
+      <div class="section-head section-head--row">
+        <div>
+          <h2 id="curves-title">I-V sweeps</h2>
+          <p>A capacitor charges from short circuit to open circuit while the output sensor samples.</p>
+        </div>
+        <div class="seg" role="group" aria-label="Curve type">
+          <button type="button" class="seg__btn is-on" data-curve="pv">Power</button>
+          <button type="button" class="seg__btn" data-curve="iv">Current</button>
+        </div>
+      </div>
+      <div class="chart" id="curves-chart"></div>
+    </section>
+  </main>
+
+  <footer class="deck">
+    <div class="deck__row">
+      <div class="deck__group" aria-label="Measure">
+        <button type="button" class="btn" data-cmd="GRADE">Grade</button>
+        <button type="button" class="btn btn--primary" data-cmd="SEARCH">Search</button>
+        <button type="button" class="btn" data-cmd="PROOF">Prove</button>
+        <button type="button" class="btn" data-cmd="STOP">Stop</button>
+      </div>
+      <div class="deck__group" aria-label="Wiring">
+        <span class="deck__label">Run</span>
+        <button type="button" class="btn btn--pair" data-cmd="RUN A" data-pair="A">A</button>
+        <button type="button" class="btn btn--pair" data-cmd="RUN B" data-pair="B">B</button>
+        <button type="button" class="btn btn--pair" data-cmd="RUN C" data-pair="C">C</button>
+        <button type="button" class="btn" data-cmd="RUN BEST">Best</button>
+      </div>
+      <div class="deck__group" aria-label="Pump">
+        <button type="button" class="btn" data-cmd="PUMP ON">Pump on</button>
+        <button type="button" class="btn" data-cmd="PUMP OFF">Pump off</button>
+        <button type="button" class="btn" data-cmd="PUMPPROOF">Pump A/B</button>
+      </div>
+      <div class="deck__group" aria-label="Calibration">
+        <button type="button" class="btn btn--quiet" id="btn-cal">Calibrate boxes</button>
+        <button type="button" class="btn btn--quiet" id="btn-data">Data</button>
+      </div>
+    </div>
+
+    <div class="deck__row deck__row--mock" id="mock-bench" hidden>
+      <span class="deck__label">Mock bench</span>
+      <label class="field">Light <input type="range" id="mock-light" min="0.05" max="1" step="0.05" value="0.4"><output id="mock-light-out">40% of sun</output></label>
+      <span class="deck__label">Film on</span>
+      <label class="check"><input type="checkbox" data-film="1"> 1</label>
+      <label class="check"><input type="checkbox" data-film="2" checked> 2</label>
+      <label class="check"><input type="checkbox" data-film="3"> 3</label>
+      <label class="check"><input type="checkbox" data-film="4" checked> 4</label>
+      <label class="field">Film passes <input type="range" id="mock-film" min="0.2" max="0.9" step="0.05" value="0.35"><output id="mock-film-out">35%</output></label>
+    </div>
+
+    <p class="deck__note">Gain is measured at each wiring's maximum power point from an I-V sweep, not from the pump. Lamp boxes stand in for the sun indoors. Two panels are covered with 35% window film to simulate aging.</p>
+  </footer>
+
+  <div class="tip" id="tip" hidden></div>
+
+  <dialog class="sheet" id="cal-sheet">
+    <form method="dialog">
+      <h2>Calibrate the lamp boxes</h2>
+      <p>Put the clear reference panel (panel 1) in each box in turn and measure it. The factors even out box-to-box lamp differences.</p>
+      <ol class="cal-steps" id="cal-steps">
+        <li>Box 1 <button type="button" class="btn" data-cmd="CAL 1">Measure</button> <span data-cal="1">—</span></li>
+        <li>Box 2 <button type="button" class="btn" data-cmd="CAL 2">Measure</button> <span data-cal="2">—</span></li>
+        <li>Box 3 <button type="button" class="btn" data-cmd="CAL 3">Measure</button> <span data-cal="3">—</span></li>
+        <li>Box 4 <button type="button" class="btn" data-cmd="CAL 4">Measure</button> <span data-cal="4">—</span></li>
+      </ol>
+      <p id="cal-factors">Factors: 1.00, 1.00, 1.00, 1.00</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn" data-cmd="CALRESET">Reset</button>
+        <button type="button" class="btn btn--primary" data-cmd="CALSAVE">Save factors</button>
+        <button type="submit" class="btn btn--quiet">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="sheet sheet--wide" id="data-sheet">
+    <form method="dialog">
+      <h2>Data and passports</h2>
+      <p>Each physical panel keeps its passport ID across runs; change an ID when you swap a panel in. A run is one grade plus the search and proof that follow it.</p>
+      <div class="passport-grid">
+        <label>Panel 1 <input data-passport="1" spellcheck="false"></label>
+        <label>Panel 2 <input data-passport="2" spellcheck="false"></label>
+        <label>Panel 3 <input data-passport="3" spellcheck="false"></label>
+        <label>Panel 4 <input data-passport="4" spellcheck="false"></label>
+      </div>
+      <label class="field field--wide">Bench notes <input id="bench-notes" placeholder="lamp boxes, 35% film on panels 2 and 4"></label>
+      <label class="field field--wide">Upload to <input id="upload-url" placeholder="empty = this laptop's server (tools/serve.py), or a full https://…/api/runs address" spellcheck="false"></label>
+      <p id="run-line">No run yet. Press Grade or Search.</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--primary" id="btn-export-passports">Export passports (JSON)</button>
+        <button type="button" class="btn" id="btn-upload">Upload run</button>
+        <span class="sheet__status" id="upload-status"></span>
+      </div>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--quiet" id="btn-dl-jsonl">Download all messages (JSONL)</button>
+        <button type="button" class="btn btn--quiet" id="btn-dl-csv">Download live power (CSV)</button>
+        <button type="submit" class="btn btn--quiet">Close</button>
+      </div>
+      <table class="table" id="data-table">
+        <thead><tr><th>Time</th><th>Type</th><th>Summary</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
