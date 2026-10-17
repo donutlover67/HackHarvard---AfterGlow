@@ -1,6 +1,11 @@
-# Publishes site/ to GitHub Pages at https://mscl741.github.io/HackHarvard/
-# Runs on every push to main and by hand from the Actions tab (Run workflow).
-# One-time setup by a repo admin: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+# Publishes site/ to GitHub Pages as the root of the Pages site (https://mscl741.github.io/HackHarvard/)
+# when the repository's Pages source is "GitHub Actions". Runs on every push to main and by hand from
+# the Actions tab (Run workflow).
+#
+# While Pages is set to "Deploy from a branch" (the mode enabled on Sat Oct 17), GitHub publishes the
+# whole repository from that branch itself (site at /HackHarvard/site/) and rejects deployments from
+# any other branch, so this workflow only reads the configuration and skips the deploy with a notice.
+# A repo admin switches modes at Settings -> Pages -> Build and deployment -> Source.
 name: Deploy site to GitHub Pages
 
 on:
@@ -20,7 +25,40 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    name: Read the Pages configuration
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.pages.outputs.mode }}
+    steps:
+      - name: Ask the API how Pages is configured
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # build_type is "workflow" (source: GitHub Actions), "legacy" (deploy from a branch),
+          # or the call fails with 404 when Pages is not enabled at all.
+          if site=$(gh api "repos/$GITHUB_REPOSITORY/pages" 2>/dev/null); then
+            mode=$(printf '%s' "$site" | jq -r '.build_type')
+            branch=$(printf '%s' "$site" | jq -r '.source.branch // "?"')
+            url=$(printf '%s' "$site" | jq -r '.html_url // "?"')
+          else
+            mode=disabled
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          case "$mode" in
+            workflow)
+              echo "Pages source is GitHub Actions: deploying site/ as the root of $url" ;;
+            legacy)
+              echo "::notice title=Deploy skipped::Pages is set to deploy from branch '$branch', so GitHub already publishes the repository from that branch (the site is at ${url}site/). To let this workflow publish site/ as the root instead, a repo admin sets Settings -> Pages -> Source to 'GitHub Actions'." ;;
+            *)
+              echo "::notice title=Deploy skipped::Pages is not enabled for this repository. A repo admin enables it at Settings -> Pages -> Source: 'GitHub Actions'." ;;
+          esac
+
   deploy:
+    name: Deploy site/
+    needs: check
+    if: needs.check.outputs.mode == 'workflow'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
