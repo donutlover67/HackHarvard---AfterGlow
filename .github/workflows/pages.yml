@@ -1,0 +1,43 @@
+# Publishes site/ to GitHub Pages at https://mscl741.github.io/HackHarvard/
+# Runs on every push to main and by hand from the Actions tab (Run workflow).
+# One-time setup by a repo admin: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Checkout reads the repo; the deploy step proves its identity to Pages with an OIDC token.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time. A push that lands mid-deploy waits for it instead of cancelling it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      # site/ has no build step: the folder is uploaded as is and becomes the root of the Pages site.
+      - name: Upload site/ as the Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
