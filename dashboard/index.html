@@ -28,7 +28,7 @@
         <span class="readout__value" id="pairing-text">—</span>
       </div>
       <div class="readout">
-        <span class="readout__label">Pump</span>
+        <span class="readout__label" id="pump-label">Pump</span>
         <span class="readout__value" id="pump-text">—</span>
       </div>
     </div>
@@ -66,7 +66,7 @@
     <section class="trace" aria-labelledby="trace-title">
       <div class="section-head">
         <h2 id="trace-title">Output power, last two minutes</h2>
-        <p>Power into our pump, from the combined output. The line changes colour when the relays change the wiring.</p>
+        <p id="trace-note">Power into our pump, from the combined output. The line changes colour when the relays change the wiring.</p>
       </div>
       <div class="chart" id="trace-chart"></div>
     </section>
@@ -136,9 +136,10 @@
       <label class="check"><input type="checkbox" data-film="3"> 3</label>
       <label class="check"><input type="checkbox" data-film="4" checked> 4</label>
       <label class="field">Film passes <input type="range" id="mock-film" min="0.2" max="0.9" step="0.05" value="0.35"><output id="mock-film-out">35%</output></label>
+      <button type="button" class="btn btn--quiet" id="btn-calib">Simulate measured panels…</button>
     </div>
 
-    <p class="deck__note">Gain is measured at each wiring's maximum power point from an I-V sweep, not from the pump. Lamp boxes stand in for the sun indoors. Two panels are covered with 35% window film to simulate aging.</p>
+    <p class="deck__note">Gain is measured at each wiring's maximum power point from an I-V sweep, not from the load. Each run records its light source and any film in its bench notes; the mock bench and its calibrated mode are simulations.</p>
   </footer>
 
   <div class="tip" id="tip" hidden></div>
@@ -173,6 +174,7 @@
         <label>Panel 4 <input data-passport="4" spellcheck="false"></label>
       </div>
       <label class="field field--wide">Bench notes <input id="bench-notes" placeholder="lamp boxes, 35% film on panels 2 and 4"></label>
+      <label class="field field--wide">The array powers <select id="load-kind"><option value="pump">the pump</option><option value="fan">a fan</option><option value="resistor">a load resistor</option><option value="none">nothing (measurement only)</option></select></label>
       <label class="field field--wide">Upload to <input id="upload-url" placeholder="empty = this laptop's server (tools/serve.py), or a full https://…/api/runs address" spellcheck="false"></label>
       <label class="check" style="margin-top:10px"><input type="checkbox" id="auto-upload" checked> Upload automatically when a proof finishes</label>
       <p id="run-line">No run yet. Press Grade or Search.</p>

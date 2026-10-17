@@ -1,5 +1,7 @@
 import { renderBars, renderTrace, renderCurves, renderWiring, updatePump, panelCellSvg, makeTip, pairPanels } from "./charts.js";
 import { MockBench } from "./mock.js";
+import { initCalibration, savedCalibration, describeCalibration } from "./calibrate.js";
+import { initLoad, loadNoun } from "./load.js";
 import { SerialLink } from "./serial.js";
 import { buildReplay, replayPort, watchErrors, checkReplay } from "./replay.js";
 
@@ -124,7 +126,7 @@ const handlers = {
     renderReadouts(); renderTraceChart(); renderPanelLive();
     const key = `${state.pairing}|${state.pump}`;
     if (key !== state.diagramKey) renderWiringDiagram();
-    else updatePump(els.wiring, { pump: state.pump, power: p });
+    else updatePump(els.wiring, { pump: state.pump, power: p, load: loadNoun() });
   },
   grade(m) {
     if (!Array.isArray(m.panels) || !m.panels.length || !m.panels.every(isGradePanel)) return false;
@@ -192,7 +194,7 @@ function renderHeadline() {
     els.gainNumber.classList.remove("is-empty");
     setText(els.gainCi, `±${Number(pr.ci95_pct).toFixed(1)} percentage points (95% confidence), ${pr.cycle} ${pr.cycle === 1 ? "cycle" : "cycles"}`);
     setText(els.gainSub, pr.kind === "pump"
-      ? `More power into our pump on wiring ${pr.best} than on wiring ${pr.base}. Load-dependent; the sweep figure is the claim.`
+      ? `More power into our ${loadNoun()} on wiring ${pr.best} than on wiring ${pr.base}. Load-dependent; the sweep figure is the claim.`
       : `More power from wiring ${pr.best} than from wiring ${pr.base}, each at its own maximum power point.`);
   } else if (se && se.pmax_w) {
     const vals = Object.values(se.pmax_w);
@@ -285,7 +287,7 @@ function renderCurvesChart() {
 function renderWiringDiagram() {
   const grades = Object.fromEntries(Object.values(state.panels).map((p) => [p.id, p.grade]));
   state.diagramKey = `${state.pairing}|${state.pump}`;
-  renderWiring(els.wiring, { pairing: state.pairing, grades, films: state.conn === "mock" ? state.films : {}, pump: state.pump, power: state.lastPower });
+  renderWiring(els.wiring, { pairing: state.pairing, grades, films: state.conn === "mock" ? state.films : {}, pump: state.pump, power: state.lastPower, load: loadNoun() });
 }
 
 function renderCal() {
@@ -348,6 +350,7 @@ function newRunId() {
 
 function benchDescription() {
   if (state.benchNotes) return state.benchNotes;
+  if (state.conn === "mock" && mock && mock.calib) return `simulated: mock bench calibrated to measured panels (${describeCalibration(mock.calib)})`;
   if (state.conn === "mock" && mock) {
     const filmed = Object.keys(mock.film).filter((k) => mock.film[k]);
     return `mock bench, ${Math.round(mock.light * 100)}% of sun, ${Math.round(mock.filmT * 100)}% film on ${filmed.length ? "panels " + filmed.join(" and ") : "no panel"}`;
@@ -474,10 +477,12 @@ function startMock() {
   mock.light = Number($("mock-light").value);
   mock.filmT = Number($("mock-film").value);
   document.querySelectorAll("[data-film]").forEach((c) => { mock.film[Number(c.dataset.film)] = c.checked; });
+  mock.calib = savedCalibration();
+  if (mock.calib) mock.film = { 1: false, 2: false, 3: false, 4: false };   // real panels: the readings already include any film
   state.films = { ...mock.film };
   state.link = mock;
   resetData();
-  setConn("mock", "Mock bench (simulated panels)");
+  setConn("mock", mock.calib ? "Mock bench simulating your measured panels" : "Mock bench (simulated panels)");
   mock.connect();
 }
 
@@ -547,6 +552,11 @@ document.querySelectorAll(".seg__btn").forEach((b) => b.addEventListener("click"
   document.querySelectorAll(".seg__btn").forEach((x) => x.classList.toggle("is-on", x === b));
   renderCurvesChart();
 }));
+
+// The mock bench can simulate four measured panels (js/calibrate.js); a change restarts it with them.
+const calibration = initCalibration({ onChange: () => { if (state.conn === "mock") startMock(); } });
+$("btn-calib").addEventListener("click", () => calibration.open());
+initLoad(() => { renderWiringDiagram(); renderHeadline(); });
 
 $("mock-light").addEventListener("input", (e) => { const v = Number(e.target.value); $("mock-light-out").textContent = `${Math.round(v * 100)}% of sun`; if (mock) mock.light = v; });
 $("mock-film").addEventListener("input", (e) => { const v = Number(e.target.value); $("mock-film-out").textContent = `${Math.round(v * 100)}%`; if (mock) mock.filmT = v; });

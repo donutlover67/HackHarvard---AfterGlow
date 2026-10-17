@@ -243,7 +243,7 @@ export function renderCurves(el, { sweeps, kind = "pv", tip }) {
 }
 
 // ---------- wiring diagram: 2S2P with the active slot assignment ----------
-export function renderWiring(el, { pairing, grades = {}, films = {}, pump, power }) {
+export function renderWiring(el, { pairing, grades = {}, films = {}, pump, power, load = "pump" }) {
   const slots = pairSlots(pairing);
   const W = 360; const H = 230;
   const busTop = 30; const busBot = 206;
@@ -277,17 +277,17 @@ export function renderWiring(el, { pairing, grades = {}, films = {}, pump, power
   const spinning = pump && power > 0.15;
   const period = spinning ? Math.max(0.35, 2.2 - power / 2.5).toFixed(2) : 1;
   s += `<g class="pump-vane ${spinning ? "is-spinning" : ""}" style="--spin:${period}s">${[0, 120, 240].map((a) => `<line x1="${px}" y1="${py}" x2="${(px + 11 * Math.cos((a * Math.PI) / 180)).toFixed(1)}" y2="${(py + 11 * Math.sin((a * Math.PI) / 180)).toFixed(1)}"/>`).join("")}</g>`;
-  s += `<text class="diagram-label" x="${px}" y="${py + 34}" text-anchor="middle">${pump === false ? "pump off" : spinning ? `pump ${power.toFixed(2)} W` : pump ? "pump stalled" : "pump"}</text>`;
+  s += `<text class="diagram-label" x="${px}" y="${py + 34}" text-anchor="middle">${pump === false ? `${esc(load)} off` : spinning ? `${esc(load)} ${power.toFixed(2)} W` : pump ? `${esc(load)} stalled` : esc(load)}</text>`;
   s += "</svg>";
   el.innerHTML = s;
 }
 
-export function updatePump(el, { pump, power }) {
+export function updatePump(el, { pump, power, load = "pump" }) {
   const vane = el.querySelector(".pump-vane");
   const label = el.querySelector(".diagram-label:last-of-type");
   if (!vane) return;
   const spinning = pump && power > 0.15;
   vane.classList.toggle("is-spinning", !!spinning);
   if (spinning) vane.style.setProperty("--spin", `${Math.max(0.35, 2.2 - power / 2.5).toFixed(2)}s`);
-  if (label) label.textContent = pump === false ? "pump off" : spinning ? `pump ${power.toFixed(2)} W` : "pump stalled";
+  if (label) label.textContent = pump === false ? `${load} off` : spinning ? `${load} ${power.toFixed(2)} W` : `${load} stalled`;
 }

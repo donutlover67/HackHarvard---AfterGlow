@@ -28,6 +28,9 @@ export class MockBench {
     this.onLine = onLine;
     this.light = 0.4;                 // fraction of full sun reaching a clear panel
     this.film = { 1: false, 2: true, 3: false, 4: true };
+    // Measured panels, e.g. { 1: { isc_ma: 148, voc_v: 6.8 }, ... }: when set, each simulated panel takes its
+    // short-circuit current and open-circuit voltage from real readings, and light, film and lamp differences are ignored.
+    this.calib = null;
     this.filmT = 0.35;
     this.factors = [1, 1, 1, 1];
     this.pairing = "A";
@@ -58,11 +61,20 @@ export class MockBench {
 
   // ---- physics ----
   drift() { return 1 + 0.02 * Math.sin(this.now() / 9000); }
-  iph(k) { return ISC_SUN * this.light * BOX_LAMPS[k - 1] * (this.film[k] ? this.filmT : 1) * this.drift(); }
+  iph(k) {
+    if (this.calib) return (this.calib[k].isc_ma / 1000) * this.drift();
+    return ISC_SUN * this.light * BOX_LAMPS[k - 1] * (this.film[k] ? this.filmT : 1) * this.drift();
+  }
+  // Diode saturation current: shared by identical panels, or fitted per panel so its open-circuit voltage matches the reading.
+  i0(k) {
+    if (!this.calib) return I0;
+    const c = this.calib[k];
+    return (c.isc_ma / 1000) / (Math.exp(c.voc_v / (NS * N_ID * VT)) - 1);
+  }
   panelV(k, I) {
     const iph = this.iph(k);
     if (I >= iph) return BYPASS_V;
-    const v = NS * N_ID * VT * Math.log((iph - I) / I0 + 1) - I * RS_PANEL;
+    const v = NS * N_ID * VT * Math.log((iph - I) / this.i0(k) + 1) - I * RS_PANEL;
     return Math.max(v, BYPASS_V);
   }
   stringV(a, b, I) { return this.panelV(a, I) + this.panelV(b, I); }
