@@ -11,6 +11,7 @@ Requirements are in docs/spec-v2.md §9 and §11.6; messages are in protocol/PRO
 - `python3 -m http.server 8000` from this folder, then open http://localhost:8000 in Chrome (Web Serial needs localhost or https; ES modules don't load from file://).
 - Mock mode (the default when no port is connected) must exercise every message type, so every chart can be checked without hardware.
 - Before saying done: load the page in mock mode, confirm no console errors, and confirm each message type renders.
+- Serial parsing without a board: serve the repo root (`python3 tools/serve.py`) and open `/dashboard/?replay=1` (or `?replay=auto&speed=0`), then press Replay recording. js/replay.js feeds protocol/samples/ plus reset noise, torn lines, garbage and bad fields through SerialLink's own read loop and reports pass/fail on the page and in the console.
 
 ## Rules
 - Only Chrome/Edge matter (Web Serial). Don't add polyfills or other browsers.
