@@ -46,13 +46,21 @@
 .fig__line { color: var(--ink-2); margin-top: 10px; max-width: 26ch; }
 .problem__text { max-width: var(--measure); margin-top: 56px; font-size: 1.2rem; line-height: 1.45; }
 
-/* how the bench works: a real sequence, so the steps are numbered */
+/* how the bench works: the four steps hang in order on one wire, like panels on a string; order comes from position, not numerals */
 .how { padding-block: var(--section); }
-.steps { list-style: none; padding: 0; margin-top: 40px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 56px; }
-.steps li { display: grid; grid-template-columns: 2.4rem 1fr; column-gap: 12px; align-items: baseline; }
-.steps__n { grid-row: 1 / span 2; font-size: 1.7rem; font-weight: 700; font-stretch: 112.5%; line-height: 1; color: var(--ink-3); }
-.steps h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; color: var(--cell); }
-.steps p { color: var(--ink-2); margin-top: 4px; }
+.string-box { position: relative; margin-top: 48px; }
+.string { list-style: none; padding: 0; margin: 0; position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 40px; }
+.string__wire { position: absolute; pointer-events: none; overflow: visible; }
+.string__wire path { fill: none; stroke: var(--cell); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.string__wire--h { left: 0; right: 0; top: 55px; width: 100%; height: 2px; }  /* through each drawing's rail (y 32 of 40, at 70 px tall) */
+.string__wire--v { display: none; }
+.step { position: relative; display: grid; gap: 10px; align-content: start; }
+.step__glyph { width: 126px; height: 70px; display: block; }
+.step__glyph .g-line { fill: none; stroke: var(--cell); stroke-width: 1.5; }
+.step__glyph .g-rail { stroke: var(--busbar); }
+.step__glyph .g-curve { fill: none; stroke: var(--cell); stroke-width: 2; }
+.step h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; color: var(--cell); margin-top: 10px; }
+.step p { color: var(--ink-2); }
 
 /* the strip: three wirings side by side; a swipe row by default, turned sideways by the scroll on fine pointers */
 .strip { overflow: clip; }
@@ -112,7 +120,14 @@
 @media (max-width: 760px) {
   .problem__grid { grid-template-columns: 1fr; gap: 28px; }
   .problem__text { margin-top: 40px; font-size: 1.1rem; }
-  .steps { grid-template-columns: 1fr; gap: 24px; }
+  /* on a phone the string runs down the left and each step hangs to its right */
+  .string { grid-template-columns: 1fr; gap: 28px; }
+  .string__wire--h { display: none; }
+  .string__wire--v { display: block; left: 47px; top: 0; bottom: 0; width: 2px; height: 100%; }
+  .step { grid-template-columns: 96px 1fr; column-gap: 16px; row-gap: 4px; align-items: start; }
+  .step__glyph { grid-row: 1 / span 2; width: 96px; height: 53px; }
+  .step h3 { grid-column: 2; margin-top: 8px; }
+  .step p { grid-column: 2; }
   .rp { max-height: none; }
 }
 @media (max-width: 480px) {

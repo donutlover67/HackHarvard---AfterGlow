@@ -89,15 +89,32 @@ window.SSFront = (function () {
         <p class="problem__text">In a series string every panel carries the same current, so the weakest panel limits the string. Factories sort new panels into current classes; used ones arrive mixed and untested.</p>
       </div>
     </section>`;
+  // the bench's four steps hang in order on one wire, the way panels hang on a string; each carries a drawing of what happens
+  const tiny = (x, y, w, h, strong) => `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--cell)"/>${strong ? "" : `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--film)"/>`}`;
+  const GLYPHS = {
+    // four panels read at the same instant: one bracket over all of them
+    measure: `<path d="M5,9 V5 H67 V9" class="g-line"/>${tiny(5, 14, 13, 10, true)}${tiny(21, 14, 13, 10, false)}${tiny(37, 14, 13, 10, true)}${tiny(53, 14, 13, 10, false)}<path d="M2,32 H70" class="g-line g-rail"/>`,
+    // the two strong ones belong together: a plate under the matched pair
+    predict: `<rect x="3" y="11" width="34" height="18" rx="2" fill="var(--surface)"/>${tiny(6, 14, 13, 10, true)}${tiny(21, 14, 13, 10, true)}${tiny(41, 14, 13, 10, false)}${tiny(56, 14, 13, 10, false)}<path d="M2,32 H70" class="g-line g-rail"/>`,
+    // relays switch, a capacitor sweeps the curve from short circuit to open circuit
+    sweep: `${tiny(4, 6, 13, 10, true)}${tiny(4, 22, 13, 10, true)}<path d="M17,11 H26 M17,27 H26 M26,11 V27" class="g-line"/><path d="M34,32 H68 M34,32 V4" class="g-line g-rail"/><path d="M36,8 C 52,8 58,13 62,18 C 65,22 66,28 66,31" class="g-curve"/>`,
+    // best against worst, twenty times: the gain stands
+    prove: `<path d="M4,32 H68" class="g-line g-rail"/><rect x="12" y="6" width="16" height="26" fill="var(--cell)"/><rect x="34" y="16" width="16" height="16" fill="var(--busbar)"/><path d="M12,4 H28" class="g-line"/>`,
+  };
+  const glyph = (name) => `<svg class="step__glyph" viewBox="0 0 72 40" aria-hidden="true" focusable="false"><rect width="72" height="40" fill="var(--page)"/>${GLYPHS[name]}</svg>`;
   const how = () => `<section class="how" data-in>
       <div class="wrap">
         <h2 class="title">Four panels, three ways to pair them.</h2>
-        <ol class="steps">
-          <li><span class="steps__n">1</span><h3>Measure</h3><p>Every panel's current at the same instant, and its voltage.</p></li>
-          <li><span class="steps__n">2</span><h3>Predict</h3><p>The scores say which pairs match.</p></li>
-          <li><span class="steps__n">3</span><h3>Switch and sweep</h3><p>Relays try all three wirings; a capacitor sweeps each one's power curve.</p></li>
-          <li><span class="steps__n">4</span><h3>Keep and prove</h3><p>The best wiring stays on; alternating best and worst twenty times proves the gain.</p></li>
+        <div class="string-box">
+          <svg class="string__wire string__wire--h" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,1 H100" pathLength="1"/></svg>
+          <svg class="string__wire string__wire--v" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M1,0 V100" pathLength="1"/></svg>
+        <ol class="string">
+          <li class="step">${glyph("measure")}<h3>Measure</h3><p>Every panel's current at the same instant, and its voltage.</p></li>
+          <li class="step">${glyph("predict")}<h3>Predict</h3><p>The scores say which pairs match.</p></li>
+          <li class="step">${glyph("sweep")}<h3>Switch and sweep</h3><p>Relays try all three wirings; a capacitor sweeps each one's power curve.</p></li>
+          <li class="step">${glyph("prove")}<h3>Keep and prove</h3><p>The best wiring stays on; alternating best and worst twenty times proves the gain.</p></li>
         </ol>
+        </div>
       </div>
     </section>`;
   function stripInner(ctx, strip) {

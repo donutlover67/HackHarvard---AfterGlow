@@ -80,6 +80,15 @@ html.has-motion [data-in]:not(.is-in) .m-part { opacity: 0; transform: translate
 html.reduced [data-hero] { --k: 1; --w: 1; --g: 1; }
 html.reduced .hero__scroll { display: none; }
 
+/* how the bench works: the wire draws itself across the section as it enters, and each step lights as the wire reaches it */
+.string__wire path { stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset 1200ms linear 150ms; }
+html.has-motion .how:not(.is-in) .string__wire path { stroke-dashoffset: 1; }
+.step__glyph, .step h3 { transition: opacity 420ms var(--m-ease); }
+html.has-motion .how:not(.is-in) .step__glyph, html.has-motion .how:not(.is-in) .step h3 { opacity: 0.25; }
+.how.is-in .step:nth-child(2) .step__glyph, .how.is-in .step:nth-child(2) h3 { transition-delay: 300ms; }
+.how.is-in .step:nth-child(3) .step__glyph, .how.is-in .step:nth-child(3) h3 { transition-delay: 600ms; }
+.how.is-in .step:nth-child(4) .step__glyph, .how.is-in .step:nth-child(4) h3 { transition-delay: 900ms; }
+
 /* the strip: the stage zooms in as the section docks (motion.js sets its transform), and a card still off to the right
    sits lower and quieter until it has arrived (--arrive 0..1) */
 .strip__stage { will-change: transform, opacity; }
@@ -112,7 +121,7 @@ html[data-dir="back"] .view.is-leaving { animation-name: vt-out-back; }
 html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
-  .m-part, .line__in, .rise, .grow, .hero__scroll { transition: none; }
+  .m-part, .line__in, .rise, .grow, .hero__scroll, .string__wire path, .step__glyph, .step h3 { transition: none; }
   [data-hero] { --k: 1; --w: 1; --g: 1; }
   ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
 }

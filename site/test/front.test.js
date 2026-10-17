@@ -65,6 +65,15 @@ test("while runs are loading the passports section says so", () => {
   expect(page({ ...ctxEmpty, loading: true })).toContain("Loading passports");
 });
 
+test("the four steps hang on a drawn string, with a drawing each and no numerals", () => {
+  const html = page(ctxSample);
+  expect(html).not.toContain("steps__n");
+  expect((html.match(/class="step"/g) || []).length).toBe(4);
+  expect((html.match(/class="step__glyph"/g) || []).length).toBe(4);
+  expect((html.match(/class="string__wire/g) || []).length).toBe(2);
+  expect(html).toContain("<ol class=\"string\"");
+});
+
 test("every section can enter, the hero intro and the passports heading reveal, the problem numerals count", () => {
   const html = page(ctxSample);
   expect((html.match(/<section[^>]*data-in/g) || []).length).toBeGreaterThanOrEqual(7);
