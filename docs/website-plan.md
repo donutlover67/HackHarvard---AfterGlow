@@ -18,7 +18,28 @@ The dashboard no longer runs on the ESP32's Wi-Fi. Since spec v2 the ESP32 talks
 - **The dashboard uploads.** After a run it POSTs the run (passports + search + proof) to the site. If the upload fails, nothing on the bench changes; the dashboard keeps working offline.
 - **Fallback is already built:** the dashboard's Data sheet downloads every message as JSONL. A static site can import that file by hand.
 
-Hosting, as built Friday night: `tools/serve.py` (stdlib Python, no dependencies) serves `dashboard/` and `site/` from the demo laptop and stores uploads at `POST /api/runs`; the site polls `/api/runs` and shows new passports within 5 s, so the whole loop works at the table with no internet. For a public URL, `site/` also works on GitHub Pages as a static folder (runs imported by hand, or `site/data/runs/` committed). A sponsor host (Modal, Daytona) is optional, only if a mentor sets it up in minutes.
+Hosting has its own section below: `tools/serve.py` at the table, GitHub Pages for the public URL, bench runs committed to `site/data/runs/`.
+
+## Hosting
+
+Two hosts serve the same `site/` folder; there is no build step on either.
+
+**At the table: the demo laptop.** `python3 tools/serve.py` (stdlib Python, no dependencies) serves `dashboard/` and `site/` and stores what the dashboard uploads at `POST /api/runs` as `site/data/runs/<run_id>.json`. The site polls `GET /api/runs` every 5 s, so a new run shows on the passports page within seconds, with no internet.
+
+**For judges' phones: GitHub Pages.** A QR code encodes the page's own URL, so the passport a judge scans must be public. `.github/workflows/pages.yml` publishes `site/` with GitHub's own Pages actions (checkout, configure-pages, upload-pages-artifact, deploy-pages) on every push to `main` and from the Actions tab (Run workflow). `site/` is the root of the Pages site:
+
+- https://mscl741.github.io/HackHarvard/ is the passport index; `#/build` and `#/impact` are the other pages.
+- https://mscl741.github.io/HackHarvard/#/p/SS-0001 is what a QR code opens.
+
+One-time step, repo admin only: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Until then the workflow fails at "Configure Pages". The work sits on `feat/dashboard-and-skeleton`; nothing is public until it is merged into `main`. Show and print passports from the public URL, not from localhost, or the QR codes point at a page phones cannot open.
+
+**Runs on the public site.** Pages is static: there is no `/api/runs`. The site asks `../api/runs` first and, when that fails (404 on Pages, connection refused with no local server), loads `data/runs/index.json` and every run file it lists; the empty states read "Loading passports…" until that first pull is over. Decision, Fri night: **run files are committed**, so `site/data/runs/` is no longer in `.gitignore`. A public passport page with no data defeats the QR code, and importing a file by hand on a judge's phone is not realistic. To publish runs:
+
+1. Upload from the dashboard (Data → Upload run) with `tools/serve.py` running, or copy an exported run file into `site/data/runs/`.
+2. Delete test runs that should not be public, then `python3 tools/sim/make_runs_index.py`. It prints every run it lists and rewrites `index.json`.
+3. `git add site/data/runs`, commit with the `site:` prefix, merge into `main`, push. Pages redeploys in about a minute.
+
+Costs: `git add -A` sweeps mock runs into a commit (step 2 is the guard), and two people adding runs at once conflict on `index.json` (rerun the script). To reverse the decision, add `site/data/runs/*.json` and `!site/data/runs/index.json` to `.gitignore`, commit the empty index, and import runs by hand on whichever laptop shows the passports. A sponsor host (Modal, Daytona) stays optional, only if a mentor sets it up in minutes.
 
 ## Passport schema (draft; becomes protocol/passport.schema.json once B agrees)
 
@@ -40,7 +61,7 @@ Hosting, as built Friday night: `tools/serve.py` (stdlib Python, no dependencies
 }
 ```
 
-- `passport_id` is assigned by the dashboard (a counter persisted in the browser, prefix `SS-`), the QR code encodes `https://<site>/p/SS-0001`.
+- `passport_id` is assigned by the dashboard (a counter persisted in the browser, prefix `SS-`); the QR code encodes the passport page's own URL, on the public site `https://mscl741.github.io/HackHarvard/#/p/SS-0001`.
 - `reference.kind` is `relative` for identical panels graded together, `rated` when the label's Isc is known and irradiance was measured.
 - One run produces four passports plus the run record (`search`, `proof`, the lamp and film description).
 
