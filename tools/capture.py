@@ -13,8 +13,10 @@ import serial
 
 
 def guess_port():
+    # ESP32 DevKits (CP210x, CH340) and Uno clones show up as usbserial/SLAB/wchusbserial; a genuine Uno R3 as usbmodem
     ports = sorted(glob.glob("/dev/cu.usbserial*") + glob.glob("/dev/cu.SLAB*")
-                   + glob.glob("/dev/cu.wchusbserial*") + glob.glob("/dev/ttyUSB*"))
+                   + glob.glob("/dev/cu.wchusbserial*") + glob.glob("/dev/cu.usbmodem*")
+                   + glob.glob("/dev/ttyUSB*") + glob.glob("/dev/ttyACM*"))
     return ports[0] if ports else None
 
 
