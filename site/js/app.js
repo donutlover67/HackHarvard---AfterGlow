@@ -3,17 +3,33 @@
 (function () {
   const $ = (sel, root) => (root || document).querySelector(sel);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const safeDecode = (s) => { try { return decodeURIComponent(s); } catch (_) { return s; } };
+  const num = (x, digits) => (x != null && x !== "" && Number.isFinite(Number(x)) ? Number(x).toFixed(digits) : "—");
   const PAIR_PANELS = { A: "1+2, 3+4", B: "1+3, 2+4", C: "1+4, 2+3" };
   const LS = {
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (_) { return d; } },
-    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) { /* unavailable */ } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) { /* unavailable or full */ } },
+    del(k) { try { localStorage.removeItem(k); } catch (_) { /* unavailable */ } },
   };
 
   // ---------- data ----------
-  let runs = LS.get("ss.site.runs", []);
+  // Keep only what the pages can draw: a run_id string and passports that are objects with a passport_id string.
+  // Anything else (a hand-edited file, an older export) is dropped here instead of crashing a page later.
+  function normalizeRun(run) {
+    if (!run || typeof run !== "object" || !Array.isArray(run.passports)) throw new Error("not a run export: no passports array");
+    if (typeof run.run_id !== "string" || !run.run_id) throw new Error("not a run export: no run_id");
+    const passports = run.passports
+      .filter((p) => p && typeof p === "object" && typeof p.passport_id === "string" && p.passport_id)
+      .map((p) => ({ ...p, flags: Array.isArray(p.flags) ? p.flags.filter((f) => typeof f === "string") : [] }));
+    if (!passports.length) throw new Error("not a run export: no passport has a passport_id");
+    return { ...run, passports };
+  }
+  let runs = [];
+  const stored = LS.get("ss.site.runs", []);
+  (Array.isArray(stored) ? stored : []).forEach((r) => { try { runs.push(normalizeRun(r)); } catch (_) { /* stored by an older version: drop it */ } });
   function saveRuns() { LS.set("ss.site.runs", runs); }
-  function addRun(run) {
-    if (!run || !Array.isArray(run.passports)) throw new Error("not a run export: no passports array");
+  function addRun(raw) {
+    const run = normalizeRun(raw);
     runs = runs.filter((r) => r.run_id !== run.run_id);
     runs.push(run);
     runs.sort((a, b) => String(a.measured_at).localeCompare(String(b.measured_at)));
@@ -22,8 +38,8 @@
   function passports() {
     // latest passport per ID
     const map = new Map();
-    runs.forEach((r) => (r.passports || []).forEach((p) => { map.set(p.passport_id, { ...p, run: r }); }));
-    return [...map.values()].sort((a, b) => a.passport_id.localeCompare(b.passport_id));
+    runs.forEach((r) => r.passports.forEach((p) => { map.set(p.passport_id, { ...p, run: r }); }));
+    return [...map.values()].sort((a, b) => String(a.passport_id).localeCompare(String(b.passport_id)));
   }
   function passport(id) { return passports().find((p) => p.passport_id === id); }
   // true until the first pull of runs (the local API, then data/runs/index.json) has finished; empty states say "Loading…" meanwhile
@@ -42,12 +58,15 @@
   const cellSvg = (opts) => `<svg class="cell-svg" viewBox="0 0 120 84" role="img" aria-label="${esc(opts.label || "panel")}">${cellGlyph({ ...opts, x: 1, y: 1, w: 118, h: 82 })}</svg>`;
   const gradeWord = { A: "strong: within 10% of the best panel in its batch", B: "usable: 75–90% of the best panel", C: "weak: under 75% of the best panel" };
   const flagWord = { weak: "Weak output: under 75% of the strongest panel measured with it.", low_voc: "Open-circuit voltage well below the others: possibly a failed cell group.", dark: "Almost no current: no light, or disconnected." };
-  const fmtDate = (iso) => { const d = new Date(iso); return isNaN(d) ? esc(iso) : d.toLocaleString(); };
+  const fmtDate = (iso) => { const d = new Date(typeof iso === "string" || typeof iso === "number" ? iso : NaN); return isNaN(d) ? esc(typeof iso === "string" ? iso : "unknown") : d.toLocaleString(); };
   function pairingLine(v) {
-    if (!v || !v.pmax_w) return "";
-    const worst = Math.min(...Object.values(v.pmax_w));
-    const best = v.pmax_w[v.best_pairing];
-    return `Best in wiring <b class="pair-${esc(v.best_pairing)}">${esc(v.best_pairing)}</b> (panels ${PAIR_PANELS[v.best_pairing] || ""}): ${best.toFixed(2)} W at maximum power, ${((best / worst - 1) * 100).toFixed(0)}% more than the worst wiring.`;
+    if (!v || !v.pmax_w || typeof v.pmax_w !== "object") return "";
+    const watts = Object.values(v.pmax_w).map(Number).filter(Number.isFinite);
+    const best = Number(v.pmax_w[v.best_pairing]);
+    if (!watts.length || !Number.isFinite(best) || best <= 0) return "";
+    const worst = Math.min(...watts);
+    const gain = worst > 0 ? `, ${((best / worst - 1) * 100).toFixed(0)}% more than the worst wiring` : "";
+    return `Best in wiring <b class="pair-${esc(v.best_pairing)}">${esc(v.best_pairing)}</b> (panels ${PAIR_PANELS[v.best_pairing] || ""}): ${best.toFixed(2)} W at maximum power${gain}.`;
   }
 
   // ---------- pages ----------
@@ -56,10 +75,10 @@
     const rows = ps.map((p) => `<tr>
       <td><a href="#/p/${encodeURIComponent(p.passport_id)}">${esc(p.passport_id)}</a></td>
       <td><span class="grade g-${esc(p.grade)}">${esc(p.grade)}</span></td>
-      <td class="num">${Number(p.isc_ma).toFixed(0)} mA</td>
-      <td class="num">${Number(p.voc_v).toFixed(2)} V</td>
-      <td class="num">${Number(p.score_pct).toFixed(0)}%</td>
-      <td>${(p.flags || []).map((f) => esc(f.replace("_", " "))).join(", ") || "—"}</td>
+      <td class="num">${num(p.isc_ma, 0)} mA</td>
+      <td class="num">${num(p.voc_v, 2)} V</td>
+      <td class="num">${num(p.score_pct, 0)}%</td>
+      <td>${(p.flags || []).map((f) => esc(String(f).replace("_", " "))).join(", ") || "—"}</td>
       <td class="small muted">${fmtDate(p.measured_at)}</td>
     </tr>`).join("");
     return `
@@ -83,7 +102,7 @@
         <div id="paste-box" hidden style="margin-top:10px"><label class="field">Run JSON <textarea id="paste-text"></textarea></label><div class="row" style="margin-top:8px"><button type="button" class="btn btn--primary" id="btn-paste-go">Import</button></div></div>
       </div>
       ${runs.length ? `<div class="card"><h2>Runs</h2><table class="table"><thead><tr><th>Run</th><th>Bench</th><th>Best wiring</th><th>Measured gain</th><th>Panels</th></tr></thead><tbody>
-        ${runs.map((r) => `<tr><td>${esc(r.run_id)}</td><td class="small muted">${esc(r.bench || "")}</td><td>${r.search ? `<b class="pair-${esc(r.search.best)}">${esc(r.search.best)}</b>` : "—"}</td><td>${r.proof ? `+${Number(r.proof.gain_pct).toFixed(1)}% ± ${Number(r.proof.ci95_pct).toFixed(1)} (${r.proof.cycle} cycles)` : r.search ? "search only" : "—"}</td><td>${(r.passports || []).map((p) => `<a href="#/p/${encodeURIComponent(p.passport_id)}">${esc(p.passport_id)}</a>`).join(", ")}</td></tr>`).join("")}
+        ${runs.map((r) => `<tr><td>${esc(r.run_id)}</td><td class="small muted">${esc(r.bench || "")}</td><td>${r.search ? `<b class="pair-${esc(r.search.best)}">${esc(r.search.best)}</b>` : "—"}</td><td>${r.proof ? `+${num(r.proof.gain_pct, 1)}% ± ${num(r.proof.ci95_pct, 1)} (${r.proof.cycle} cycles)` : r.search ? "search only" : "—"}</td><td>${(r.passports || []).map((p) => `<a href="#/p/${encodeURIComponent(p.passport_id)}">${esc(p.passport_id)}</a>`).join(", ")}</td></tr>`).join("")}
       </tbody></table></div>` : ""}`;
   }
 
@@ -123,10 +142,10 @@
           <div class="passport__id">${esc(p.passport_id)}</div>
           <div class="passport__grade-line"><span class="passport__grade grade g-${esc(p.grade)}">${esc(p.grade)}</span><span class="muted">${esc(gradeWord[p.grade] || "")}</span></div>
           <dl class="facts">
-            <div><dt>Short-circuit current</dt><dd>${Number(p.isc_ma).toFixed(1)} mA</dd></div>
-            <div><dt>Open-circuit voltage</dt><dd>${Number(p.voc_v).toFixed(2)} V</dd></div>
-            <div><dt>Relative current score</dt><dd>${Number(p.score_pct).toFixed(0)}% <span class="small muted">of the strongest panel in its batch (${Number(p.reference && p.reference.strongest_isc_ma).toFixed(0)} mA)</span></dd></div>
-            <div><dt>Raw reading, box factor</dt><dd class="small">${Number(p.isc_raw_ma).toFixed(1)} mA × ${Number(p.reference && p.reference.box_factor).toFixed(2)}</dd></div>
+            <div><dt>Short-circuit current</dt><dd>${num(p.isc_ma, 1)} mA</dd></div>
+            <div><dt>Open-circuit voltage</dt><dd>${num(p.voc_v, 2)} V</dd></div>
+            <div><dt>Relative current score</dt><dd>${num(p.score_pct, 0)}% <span class="small muted">of the strongest panel in its batch (${num(p.reference && p.reference.strongest_isc_ma, 0)} mA)</span></dd></div>
+            <div><dt>Raw reading, box factor</dt><dd class="small">${num(p.isc_raw_ma, 1)} mA × ${num(p.reference && p.reference.box_factor, 2)}</dd></div>
             <div><dt>Light during the test</dt><dd class="small">${esc(p.reference && p.reference.light || "not recorded")}</dd></div>
             <div><dt>Measured</dt><dd class="small">${fmtDate(p.measured_at)}, run ${esc(p.run_id)}, position ${esc(p.panel_label)}</dd></div>
           </dl>
@@ -140,7 +159,7 @@
   function pageBuild() {
     const ps = passports();
     const sel = new Set(LS.get("ss.site.pool", ps.map((p) => p.passport_id)));
-    const items = ps.map((p) => `<label class="${sel.has(p.passport_id) ? "is-on" : ""}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${sel.has(p.passport_id) ? "checked" : ""}> <b>${esc(p.passport_id)}</b> <span class="muted small">${Number(p.isc_ma).toFixed(0)} mA, ${Number(p.voc_v).toFixed(2)} V, ${esc(p.grade)}</span></label>`).join("");
+    const items = ps.map((p) => `<label class="${sel.has(p.passport_id) ? "is-on" : ""}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${sel.has(p.passport_id) ? "checked" : ""}> <b>${esc(p.passport_id)}</b> <span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, ${esc(p.grade)}</span></label>`).join("");
     return `
       <h1 class="page-title">Array Builder</h1>
       <p class="lede">Pick a pool of passports. The builder puts panels with similar current in the same series string, so no strong panel is throttled by a weak one, and estimates the power against wiring them in the order they came.</p>
@@ -204,11 +223,11 @@
     let bench = "";
     const run = runs.find((r) => r.search && r.passports && r.passports.length === 4 && panels.length === 4 && r.passports.every((p) => panels.some((q) => q.id === p.passport_id)));
     if (run && k === 2) {
-      const pos = Object.fromEntries(run.passports.map((p) => [p.passport_id, Number(p.panel_label.replace("P", ""))]));
+      const pos = Object.fromEntries(run.passports.map((p) => [p.passport_id, Number(String(p.panel_label || "").replace("P", ""))]));
       const keyOf = (groups) => groups.map((g) => g.map((p) => pos[p.id]).sort().join("+")).sort().join(", ");
       const letter = Object.keys(PAIR_PANELS).find((L) => PAIR_PANELS[L] === keyOf(res.greedy.groups));
       const agree = letter === run.search.best;
-      bench = `<div class="verdict ${agree ? "is-good" : "is-bad"}">Bench check: these four panels were measured on the bench in run ${esc(run.run_id)}. The builder's grouping is wiring <b class="pair-${esc(letter)}">${esc(letter)}</b>; the bench measured wiring <b class="pair-${esc(run.search.best)}">${esc(run.search.best)}</b> as best (${Object.entries(run.search.pmax_w).map(([L, w]) => `${L} ${Number(w).toFixed(2)} W`).join(", ")}). ${agree ? "They agree." : "They disagree: trust the measurement."}</div>`;
+      bench = `<div class="verdict ${agree ? "is-good" : "is-bad"}">Bench check: these four panels were measured on the bench in run ${esc(run.run_id)}. The builder's grouping is wiring <b class="pair-${esc(letter)}">${esc(letter)}</b>; the bench measured wiring <b class="pair-${esc(run.search.best)}">${esc(run.search.best)}</b> as best (${Object.entries(run.search.pmax_w || {}).map(([L, w]) => `${L} ${num(w, 2)} W`).join(", ")}). ${agree ? "They agree." : "They disagree: trust the measurement."}</div>`;
     }
     out.innerHTML = `<div class="card">
       <h2>Result</h2>
@@ -259,10 +278,19 @@
     const view = $("#view");
     loadingShown = false;
     let route = "index";
-    if (hash.startsWith("#/p/")) { view.innerHTML = pagePassport(decodeURIComponent(hash.slice(4))); route = "index"; }
-    else if (hash.startsWith("#/build")) { view.innerHTML = pageBuild(); wireBuild(); route = "build"; }
-    else if (hash.startsWith("#/impact")) { view.innerHTML = pageImpact(); route = "impact"; }
-    else { view.innerHTML = pageIndex(); wireIndex(); }
+    try {
+      if (hash.startsWith("#/p/")) { view.innerHTML = pagePassport(safeDecode(hash.slice(4))); route = "index"; }
+      else if (hash.startsWith("#/build")) { view.innerHTML = pageBuild(); wireBuild(); route = "build"; }
+      else if (hash.startsWith("#/impact")) { view.innerHTML = pageImpact(); route = "impact"; }
+      else { view.innerHTML = pageIndex(); wireIndex(); }
+    } catch (err) {
+      // never leave a blank page on a judge's phone: say what happened and offer the one fix that always works
+      console.error(err);
+      view.innerHTML = `<div class="card"><h2>This page could not be drawn</h2><p class="status is-bad">${esc(err && err.message || err)}</p>
+        <p class="small muted" style="margin-top:8px">Usually an imported run is malformed. Removing the runs imported into this browser fixes it; nothing on the bench or the server changes.</p>
+        <div class="row" style="margin-top:10px"><button type="button" class="btn" id="btn-reset">Remove imported runs and reload</button></div></div>`;
+      $("#btn-reset").addEventListener("click", () => { LS.del("ss.site.runs"); LS.del("ss.site.pool"); location.reload(); });
+    }
     document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("is-on", a.dataset.route === route));
     window.scrollTo(0, 0);
   }
@@ -294,7 +322,9 @@
   function pullFromIndex() {
     fetchJson("data/runs/index.json")
       .then((index) => {
-        const files = Array.isArray(index) ? index : (index && Array.isArray(index.runs) ? index.runs : []);
+        const listed = Array.isArray(index) ? index : (index && Array.isArray(index.runs) ? index.runs : []);
+        // plain file names only: no paths, nothing but the run files the index script lists
+        const files = listed.filter((f) => typeof f === "string" && /^[A-Za-z0-9][A-Za-z0-9._-]*\.json$/.test(f) && f !== "index.json");
         return Promise.all(files.map((f) => fetchJson(`data/runs/${encodeURIComponent(String(f))}`).catch(() => null)));
       })
       .then((list) => settle(mergeRuns(list.filter(Boolean))))
