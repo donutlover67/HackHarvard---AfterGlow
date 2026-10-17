@@ -224,7 +224,7 @@
     const items = ps.map((p) => `<label class="${sel.has(p.passport_id) ? "is-on" : ""}"><input type="checkbox" data-pool="${esc(p.passport_id)}" ${sel.has(p.passport_id) ? "checked" : ""}> <b>${esc(p.passport_id)}</b> <span class="muted small">${num(p.isc_ma, 0)} mA, ${num(p.voc_v, 2)} V, ${esc(p.grade)}</span></label>`).join("");
     return `
       <h1 class="page-title">Array Builder</h1>
-      <p class="lede">Pick a pool of passports. The builder puts panels with similar current in the same series string, so no strong panel is throttled by a weak one, and estimates the power against wiring them in the order they came.</p>
+      <p class="lede">Pick a pool of passports. The builder puts panels with similar current in the same series string, so no strong panel is throttled by a weak one, and spreads panels with low open-circuit voltage (a possible failed cell group) across strings, so no string sits below the array's voltage. It estimates the power against wiring them in the order they came.</p>
       <div class="card no-print">
         <h2>Pool</h2>
         ${ps.length ? `<div class="pool" id="pool">${items}</div>` : emptyNote(`<p class="muted">No passports yet. <a href="#/">Import a run first.</a></p>`)}
@@ -277,7 +277,7 @@
     if (res.brute) {
       verdict = res.brute.greedyIsBest
         ? `<div class="verdict is-good">Checked against all ${res.brute.count} possible groupings: the matched grouping is the best one. Worst grouping: ${res.brute.worst.pmax.toFixed(2)} W.</div>`
-        : `<div class="verdict is-bad">Checked against all ${res.brute.count} groupings: a better grouping exists, ${res.brute.best.pmax.toFixed(2)} W. Sorting by current is a heuristic; the bench verifies by measuring.</div>`;
+        : `<div class="verdict is-bad">Checked against all ${res.brute.count} groupings: a better grouping exists, ${res.brute.best.pmax.toFixed(2)} W. The matched grouping is a heuristic; the bench verifies by measuring.</div>`;
     } else {
       verdict = `<div class="verdict">${res.totalGroupings.toLocaleString()} possible groupings, too many to enumerate here; the average comes from 200 random groupings.</div>`;
     }
@@ -299,6 +299,7 @@
         <div class="stat"><b>+${avgGain.toFixed(1)}%</b><span>against the average grouping (${avg.toFixed(2)} W), what wiring without measuring gets</span></div>
       </div>
       <h3 class="small muted" style="margin-bottom:8px">Matched grouping</h3>
+      <p class="small muted" style="margin-bottom:8px">Method: ${esc(res.greedy.how)} (the best of four starting points, each improved by swaps the panel model scores).${res.greedy.lowVoc.length ? ` Low open-circuit voltage, possibly a failed cell group: ${res.greedy.lowVoc.map(esc).join(", ")}.` : ""}</p>
       ${groupsHtml(res.greedy.groups, byId)}
       <h3 class="small muted" style="margin:14px 0 8px">As they came</h3>
       ${groupsHtml(res.naive.groups, byId)}

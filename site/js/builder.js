@@ -1,14 +1,107 @@
-// Array Builder: group panels into series strings of similar current, and check the greedy answer
-// against brute force while the pool is small enough to enumerate.
+// Array Builder: group panels into series strings, matching current within a string and balancing
+// voltage across strings, and check the answer against brute force while the pool is small enough
+// to enumerate. The same logic as tools/eval/advisor_voltage.py.
 window.SSBuilder = (function () {
   const M = window.SSModel;
+  const LOW_VOC_RATIO = 0.8;
 
   function chunk(list, k) { const out = []; for (let i = 0; i < list.length; i += k) out.push(list.slice(i, i + k)); return out; }
+  const byCurrent = (panels) => [...panels].sort((a, b) => b.isc_ma - a.isc_ma);
 
-  // greedy: strongest with strongest
-  function greedy(panels, k) { return chunk([...panels].sort((a, b) => b.isc_ma - a.isc_ma), k); }
+  // sort by current: strongest with strongest
+  function sortByCurrent(panels, k) { return chunk(byCurrent(panels), k); }
   // naive: the order the panels came in, as an installer would wire a mixed batch
   function naive(panels, k) { return chunk(panels, k); }
+
+  // panels whose Voc is under 0.8 x the pool's median: possibly a failed cell group (the low_voc flag's rule)
+  function lowVocIds(panels) {
+    if (!panels.length) return new Set();
+    const med = panels.map((p) => p.voc_v).sort((a, b) => a - b)[Math.floor(panels.length / 2)];
+    return new Set(panels.filter((p) => p.voc_v < LOW_VOC_RATIO * med).map((p) => p.id));
+  }
+  // voltage-balanced: low-voltage panels dealt as evenly as possible across strings (one per string while
+  // there are fewer of them than strings); the healthy strings come first and take the strongest panels,
+  // the voltage-limited strings take the weakest
+  function balanced(panels, k) {
+    const low = lowVocIds(panels);
+    let lows = byCurrent(panels.filter((p) => low.has(p.id)));
+    let normals = byCurrent(panels.filter((p) => !low.has(p.id)));
+    const m = panels.length / k, q = Math.floor(lows.length / m), r = lows.length % m;
+    const groups = [];
+    for (let s = 0; s < m; s++) {
+      const c = s < m - r ? q : q + 1;
+      groups.push([...normals.slice(0, k - c), ...lows.slice(0, c)]);
+      normals = normals.slice(k - c); lows = lows.slice(c);
+    }
+    return groups;
+  }
+  // the same spread, but each low-voltage string takes the healthy panels closest to it in current
+  // (better when the low-voltage panels are strong)
+  function balancedMatched(panels, k) {
+    const low = lowVocIds(panels);
+    let lows = byCurrent(panels.filter((p) => low.has(p.id)));
+    const normals = byCurrent(panels.filter((p) => !low.has(p.id)));
+    const m = panels.length / k, q = Math.floor(lows.length / m), r = lows.length % m;
+    const groups = [];
+    for (let s = 0; s < m; s++) {
+      const c = s < r ? q + 1 : q;            // strings holding the most low-voltage panels first
+      if (c === 0) break;
+      const g = lows.slice(0, c); lows = lows.slice(c);
+      const target = g.reduce((t, p) => t + p.isc_ma, 0) / c;
+      for (let n = 0; n < k - c; n++) {
+        let bi = 0;                             // ties: the stronger one
+        normals.forEach((p, i) => { if (Math.abs(p.isc_ma - target) < Math.abs(normals[bi].isc_ma - target)) bi = i; });
+        g.push(normals.splice(bi, 1)[0]);
+      }
+      groups.push(g);
+    }
+    return [...chunk(normals, k), ...groups];
+  }
+  // low-voltage panels packed into the last strings, sacrificing as few strings as possible
+  function packed(panels, k) {
+    const low = lowVocIds(panels);
+    return chunk([...byCurrent(panels.filter((p) => !low.has(p.id))), ...byCurrent(panels.filter((p) => low.has(p.id)))], k);
+  }
+
+  // sample each string's I(V) once on a shared voltage grid, so a grouping's power is a sum (tools/eval/builder.py StringCache)
+  function stringCache(panels, k, steps = 200) {
+    const vmax = Math.max(panels.map((p) => p.voc_v).sort((a, b) => b - a).slice(0, k).reduce((s, v) => s + v, 0), 0.1);
+    const grid = Array.from({ length: steps + 1 }, (_, i) => (vmax * i) / steps);
+    const cache = new Map();
+    const currents = (g) => {
+      const kk = g.map((p) => p.id).sort().join("+");
+      if (!cache.has(kk)) cache.set(kk, grid.map((v) => M.stringI(g.map((p) => p.model), v)));
+      return cache.get(kk);
+    };
+    return (groups) => { const cols = groups.map(currents); let best = 0; grid.forEach((v, i) => { const p = v * cols.reduce((s, c) => s + c[i], 0); if (p > best) best = p; }); return best; };
+  }
+  // pairwise swaps between strings while the model says one gains power
+  function polish(groups, pw) {
+    groups = groups.map((g) => [...g]);
+    let best = pw(groups), kept = 0, improved = true;
+    while (improved) {
+      improved = false;
+      for (let a = 0; a < groups.length; a++) for (let b = a + 1; b < groups.length; b++) for (let i = 0; i < groups[a].length; i++) for (let j = 0; j < groups[b].length; j++) {
+        [groups[a][i], groups[b][j]] = [groups[b][j], groups[a][i]];
+        const p = pw(groups);
+        if (p > best * (1 + 1e-9)) { best = p; kept++; improved = true; } else [groups[a][i], groups[b][j]] = [groups[b][j], groups[a][i]];
+      }
+    }
+    return { groups, kept };
+  }
+  // the matched grouping: polish four starting points by swaps, keep the best by the model
+  function matched(panels, k) {
+    const pw = stringCache(panels, k);
+    const starts = [["voltage-balanced", balanced(panels, k)], ["voltage-balanced, current-matched", balancedMatched(panels, k)],
+      ["sort by current", sortByCurrent(panels, k)], ["low-voltage packed", packed(panels, k)]];
+    let best = null;
+    starts.forEach(([how, g]) => {
+      const { groups, kept } = polish(g, pw);
+      const p = pw(groups);
+      if (!best || p > best.p * (1 + 1e-9)) best = { p, groups, how: how + (kept ? `, then ${kept} swap${kept === 1 ? "" : "s"}` : "") };   // ties keep the earlier start
+    });
+    return { groups: best.groups, how: best.how, lowVoc: [...lowVocIds(panels)] };
+  }
 
   // every way to split items into unordered groups of size k
   function partitions(items, k) {
@@ -39,8 +132,9 @@ window.SSBuilder = (function () {
   function analyze(panels, k, bruteLimit = 10) {
     const ps = panels.map((p) => ({ ...p, model: M.panel(p.isc_ma, p.voc_v) }));
     if (ps.length < k || ps.length % k !== 0) return { error: `Pick a multiple of ${k} panels (you picked ${ps.length}).` };
-    const g = greedy(ps, k); const n = naive(ps, k);
-    const res = { k, n: ps.length, greedy: { groups: g, pmax: power(g) }, naive: { groups: n, pmax: power(n) }, brute: null };
+    const mg = matched(ps, k); const g = mg.groups; const n = naive(ps, k);
+    // res.greedy is the matched grouping (the name predates the voltage balancing)
+    const res = { k, n: ps.length, greedy: { groups: g, pmax: power(g), how: mg.how, lowVoc: mg.lowVoc }, naive: { groups: n, pmax: power(n) }, brute: null };
     const total = countPartitions(ps.length, k);
     if (ps.length <= bruteLimit) {
       const all = partitions(ps, k);
@@ -56,5 +150,5 @@ window.SSBuilder = (function () {
     return res;
   }
 
-  return { analyze, greedy, naive, partitions, countPartitions, key };
+  return { analyze, matched, balanced, balancedMatched, sortByCurrent, naive, lowVocIds, partitions, countPartitions, key };
 })();
