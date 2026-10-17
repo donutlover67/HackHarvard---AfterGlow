@@ -74,7 +74,7 @@ class Handler(SimpleHTTPRequestHandler):
             json.dump(run, f, indent=1)
         index_note = refresh_index()
         self._json(201, {"ok": True, "run_id": run_id, "passports": len(run["passports"]),
-                         "site": "/site/#/", "stored": f"site/data/runs/{run_id}.json",
+                         "site": "/site/#/passports", "stored": f"site/data/runs/{run_id}.json",
                          "index": index_note})
 
     def log_message(self, fmt, *args):
