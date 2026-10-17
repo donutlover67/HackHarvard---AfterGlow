@@ -279,7 +279,7 @@
         ? `<div class="verdict is-good">Checked against all ${res.brute.count} possible groupings: the matched grouping is the best one. Worst grouping: ${res.brute.worst.pmax.toFixed(2)} W.</div>`
         : `<div class="verdict is-bad">Checked against all ${res.brute.count} groupings: a better grouping exists, ${res.brute.best.pmax.toFixed(2)} W. The matched grouping is a heuristic; the bench verifies by measuring.</div>`;
     } else {
-      verdict = `<div class="verdict">${res.totalGroupings.toLocaleString()} possible groupings, too many to enumerate here; the average comes from 200 random groupings.</div>`;
+      verdict = `<div class="verdict">${res.totalGroupings.toLocaleString()} possible groupings, too many to enumerate here; the average comes from ${res.sampledCount} random groupings.</div>`;
     }
     // bench comparison: the pool is exactly one run's four passports
     let bench = "";
@@ -299,7 +299,7 @@
         <div class="stat"><b>+${avgGain.toFixed(1)}%</b><span>against the average grouping (${avg.toFixed(2)} W), what wiring without measuring gets</span></div>
       </div>
       <h3 class="small muted" style="margin-bottom:8px">Matched grouping</h3>
-      <p class="small muted" style="margin-bottom:8px">Method: ${esc(res.greedy.how)} (the best of four starting points, each improved by swaps the panel model scores).${res.greedy.lowVoc.length ? ` Low open-circuit voltage, possibly a failed cell group: ${res.greedy.lowVoc.map(esc).join(", ")}.` : ""}</p>
+      <p class="small muted" style="margin-bottom:8px">Method: ${esc(res.greedy.how)}${/no swap search/.test(res.greedy.how) ? " (the best of four starting points by the panel model)" : " (the best of four starting points, each improved by swaps the panel model scores)"}.${res.greedy.lowVoc.length ? ` Low open-circuit voltage, possibly a failed cell group: ${res.greedy.lowVoc.map(esc).join(", ")}.` : ""}</p>
       ${groupsHtml(res.greedy.groups, byId)}
       <h3 class="small muted" style="margin:14px 0 8px">As they came</h3>
       ${groupsHtml(res.naive.groups, byId)}

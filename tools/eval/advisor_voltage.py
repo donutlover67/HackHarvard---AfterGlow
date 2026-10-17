@@ -86,9 +86,14 @@ def packed(panels, k):
     return builder.chunk(by_current([p for p in panels if p["id"] not in low]) + by_current([p for p in panels if p["id"] in low]), k)
 
 
+POLISH_LIMIT = 60   # same as site/js/builder.js: the swap search is quadratic in strings, so big pools skip it
+
+
 def polish(groups, sc):
     """Pairwise swaps between strings while the model says one gains power. Returns (groups, swaps kept)."""
     groups = [list(g) for g in groups]
+    if sum(len(g) for g in groups) > POLISH_LIMIT:
+        return groups, 0
     best = sc.power(groups)
     kept = 0
     improved = True

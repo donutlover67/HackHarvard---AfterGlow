@@ -4,6 +4,9 @@
 window.SSBuilder = (function () {
   const M = window.SSModel;
   const LOW_VOC_RATIO = 0.8;
+  // The swap search is quadratic in the number of strings: under a second up to 40 panels, 2.6 s at 80, far longer
+  // beyond. Above this many panels the best of the four starting groupings is used as it is, and the page says so.
+  const POLISH_LIMIT = 60;
 
   function chunk(list, k) { const out = []; for (let i = 0; i < list.length; i += k) out.push(list.slice(i, i + k)); return out; }
   const byCurrent = (panels) => [...panels].sort((a, b) => b.isc_ma - a.isc_ma);
@@ -95,11 +98,13 @@ window.SSBuilder = (function () {
     const starts = [["voltage-balanced", balanced(panels, k)], ["voltage-balanced, current-matched", balancedMatched(panels, k)],
       ["sort by current", sortByCurrent(panels, k)], ["low-voltage packed", packed(panels, k)]];
     let best = null;
+    const noPolish = panels.length > POLISH_LIMIT;
     starts.forEach(([how, g]) => {
-      const { groups, kept } = polish(g, pw);
+      const { groups, kept } = noPolish ? { groups: g, kept: 0 } : polish(g, pw);
       const p = pw(groups);
       if (!best || p > best.p * (1 + 1e-9)) best = { p, groups, how: how + (kept ? `, then ${kept} swap${kept === 1 ? "" : "s"}` : "") };   // ties keep the earlier start
     });
+    if (noPolish) best.how += `, no swap search above ${POLISH_LIMIT} panels`;
     return { groups: best.groups, how: best.how, lowVoc: [...lowVocIds(panels)] };
   }
 
@@ -143,9 +148,9 @@ window.SSBuilder = (function () {
       res.brute = { count: all.length, best, worst, average: sum / all.length, greedyIsBest: key(best.groups) === key(g) || Math.abs(best.pmax - res.greedy.pmax) < 1e-6 };
     } else {
       // too many groupings to enumerate: estimate the average from random groupings
-      let sum = 0; const samples = 200;
+      let sum = 0; const samples = ps.length > 40 ? 60 : 200;   // fewer random groupings for big pools: each costs a model run per string
       for (let s = 0; s < samples; s++) { const sh = [...ps].sort(() => Math.random() - 0.5); sum += power(chunk(sh, k)); }
-      res.sampledAverage = sum / samples; res.totalGroupings = total;
+      res.sampledAverage = sum / samples; res.sampledCount = samples; res.totalGroupings = total;
     }
     return res;
   }
