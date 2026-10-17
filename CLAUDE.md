@@ -15,7 +15,7 @@ New to the repo or to your area? Read your section of docs/team-notes.md first: 
 - `docs/hardware.md` — pin map and relay wiring as built. Owner: A. If it disagrees with spec §11.2, it wins (the wiring is real).
 - `docs/`, `README.md`, Devpost text — owner: D.
 - `tools/` — capture.py (bounded serial capture), sim/ (the physics model behind the numbers in the spec), eval/ (the Panel Advisor eval harness: cases, reference advisor, scorer; see tools/eval/README.md). The Chalk agent itself is built by another teammate outside this repo's tools/eval; don't start it here.
-- `site/` (planned) — Panel Passport pages, Array Builder, impact page, advisor agent. Brief and plumbing decision in docs/website-plan.md. Owner: C. The ESP32 never touches a network; the laptop dashboard uploads runs.
+- `site/` — Panel Passport pages with QR codes, Array Builder, impact page; deployed to GitHub Pages from main by .github/workflows/pages.yml. Brief and plumbing decision in docs/website-plan.md. Owner: C. The ESP32 never touches a network; the laptop dashboard uploads runs, and runs committed under site/data/runs/ (indexed by tools/sim/make_runs_index.py) show on the public site.
 - `solar_pairing/` — the earlier Python stand-in, written before the spec rewrite. Superseded by dashboard/. Don't extend it.
 
 ## Commands
@@ -29,7 +29,7 @@ New to the repo or to your area? Read your section of docs/team-notes.md first: 
 - Edit only the area you were asked to work in. If another area needs a change, stop and describe it.
 - Never change protocol/ to make your side pass: the firmware and dashboard are built by different people against it. Write the mismatch to docs/NOTES.md and stop.
 - Don't add dependencies or load anything from a CDN: the demo must run with no internet.
-- Don't commit or push unless asked. Commit prefixes: `fw:` `dash:` `proto:` `docs:`.
+- Don't commit or push unless asked. Commit prefixes: `fw:` `dash:` `proto:` `site:` `docs:` `tools:`.
 - Smallest working end-to-end slice first. Mock data must match protocol/samples/.
 - Done means the relevant command above passed and you showed its output, plus a list of what you did not verify.
 - If a pin, voltage, library API or version isn't written in this repo, say so and ask. Don't guess: guessed pins can burn parts.
