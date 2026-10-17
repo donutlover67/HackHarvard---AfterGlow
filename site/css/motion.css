@@ -62,3 +62,47 @@ a, .btn, .nav__links a, .pool label, .chipcell, .field input, .field select, .fi
   a, .btn, .nav__links a, .pool label, .chipcell, .table tbody tr td, .link-grow::after { transition: none; }
   .btn:active, .pool label:active { transform: none; }
 }
+
+/* ---------- the moves: motion.js adds the classes and drives the variables ---------- */
+
+/* entrances: a section's parts rise in, staggered, the first time a fifth of it is on screen */
+.m-part { transition: opacity 360ms var(--m-ease), transform 360ms var(--m-ease); transition-delay: calc(var(--i, 0) * var(--m-stagger)); }
+html.has-motion [data-in]:not(.is-in) .m-part { opacity: 0; transform: translateY(18px); }
+
+/* the re-pairing: --k moves cells 2 and 3 into the other string, --w draws the wires, --g lights the strong pair and the gain */
+.rp-cell[data-cell="2"] { transform: translate(calc(var(--k, 0) * -140px), calc(var(--k, 0) * 90px)); }
+.rp-cell[data-cell="3"] { transform: translate(calc(var(--k, 0) * 140px), calc(var(--k, 0) * -90px)); }
+.rp-wire { stroke-dasharray: 320px; stroke-dashoffset: calc(320px * (1 - var(--w, 1))); }
+.rp-glow { opacity: calc(var(--g, 0) * 0.9); }
+.rp-num, .rp-label { opacity: calc(0.3 + 0.7 * var(--g, 1)); }
+.hero__scroll { transition: opacity var(--m-fast) ease; }
+.hero__scroll.is-gone { opacity: 0; }
+html.reduced [data-hero] { --k: 1; --w: 1; --g: 1; }
+html.reduced .hero__scroll { display: none; }
+
+/* dust: the headline is transparent while its particles gather, then its colour returns */
+[data-dust] { transition: color 260ms ease; }
+[data-dust].is-dusting { color: transparent; }
+.dust-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 260ms ease; }
+
+/* route changes: the view slides along the nav axis, with the View Transitions API or with classes */
+#view { view-transition-name: view; }
+@keyframes vt-out { to { opacity: 0; transform: translateX(-24px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateX(24px); } }
+@keyframes vt-out-back { to { opacity: 0; transform: translateX(24px); } }
+@keyframes vt-in-back { from { opacity: 0; transform: translateX(-24px); } }
+::view-transition-old(view) { animation: vt-out var(--m-quick) ease both; }
+::view-transition-new(view) { animation: vt-in var(--m-fast) var(--m-ease) both; }
+html[data-dir="back"]::view-transition-old(view) { animation-name: vt-out-back; }
+html[data-dir="back"]::view-transition-new(view) { animation-name: vt-in-back; }
+.view.is-leaving { animation: vt-out var(--m-quick) ease both; }
+.view.is-entering { animation: vt-in var(--m-fast) var(--m-ease) both; }
+html[data-dir="back"] .view.is-leaving { animation-name: vt-out-back; }
+html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
+
+@media (prefers-reduced-motion: reduce) {
+  .m-part, [data-dust], .hero__scroll, .dust-canvas { transition: none; }
+  [data-hero] { --k: 1; --w: 1; --g: 1; }
+  ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
+}
+html.reduced .m-part, html.reduced [data-dust] { transition: none; }

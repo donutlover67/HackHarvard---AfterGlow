@@ -365,10 +365,14 @@
   // the front page's data and helpers; front.js draws it. While the first pull is running it shows a loading
   // note, so say so (loadingShown) and settle() redraws it when the pull ends, as emptyNote does for the other pages.
   const frontCtx = () => { if (loading) loadingShown = true; return { runs, passports: passports(), loading, esc, num, cellSvg, fmtDay }; };
-  // reason: "route" when the hash changed (start at the top), "data" when runs arrived (redraw in place)
+  // reason: "route" when the hash changed (slide in, start at the top), "data" when runs arrived (redraw in place)
+  let motionCtl = null, lastPage = null;
   function render(reason = "route") {
     const r = window.SSRoutes.parse(location.hash);
     const view = $("#view");
+    const M = window.SSMotion;
+    let inPlace = false;
+    const draw = () => {
     loadingShown = false;
     try {
       if (r.page === "passport") view.innerHTML = pagePassport(r.id);
@@ -376,7 +380,7 @@
       else if (r.page === "impact") view.innerHTML = pageImpact();
       else if (r.page === "print") view.innerHTML = pagePrint();
       else if (r.page === "passports") { view.innerHTML = pageIndex(); wireIndex(); }
-      else if (reason === "data" && view.querySelector("[data-hero]")) window.SSFront.refresh(view, frontCtx());
+      else if (reason === "data" && view.querySelector("[data-hero]")) { window.SSFront.refresh(view, frontCtx()); inPlace = true; }
       else { view.innerHTML = window.SSFront.page(frontCtx()); window.SSFront.wire(view, { loadSample }); }
     } catch (err) {
       // never leave a blank page on a judge's phone: say what happened and offer the one fix that always works
@@ -389,6 +393,14 @@
     document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("is-on", a.dataset.route === r.nav));
     document.body.dataset.page = r.page;
     if (reason === "route") window.scrollTo(0, 0);
+    if (!M) return;
+    if (inPlace && motionCtl) motionCtl.refresh();
+    else { if (motionCtl) motionCtl.destroy(); motionCtl = M.mount(view, r.page); }
+    };
+    // the first paint and in-place refreshes draw at once; later route changes slide along the nav
+    if (M && reason === "route" && lastPage !== null) M.transition(draw, window.SSRoutes.direction(lastPage, r.page));
+    else draw();
+    lastPage = r.page;
   }
   // When tools/serve.py is serving this site, runs uploaded by the dashboard appear on their own.
   // On a static host (GitHub Pages) there is no API: the site loads the runs committed to data/runs/,
@@ -427,6 +439,7 @@
       .catch(() => settle(false)); // neither the API nor an index: import by hand
   }
 
+  if (window.SSMotion) window.SSMotion.init();
   window.addEventListener("hashchange", () => render("route"));
   render("route");
   pullFromServer(true);

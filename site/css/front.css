@@ -22,7 +22,7 @@
 .rp-rail { fill: none; stroke: var(--busbar); stroke-width: 2; }
 .rp-glow { fill: var(--surface); opacity: 0; }
 .rp-num { font-size: 58px; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; fill: var(--cell); }
-.rp-label { font-size: 14px; fill: var(--ink-2); }
+.rp-label { font-size: 13px; fill: var(--ink-2); }
 .hero__scroll { grid-area: scroll; text-align: center; display: none; }  /* only where the hero pins */
 @media (min-width: 900px) and (min-height: 700px) {
   .hero { min-height: 200vh; }
@@ -63,8 +63,9 @@
 .wiring.is-best .wiring__w { color: var(--cell); }
 .strip__note { margin-top: 20px; }
 @media (min-width: 760px) and (pointer: fine) {
-  .strip__pin { position: sticky; top: 0; }
-  .strip__track { overflow: visible; scroll-snap-type: none; padding-inline: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter))); will-change: transform; }
+  /* only while motion.js drives it; it adds .is-row (the swipe row) when it cannot */
+  html.has-motion .strip:not(.is-row) .strip__pin { position: sticky; top: 0; }
+  html.has-motion .strip:not(.is-row) .strip__track { overflow: visible; scroll-snap-type: none; padding-inline: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter))); will-change: transform; }
 }
 
 /* the gain: the page's one strong colour */
