@@ -2,6 +2,7 @@ import { renderBars, renderTrace, renderCurves, renderWiring, updatePump, panelC
 import { MockBench } from "./mock.js";
 import { SerialLink } from "./serial.js";
 import { buildReplay, replayPort, watchErrors, checkReplay } from "./replay.js";
+import { readEntry, gradeMessage, searchMessage, benchLine } from "./manual.js";
 
 const TRACE_WINDOW_MS = 120000;
 const MAX_RAW_LINES = 20000;
@@ -25,7 +26,7 @@ const LS = {
 };
 
 const state = {
-  conn: "none",            // none | mock | serial
+  conn: "none",            // none | mock | serial | manual (readings typed in by hand)
   link: null,
   mode: "IDLE",
   pairing: null,
@@ -45,6 +46,7 @@ const state = {
   errorTimer: null,
   passports: LS.get("ss.passports", null),   // panel position -> passport id, kept across runs
   benchNotes: LS.get("ss.benchNotes", ""),
+  manualNote: LS.get("ss.manualNote", ""),
   uploadUrl: LS.get("ss.uploadUrl", ""),
   runId: null,
   runAt: null,
@@ -200,13 +202,18 @@ function renderHeadline() {
     const gain = worst > 0 ? (best / worst - 1) * 100 : 0;
     setText(els.gainNumber, `+${gain.toFixed(1)}%`, gainCls);
     els.gainNumber.classList.remove("is-empty");
-    setText(els.gainCi, "From one sweep of each wiring. Press Prove for a confidence interval.");
-    setText(els.gainSub, `Wiring ${se.best} makes ${best.toFixed(2)} W at its maximum power point; the worst wiring makes ${worst.toFixed(2)} W.`);
+    if (state.conn === "manual") {
+      setText(els.gainCi, "From hand-measured power of each wiring. No proof cycles, so no confidence interval.");
+      setText(els.gainSub, `Wiring ${se.best} made ${best.toFixed(2)} W, measured by hand; the worst wiring made ${worst.toFixed(2)} W.`);
+    } else {
+      setText(els.gainCi, "From one sweep of each wiring. Press Prove for a confidence interval.");
+      setText(els.gainSub, `Wiring ${se.best} makes ${best.toFixed(2)} W at its maximum power point; the worst wiring makes ${worst.toFixed(2)} W.`);
+    }
   } else {
     setText(els.gainNumber, "—");
     els.gainNumber.classList.add("is-empty");
     setText(els.gainCi, "");
-    setText(els.gainSub, "Run a search to measure the three wirings.");
+    setText(els.gainSub, state.conn === "manual" ? "No wiring power was entered, so there is no gain to show." : "Run a search to measure the three wirings.");
   }
 }
 
@@ -225,7 +232,8 @@ function renderFacts() {
       ? `+${Number(pr.gain_pct).toFixed(1)}% vs ${pr.base} (${pr.cycle} cycles)`
       : `+${((best / worst - 1) * 100).toFixed(1)}% vs ${worstKey} (${worst.toFixed(2)} W)`);
     setText(els.factAvg, `+${((best / avg - 1) * 100).toFixed(1)}% vs the ${avg.toFixed(2)} W average`);
-    setText(els.factPred, se.predicted ? `${se.predicted}, ${se.match ? "matched by the sweeps" : `but the sweeps chose ${se.best}`}` : "—");
+    const by = state.conn === "manual" ? "the hand-measured power" : "the sweeps";
+    setText(els.factPred, se.predicted ? `${se.predicted}, ${se.match ? `matched by ${by}` : `but ${by} chose ${se.best}`}` : "—");
     els.factPred.dataset.pair = se.predicted || "";
   } else {
     setText(els.factBest, "—"); setText(els.factWorst, "—"); setText(els.factAvg, "—");
@@ -347,6 +355,7 @@ function newRunId() {
 }
 
 function benchDescription() {
+  if (state.conn === "manual") return benchLine(state.manualNote || state.benchNotes);   // always says hand-entered
   if (state.benchNotes) return state.benchNotes;
   if (state.conn === "mock" && mock) {
     const filmed = Object.keys(mock.film).filter((k) => mock.film[k]);
@@ -457,7 +466,11 @@ function setConn(kind, text) {
   document.body.dataset.conn = kind;
   els.connText.textContent = text;
   els.mockBench.hidden = kind !== "mock";
-  document.querySelectorAll("[data-cmd]").forEach((b) => { b.disabled = kind === "none"; });
+  document.querySelectorAll("[data-cmd]").forEach((b) => { b.disabled = kind === "none" || kind === "manual"; });
+  document.querySelectorAll("[data-manual]").forEach((el) => {   // section notes that would be false for typed-in readings
+    if (el.dataset.bench == null) el.dataset.bench = el.textContent;
+    el.textContent = kind === "manual" ? el.dataset.manual : el.dataset.bench;
+  });
   if (demo.active) endDemo("stopped"); else renderDemo();
   $("btn-mock").textContent = kind === "mock" ? "Stop mock bench" : "Use mock bench";
   $("btn-connect").textContent = kind === "serial" ? "Disconnect" : "Connect ESP32";
@@ -482,8 +495,8 @@ function startMock() {
 }
 
 function stopMock() {
+  if (mock && state.link === mock) state.link = null;     // compare before dropping the reference
   if (mock) { mock.disconnect(); mock = null; }
-  if (state.link === mock) state.link = null;
 }
 
 // `port` is the replay's stand-in port; without it the browser asks the user to pick the ESP32.
@@ -507,8 +520,8 @@ async function startSerial(port) {
 }
 
 function stopSerial() {
+  if (serial && state.link === serial) state.link = null;
   if (serial) { serial.disconnect(); serial = null; }
-  if (state.link === serial) state.link = null;
 }
 
 async function sendCommand(cmd) {
@@ -541,6 +554,49 @@ $("btn-export-passports").addEventListener("click", () => {
   download(`${state.runId}-passports.json`, JSON.stringify(buildRun(), null, 2), "application/json");
 });
 $("btn-upload").addEventListener("click", uploadRun);
+
+// ---------- readings entered by hand (js/manual.js) ----------
+// The typed numbers become grade and search messages that go through onLine() like serial lines.
+function manualFields() {
+  const val = (f) => document.querySelector(`[data-field="${f}"]`).value;
+  return {
+    isc: Object.fromEntries([1, 2, 3, 4].map((id) => [id, val(`isc-${id}`)])),
+    voc: Object.fromEntries([1, 2, 3, 4].map((id) => [id, val(`voc-${id}`)])),
+    pmax: Object.fromEntries(["A", "B", "C"].map((k) => [k, val(`pmax-${k}`)])),
+  };
+}
+function showManualErrors(errors) {
+  const bad = new Set(errors.map((e) => e.field));
+  document.querySelectorAll("#manual-form [data-field]").forEach((inp) => inp.setAttribute("aria-invalid", bad.has(inp.dataset.field) ? "true" : "false"));
+  $("manual-errors").innerHTML = [...new Set(errors.map((e) => e.msg))].map((m) => `<li>${esc(m)}</li>`).join("");
+}
+function useManualReadings() {
+  const entry = readEntry(manualFields());
+  if (entry.errors.length) { showManualErrors(entry.errors); document.querySelector(`[data-field="${entry.errors[0].field}"]`).focus(); return; }
+  state.manualNote = $("manual-note").value.trim(); LS.set("ss.manualNote", state.manualNote);
+  stopMock(); stopSerial();
+  setConn("manual", "Readings entered by hand (no bench)");
+  resetData();
+  state.factors = [1, 1, 1, 1]; renderCal();            // no lamp box: raw reading = corrected reading
+  const grade = gradeMessage(entry.panels);
+  const msgs = [{ type: "log", msg: "readings entered by hand from a multimeter; not measured by the bench" }, grade];
+  if (entry.pmax) msgs.push(searchMessage(entry.pmax, grade.predicted));
+  const refused = msgs.map((m) => [m.type, onLine(JSON.stringify(m))]).filter(([, st]) => st !== "handled");
+  if (refused.length) { showManualErrors([{ field: "", msg: `The dashboard refused the ${refused.map(([t]) => t).join(" and ")} message built from these readings; don't upload this run.` }]); return; }
+  showManualErrors([]);
+  $("manual-sheet").close();
+  const deck = $("deck-status"); deck.classList.remove("is-bad");
+  setText(deck, `Hand-entered readings graded${entry.pmax ? `; best wiring ${state.search.best}` : ""}. Open Data to upload.`);
+}
+$("btn-manual").addEventListener("click", () => {
+  $("manual-note").value = state.manualNote;
+  $("manual-saved").textContent = benchLine(state.manualNote);
+  showManualErrors([]);
+  $("manual-sheet").showModal();
+});
+$("manual-note").addEventListener("input", (e) => { $("manual-saved").textContent = benchLine(e.target.value); });
+$("btn-manual-use").addEventListener("click", useManualReadings);
+$("manual-form").addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); useManualReadings(); } });
 window.secondString = { buildRun, buildPassports };   // for checking in the console
 document.querySelectorAll(".seg__btn").forEach((b) => b.addEventListener("click", () => {
   state.curveKind = b.dataset.curve;

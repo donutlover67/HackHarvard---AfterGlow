@@ -258,6 +258,7 @@ body[data-conn="mock"] #btn-mock { background: var(--cell); color: #fff; border-
   gap: 10px;
 }
 .deck__row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+.deck__row[hidden] { display: none; }
 .deck__group { display: flex; gap: 6px; align-items: center; padding-right: 18px; border-right: 1px solid var(--busbar-2); }
 .deck__group:last-child { border-right: 0; }
 .deck__label { font-size: 0.8rem; color: var(--ink-3); font-stretch: 88%; margin-right: 2px; }
@@ -317,6 +318,21 @@ body[data-conn="mock"] #btn-mock { background: var(--cell); color: #fff; border-
 .sheet__status { font-size: 0.85rem; color: var(--ink-2); align-self: center; }
 .sheet__status.is-bad { color: var(--alert); }
 .panel__id { font-size: 0.74rem; color: var(--ink-3); font-stretch: 88%; }
+/* hand-entry sheet: a label column, then one or two number columns */
+.manual-grid { display: grid; grid-template-columns: max-content minmax(0, 12rem) minmax(0, 12rem); gap: 6px 10px; align-items: center; margin: 12px 0 10px; }
+.manual-grid--pairs { grid-template-columns: max-content minmax(0, 12rem); }
+.manual-grid > span { font-size: 0.78rem; color: var(--ink-3); font-stretch: 88%; }
+.manual-grid label { font-size: 0.9rem; color: var(--ink-2); }
+.manual-grid input {
+  font: inherit; font-size: 0.9rem; color: var(--ink); font-variant-numeric: tabular-nums;
+  border: 1px solid var(--busbar); border-radius: var(--radius); padding: 5px 8px; background: var(--surface); min-width: 0;
+}
+.manual-grid input[aria-invalid="true"] { border-color: var(--alert); }
+.manual-grid .pair-A { color: var(--pair-a); } .manual-grid .pair-B { color: var(--pair-b); } .manual-grid .pair-C { color: var(--pair-c); }
+.sheet p.manual-saved { font-size: 0.82rem; margin-top: 6px; }
+#manual-saved { color: var(--ink); }
+.manual-errors { list-style: none; padding: 0; margin: 10px 0 0; color: var(--alert); font-size: 0.85rem; display: grid; gap: 3px; }
+
 .table { width: 100%; border-collapse: collapse; font-size: 0.82rem; max-height: 50vh; display: block; overflow: auto; }
 .table th, .table td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--busbar-2); vertical-align: top; }
 .table th { color: var(--ink-3); font-weight: 500; position: sticky; top: 0; background: var(--surface); }

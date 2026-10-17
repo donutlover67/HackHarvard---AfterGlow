@@ -58,7 +58,7 @@
     <section class="panels" aria-labelledby="panels-title">
       <div class="section-head">
         <h2 id="panels-title">Panels, graded under the same light</h2>
-        <p id="panels-note">Short-circuit current for all four at the same instant, then open-circuit voltage.</p>
+        <p id="panels-note" data-manual="Typed in from multimeter readings, not measured by the bench. Scores compare the four with each other.">Short-circuit current for all four at the same instant, then open-circuit voltage.</p>
       </div>
       <div class="panel-row" id="panel-row"></div>
     </section>
@@ -74,7 +74,7 @@
     <section class="wiring" aria-labelledby="wiring-title">
       <div class="section-head">
         <h2 id="wiring-title">Wiring and maximum power</h2>
-        <p>Three ways to make two pairs. Maximum power from an I-V sweep of each.</p>
+        <p data-manual="Three ways to make two pairs. Maximum power measured by hand for each, if it was entered.">Three ways to make two pairs. Maximum power from an I-V sweep of each.</p>
       </div>
       <div class="wiring__grid">
         <div class="chart chart--diagram" id="wiring-diagram"></div>
@@ -124,6 +124,7 @@
       <div class="deck__group" aria-label="Calibration">
         <button type="button" class="btn btn--quiet" id="btn-cal">Calibrate boxes</button>
         <button type="button" class="btn btn--quiet" id="btn-data">Data</button>
+        <button type="button" class="btn btn--quiet" id="btn-manual">Enter readings by hand</button>
       </div>
     </div>
 
@@ -138,7 +139,7 @@
       <label class="field">Film passes <input type="range" id="mock-film" min="0.2" max="0.9" step="0.05" value="0.35"><output id="mock-film-out">35%</output></label>
     </div>
 
-    <p class="deck__note">Gain is measured at each wiring's maximum power point from an I-V sweep, not from the pump. Lamp boxes stand in for the sun indoors. Two panels are covered with 35% window film to simulate aging.</p>
+    <p class="deck__note" data-manual="These readings were typed in by hand from a multimeter; the bench measured nothing. No I-V sweep and no proof cycles, so there is no confidence interval.">Gain is measured at each wiring's maximum power point from an I-V sweep, not from the pump. Lamp boxes stand in for the sun indoors. Two panels are covered with 35% window film to simulate aging.</p>
   </footer>
 
   <div class="tip" id="tip" hidden></div>
@@ -190,6 +191,33 @@
         <thead><tr><th>Time</th><th>Type</th><th>Summary</th></tr></thead>
         <tbody></tbody>
       </table>
+    </form>
+  </dialog>
+
+  <dialog class="sheet sheet--wide" id="manual-sheet">
+    <form method="dialog" id="manual-form" novalidate>
+      <h2>Enter readings by hand</h2>
+      <p>For when the bench can't measure: type multimeter readings for each panel, taken under the same light, one right after another. The dashboard grades them with the firmware's own rules and makes passports marked as hand-entered. This ends the mock bench or the ESP32 link.</p>
+      <div class="manual-grid">
+        <span></span><span>Short-circuit current, mA</span><span>Open-circuit voltage, V</span>
+        <label for="m-isc-1">Panel 1</label><input id="m-isc-1" data-field="isc-1" aria-label="Panel 1 short-circuit current, mA" inputmode="decimal" autocomplete="off"><input id="m-voc-1" data-field="voc-1" inputmode="decimal" autocomplete="off" aria-label="Panel 1 open-circuit voltage, V">
+        <label for="m-isc-2">Panel 2</label><input id="m-isc-2" data-field="isc-2" aria-label="Panel 2 short-circuit current, mA" inputmode="decimal" autocomplete="off"><input id="m-voc-2" data-field="voc-2" inputmode="decimal" autocomplete="off" aria-label="Panel 2 open-circuit voltage, V">
+        <label for="m-isc-3">Panel 3</label><input id="m-isc-3" data-field="isc-3" aria-label="Panel 3 short-circuit current, mA" inputmode="decimal" autocomplete="off"><input id="m-voc-3" data-field="voc-3" inputmode="decimal" autocomplete="off" aria-label="Panel 3 open-circuit voltage, V">
+        <label for="m-isc-4">Panel 4</label><input id="m-isc-4" data-field="isc-4" aria-label="Panel 4 short-circuit current, mA" inputmode="decimal" autocomplete="off"><input id="m-voc-4" data-field="voc-4" inputmode="decimal" autocomplete="off" aria-label="Panel 4 open-circuit voltage, V">
+      </div>
+      <p>Optional: maximum power of each wiring, measured by hand. Enter all three or none.</p>
+      <div class="manual-grid manual-grid--pairs">
+        <label for="m-pmax-A">Wiring <b class="pair-A">A</b> (1+2, 3+4), W</label><input id="m-pmax-A" data-field="pmax-A" inputmode="decimal" autocomplete="off">
+        <label for="m-pmax-B">Wiring <b class="pair-B">B</b> (1+3, 2+4), W</label><input id="m-pmax-B" data-field="pmax-B" inputmode="decimal" autocomplete="off">
+        <label for="m-pmax-C">Wiring <b class="pair-C">C</b> (1+4, 2+3), W</label><input id="m-pmax-C" data-field="pmax-C" inputmode="decimal" autocomplete="off">
+      </div>
+      <label class="field field--wide">Bench note <input id="manual-note" placeholder="outdoors, Sat 3 PM, sun" autocomplete="off"></label>
+      <p class="manual-saved">Saved with the run as: <span id="manual-saved"></span></p>
+      <ul class="manual-errors" id="manual-errors" aria-live="polite"></ul>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--primary" id="btn-manual-use">Use these readings</button>
+        <button type="submit" class="btn btn--quiet">Cancel</button>
+      </div>
     </form>
   </dialog>
 
