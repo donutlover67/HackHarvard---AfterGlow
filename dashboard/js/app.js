@@ -1,6 +1,7 @@
 import { renderBars, renderTrace, renderCurves, renderWiring, updatePump, panelCellSvg, makeTip, pairPanels } from "./charts.js";
 import { MockBench } from "./mock.js";
 import { SerialLink } from "./serial.js";
+import { buildReplay, replayPort, watchErrors, checkReplay } from "./replay.js";
 
 const TRACE_WINDOW_MS = 120000;
 const MAX_RAW_LINES = 20000;
@@ -65,59 +66,92 @@ const els = {
 };
 
 // ---------- message handling ----------
+let lineTap = null;   // the replay (?replay=1) listens here to check how each line was classified
+
+// Returns how the line was taken: handled | rejected (known type, bad fields) | unknown (type) | ignored (not a message).
 function onLine(line) {
+  let status = "threw";
+  try { status = dispatch(line); return status; } finally { if (lineTap) lineTap(line, status); }
+}
+
+function dispatch(line) {
   state.raw.push(line);
   if (state.raw.length > MAX_RAW_LINES) state.raw.splice(0, state.raw.length - MAX_RAW_LINES);
   let msg;
-  try { msg = JSON.parse(line); } catch (_) { return; }      // boot noise and partial lines
-  if (!msg || typeof msg.type !== "string") return;
-  const handler = handlers[msg.type];
-  if (handler) handler(msg);
+  try { msg = JSON.parse(line); } catch (_) { return "ignored"; }      // boot noise and partial lines
+  if (!msg || typeof msg.type !== "string") return "ignored";
+  if (!Object.hasOwn(handlers, msg.type)) { addRow(msg); return "unknown"; }   // also "__proto__", "toString"
+  try {
+    if (handlers[msg.type](msg) === false) return "rejected";
+  } catch (err) {
+    console.error(`dashboard failed on a ${msg.type} message:`, err, line);
+    return "threw";
+  }
   addRow(msg);
+  return "handled";
 }
+
+// Field checks: a known type with a field missing or of the wrong kind is ignored (the handler returns false)
+// before it touches the state, so it can't leave NaN in a chart or replace good data. Only fields that
+// protocol/PROTOCOL.md defines and that the page uses are checked.
+const isNum = (x) => typeof x === "number" && Number.isFinite(x);
+const isPair = (p) => p === "A" || p === "B" || p === "C";
+const isPanelId = (id) => id === 1 || id === 2 || id === 3 || id === 4;
+const isFactors = (f) => Array.isArray(f) && f.length === 4 && f.every(isNum);
+const isGradePanel = (p) => !!p && isPanelId(p.id) && isNum(p.isc_ma) && isNum(p.voc_v) && isNum(p.score)
+  && isPair(p.grade) && (p.flags == null || (Array.isArray(p.flags) && p.flags.every((f) => typeof f === "string")));
+const isPoint = (pt) => Array.isArray(pt) && isNum(pt[0]) && isNum(pt[1]);
 
 const handlers = {
   hello(m) {
-    if (Array.isArray(m.factors)) state.factors = m.factors;
-    if (m.mode) state.mode = m.mode;
-    if (m.pairing) state.pairing = m.pairing;
+    if (isFactors(m.factors)) state.factors = m.factors;
+    if (typeof m.mode === "string" && m.mode) state.mode = m.mode;
+    if (isPair(m.pairing)) state.pairing = m.pairing;
     if (typeof m.pump === "boolean") state.pump = m.pump;
     renderReadouts(); renderCal(); renderWiringDiagram();
   },
   live(m) {
-    state.mode = m.mode || state.mode;
-    state.pairing = m.pairing || state.pairing;
+    if (!m.out || !isNum(m.out.p_w)) return false;     // no fake 0 W point on the trace
+    if (typeof m.mode === "string" && m.mode) state.mode = m.mode;
+    if (isPair(m.pairing)) state.pairing = m.pairing;
     state.pump = typeof m.pump === "boolean" ? m.pump : state.pump;
-    const p = m.out && typeof m.out.p_w === "number" ? m.out.p_w : 0;
+    const p = m.out.p_w;
     state.lastPower = p;
     state.trace.push({ t: Date.now(), p, pairing: state.pairing });
     const cutoff = Date.now() - TRACE_WINDOW_MS - 2000;
     while (state.trace.length && state.trace[0].t < cutoff) state.trace.shift();
-    if (Array.isArray(m.panels)) m.panels.forEach((pp) => { state.liveCurrent[pp.id] = pp.i_ma; });
+    if (Array.isArray(m.panels)) m.panels.forEach((pp) => { if (pp && isPanelId(pp.id) && isNum(pp.i_ma)) state.liveCurrent[pp.id] = pp.i_ma; });
     renderReadouts(); renderTraceChart(); renderPanelLive();
     const key = `${state.pairing}|${state.pump}`;
     if (key !== state.diagramKey) renderWiringDiagram();
     else updatePump(els.wiring, { pump: state.pump, power: p });
   },
   grade(m) {
-    (m.panels || []).forEach((pp) => { state.panels[pp.id] = pp; });
-    state.predicted = m.predicted;
+    if (!Array.isArray(m.panels) || !m.panels.length || !m.panels.every(isGradePanel)) return false;
+    m.panels.forEach((pp) => { state.panels[pp.id] = pp; });
+    state.predicted = isPair(m.predicted) ? m.predicted : null;
     ensurePassports();
     state.runId = newRunId(); state.runAt = new Date().toISOString();
     renderPanels(); renderWiringDiagram(); renderFacts(); renderBarsChart(); renderRunLine();
   },
   sweep(m) {
-    if (!m.pairing) return;
+    if (!isPair(m.pairing) || !isNum(m.pmax_w) || !isNum(m.vmp_v) || !isNum(m.imp_ma)
+      || !Array.isArray(m.pts) || !m.pts.length || !m.pts.every(isPoint)) return false;
     state.sweeps[m.pairing] = m;
     renderCurvesChart(); renderBarsChart();
   },
   search(m) {
+    const pm = m.pmax_w;
+    if (!pm || typeof pm !== "object" || Array.isArray(pm) || !Object.keys(pm).length
+      || !Object.entries(pm).every(([k, v]) => isPair(k) && isNum(v)) || !isNum(pm[m.best])) return false;
     state.search = m;
     state.proof = null;          // a new search resets the proof
     renderBarsChart(); renderHeadline(); renderFacts(); renderRunLine();
     if (demo.active && demo.stage === "search") { demo.stage = "proof"; demo.cycle = 0; renderDemo(); sendCommand("PROOF"); }
   },
   proof(m) {
+    if ((m.kind !== "sweep" && m.kind !== "pump") || !isPair(m.best) || !isPair(m.base)
+      || !isNum(m.cycle) || !isNum(m.gain_pct) || !isNum(m.ci95_pct)) return false;
     state.proof = m;
     renderHeadline(); renderFacts(); renderRunLine();
     if (demo.active && demo.stage === "proof") { demo.cycle = m.cycle; renderDemo(); }
@@ -127,12 +161,14 @@ const handlers = {
     }
   },
   cal(m) {
-    if (Array.isArray(m.factors)) state.factors = m.factors;
-    if (m.box) { const span = document.querySelector(`[data-cal="${m.box}"]`); if (span) span.textContent = `${Number(m.reading_ma).toFixed(1)} mA`; }
+    const hasBox = m.box != null; const hasFactors = m.factors != null;
+    if ((!hasBox && !hasFactors) || (hasBox && !(isPanelId(m.box) && isNum(m.reading_ma))) || (hasFactors && !isFactors(m.factors))) return false;
+    if (hasFactors) state.factors = m.factors;
+    if (hasBox) { const span = document.querySelector(`[data-cal="${m.box}"]`); if (span) span.textContent = `${Number(m.reading_ma).toFixed(1)} mA`; }
     renderCal();
   },
   error(m) {
-    showError(m.msg || "error");
+    showError(typeof m.msg === "string" && m.msg ? m.msg : "error");
     if (demo.active) endDemo("error");
   },
   log() {},
@@ -450,8 +486,9 @@ function stopMock() {
   if (state.link === mock) state.link = null;
 }
 
-async function startSerial() {
-  if (!SerialLink.supported()) { els.connText.textContent = "Web Serial needs Chrome or Edge"; return; }
+// `port` is the replay's stand-in port; without it the browser asks the user to pick the ESP32.
+async function startSerial(port) {
+  if (!port && !SerialLink.supported()) { els.connText.textContent = "Web Serial needs Chrome or Edge"; return; }
   stopMock();
   serial = new SerialLink(onLine, (status, detail) => {
     if (status === "connected") setConn("serial", `ESP32 on ${detail}`);
@@ -461,7 +498,7 @@ async function startSerial() {
   state.link = serial;
   resetData();
   try {
-    await serial.connect();
+    await serial.connect(port);
     await serial.send("STATUS");
   } catch (err) {
     state.link = null;
@@ -541,8 +578,60 @@ $("btn-dl-csv").addEventListener("click", () => {
 let resizeTimer = null;
 new ResizeObserver(() => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { renderTraceChart(); renderBarsChart(); renderCurvesChart(); }, 80); }).observe(document.querySelector(".bench"));
 
+// ---------- replay (?replay=1): recorded lines through the real serial path, no board ----------
+// ?replay=auto starts it on load; &speed=0 skips the 115200-baud pacing. Replays never upload runs.
+const params = new URLSearchParams(location.search);
+const replayMode = params.has("replay");
+
+async function startReplay() {
+  const btn = $("btn-replay");
+  const status = $("deck-status");
+  btn.disabled = true;
+  status.classList.remove("is-bad");
+  setText(status, "Replaying protocol samples through the serial parser…");
+  state.autoUpload = false; $("auto-upload").checked = false;     // not saved: the next normal load uploads again
+  const watch = watchErrors();
+  const got = [];
+  let report = null;
+  try {
+    const plan = await buildReplay(new URL("../protocol/samples/", location.href));
+    const port = replayPort(plan.chunks, { speed: Number(params.get("speed") ?? 1) });
+    stopSerial();
+    lineTap = (line, st) => got.push({ line, status: st });
+    await startSerial(port);
+    if (state.conn === "serial") els.connText.textContent = "Replay of protocol samples (no board)";
+    // the stream ends, or the link drops (which the check then reports)
+    await Promise.race([port.finished, new Promise((r) => { const poll = () => (state.conn === "serial" ? setTimeout(poll, 100) : r()); poll(); })]);
+    await new Promise((r) => setTimeout(r, 200));
+    lineTap = null;
+    report = checkReplay(plan, got, { errors: watch.stop(), sent: port.sent, conn: state.conn, doc: document });
+    console.info(`[replay] ${report.ok ? "PASS" : "FAIL"}: ${report.lines} of ${report.expectedLines} lines from ${report.bytes} bytes`, report.counts);
+    report.problems.forEach((p) => console.error(`[replay] ${p}`));
+    setText(status, report.ok
+      ? `Replay passed: ${report.lines} lines through the serial parser (${report.counts.handled || 0} messages, ${(report.lines - (report.counts.handled || 0))} bad lines ignored).`
+      : `Replay failed: ${report.problems.length} problems; see the console.`);
+    status.classList.toggle("is-bad", !report.ok);
+  } catch (err) {
+    console.error("[replay] could not run:", err);
+    setText(status, `Replay could not run: ${err.message || err}`);
+    status.classList.add("is-bad");
+  } finally {
+    lineTap = null;
+    watch.stop();
+    btn.disabled = false;
+  }
+  return report;
+}
+window.secondString.replay = startReplay;
+
 // ---------- boot ----------
 renderAll();
 setConn("none", "Not connected");
-startMock();
-setTimeout(() => { if (state.conn === "mock") sendCommand("SEARCH"); }, 1200);
+if (replayMode) {
+  $("btn-replay").hidden = false;
+  $("btn-replay").addEventListener("click", startReplay);
+  if (params.get("replay") === "auto") startReplay();
+} else {
+  startMock();
+  setTimeout(() => { if (state.conn === "mock") sendCommand("SEARCH"); }, 1200);
+}
