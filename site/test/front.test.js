@@ -18,13 +18,49 @@ const ctxSample = withRun(sample);
 const ctxFive = { ...ctxSample, passports: [...ctxSample.passports, { ...ctxSample.passports[0], passport_id: "SS-0005", measured_at: "2026-10-17T09:00:00-04:00" }] };
 const ctxHostile = { ...ctxSample, passports: [{ ...ctxSample.passports[0], passport_id: "<img src=x onerror=alert(1)>" }] };
 
-test("the hero holds the headline and both ways in", () => {
+test("the opening, at night, holds the problem headline and both ways in", () => {
   const html = page(ctxEmpty);
-  const hero = html.slice(0, html.indexOf("</section>"));
-  expect(hero).toContain('class="hero__caption');   // the diagram's caption as text, for phones where the svg's is too small
+  const first = html.slice(0, html.indexOf("</section>"));
+  expect(first).toContain('class="opening"');
+  expect(first).toContain('data-tone="night"');
+  expect(first).toContain('href="#/passports"');
+  expect(first).toContain('href="#/build"');
+  expect(first).toContain("<h1");
+  expect(first.replace(/<[^>]+>/g, "")).toContain("Most retired solar panels still work.");  // the headline is two line spans
+});
+
+test("night to day: problem first, then why, then the product, the drawn cell last; skies run from dark to light", () => {
+  const html = page(ctxSample);
+  const order = ["opening", "problem", "why", "how", "strip", "front-gain", "fpass", "hero", "close"];
+  const at = order.map((c) => html.indexOf(`<section class="${c}"`));
+  expect(at.every((i) => i >= 0)).toBe(true);
+  expect(at).toEqual([...at].sort((x, y) => x - y));
+  const skies = [...html.matchAll(/<section class="[a-z-]+"[^>]*data-sky="(#[0-9a-f]{6})"/g)].map((m) => m[1]);
+  expect(skies.length).toBe(order.length);
+  const lum = (hex) => { const c = hex.slice(1).match(/../g).map((h) => parseInt(h, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4))); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  expect(lum(skies[0])).toBeLessThan(0.02);                 // night
+  expect(lum(skies[skies.length - 1])).toBeGreaterThan(0.9); // noon
+  expect(lum(skies[1])).toBeLessThan(lum(skies[2]));        // the why is where the sky turns
+  expect(html).not.toContain("ticker");   // the facts band repeated the problem's own figures
+  expect(html).not.toContain("teaser");   // the finale carries the same two ways in
+  expect(html).not.toContain('class="rp"');
+});
+
+test("the why is a short paragraph about solar for everyday households", () => {
+  const html = page(ctxEmpty);
+  const why = html.slice(html.indexOf('<section class="why"'), html.indexOf("</section>", html.indexOf('<section class="why"')));
+  const words = why.replace(/<[^>]+>/g, " ").trim().split(/\s+/).length;
+  expect(words).toBeLessThan(80);
+  expect(why).toContain("household");
+});
+
+test("the finale: the drawn cell, a closing line and both ways in", () => {
+  const html = page(ctxEmpty);
+  const hero = html.slice(html.indexOf('<section class="hero"'), html.indexOf("</section>", html.indexOf('<section class="hero"')));
+  expect(hero).toContain("data-hero-slot");
   expect(hero).toContain('href="#/passports"');
   expect(hero).toContain('href="#/build"');
-  expect(hero.replace(/<[^>]+>/g, "")).toContain("Used panels still work.");  // the headline is two line spans
+  expect(hero.replace(/<[^>]+>/g, "")).not.toContain("Most retired solar panels still work.");   // not a repeat of the opening
 });
 
 test("with nothing published the page says so, offers the example batch and labels the model figures", () => {
@@ -78,10 +114,8 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   const html = page(ctxSample);
   expect((html.match(/<section[^>]*data-in/g) || []).length).toBeGreaterThanOrEqual(7);
   expect(html).not.toContain("data-dust");
-  expect(html).not.toContain("✦");   // the ticker's separators are drawn, not glyphs
-  expect((html.match(/data-reveal/g) || []).length).toBe(4);          // headline, lede, buttons, slab; the titles fade in with their sections
-  expect((html.match(/class="line__in"/g) || []).length).toBe(2);     // the two headline lines
-  expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
+  expect((html.match(/data-reveal/g) || []).length).toBe(7);          // opening: headline, lede, buttons; finale: slab, headline, lede, buttons
+  expect((html.match(/class="line__in"/g) || []).length).toBe(4);     // two lines in each of the two big headlines
   expect(html).toContain('class="hero__sun"');
   expect((html.match(/class="sun__beam"/g) || []).length).toBe(3);   // three beams of light onto the panel
   expect(html.indexOf('class="hero__sun"')).toBeLessThan(html.indexOf('class="hero__panel"'));   // drawn first, so the panel paints over the beams

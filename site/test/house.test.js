@@ -25,8 +25,8 @@ test("nothing loads from the internet", async () => {
 test("house style: no gradients, shadows or uppercase labels", async () => {
   for (const f of cssFiles) {
     const css = await read(`css/${f}`);
-    const gradients = css.split("\n").filter((l) => l.includes("gradient(") || l.includes("box-shadow"));
-    expect(gradients.every((l) => l.startsWith(".nav__sun"))).toBe(true);   // the nav's sun, copied from the ui-refresh branch, is the one exception
+    const gradients = css.split("\n").filter((l) => !l.trim().startsWith("/*") && (l.includes("gradient(") || l.includes("box-shadow")));
+    expect(gradients).toEqual([]);   // the night-to-day sky is solid colours blended by motion.js, and the nav's sun is drawn
     expect(css).not.toContain("text-transform: uppercase");
   }
 });
@@ -58,34 +58,23 @@ test("runs index parses", async () => {
   expect(Array.isArray(idx.runs)).toBe(true);
 });
 
-// the nav is the ui-refresh branch's code: these are its site.css lines (25-29, 206-210, 352-358, 141, 260-263, 268 there), verbatim
-const UI_REFRESH_NAV = [
-  ".nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 14px 24px; background: var(--surface); border-bottom: 1px solid var(--busbar); }",
-  ".nav__name { font-weight: 700; font-stretch: 118%; color: var(--cell); text-decoration: none; font-size: 1.25rem; }",
-  ".nav__links { display: flex; gap: 18px; }",
-  ".nav__links a { color: var(--ink-2); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }",
-  ".nav__links a.is-on { color: var(--cell); border-bottom-color: var(--cell); }",
-  ".nav { position: sticky; top: 0; z-index: 5; padding: 16px 28px; }",
-  ".nav__name { font-size: 1.35rem; }",
-  ".nav__links { gap: 22px; }",
-  ".nav__links a { font-weight: 500; }",
-  ".nav__links a:hover { color: var(--cell); }",
-  ".nav { transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }",
-  ".nav__name { display: inline-flex; align-items: center; }",
-  ".nav__sun { --p: 0; flex: none; width: 17px; height: 17px; margin-right: 10px; border-radius: 50%; background: conic-gradient(var(--sun) calc(var(--p) * 360deg), var(--busbar-2) 0); box-shadow: inset 0 0 0 2px var(--cell); }",
-  "body.has-hero .nav { position: fixed; left: 0; right: 0; top: 0; }",
-  "body.has-hero .nav.is-tucked { transform: translateY(-100%); opacity: 0; pointer-events: none; }",
-  "body.has-hero .view { padding-top: 0; }",
-  "  .nav { padding: 12px 16px; gap: 12px; }",
-  "  .nav { padding: 12px 16px 8px; flex-wrap: wrap; row-gap: 6px; }",
-  "  .nav__name { font-size: 1.15rem; white-space: nowrap; }",
-  "  .nav__links { gap: 12px; font-size: 0.92rem; }",
-  "  .nav__links a { white-space: nowrap; }",
-  "  .nav { position: static; }",
-];
-test("the nav's CSS is the ui-refresh branch's, line for line", async () => {
+// the nav: sticky on every page; its sun is a drawn disc with eight rays that light as the page scrolls (motion.js)
+test("the nav is sticky and its sun is drawn, with eight rays", async () => {
   const css = await read("css/site.css");
-  for (const line of UI_REFRESH_NAV) expect(css).toContain(line);
+  expect(css).toMatch(/\.nav \{[^}]*position: sticky; top: 0;/);
+  expect(css).toContain(".nav__sun line.is-lit { stroke: var(--sun); }");
+  expect(css).toContain("  .nav { position: static; }");   // print
   const html = await read("index.html");
-  expect(html).toContain('<a class="nav__name" href="#/"><span class="nav__sun" aria-hidden="true"></span>Second String</a>');
+  const sun = html.slice(html.indexOf('<svg class="nav__sun"'), html.indexOf("</svg>", html.indexOf('<svg class="nav__sun"')));
+  expect((sun.match(/<line /g) || []).length).toBe(8);
+  expect(sun).toContain("<circle");
+  expect(html).toMatch(/<a class="nav__name" href="#\/"><svg class="nav__sun"[\s\S]*?<\/svg>Second String<\/a>/);
+});
+
+test("the sky layer: stars, a moon and a sun, drawn, nothing remote", async () => {
+  const html = await read("index.html");
+  for (const c of ["sky__stars", "sky__moon", "sky__sun", "sky__disc"]) expect(html).toContain(`class="${c}"`);
+  const css = await read("css/front.css");
+  expect(css).toContain('body[data-page="front"] .sky { display: block; }');   // the sky shows on the front page only
+  expect(css).toContain("@media (prefers-reduced-motion: reduce)");
 });

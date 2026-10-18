@@ -1,5 +1,6 @@
-// The motion layer: entrances, count-ups, the hero re-pairing, the headline reveal, the steps, the horizontal strip, route
-// slides, and (heroPanel) the drawn cell that follows the pointer. Transform, opacity, colour and filter only.
+// The motion layer: the front page's night-to-day sky, entrances, count-ups, the headline reveal, the steps, the horizontal
+// strip, route slides, the nav's sun, and (heroPanel) the drawn cell that follows the pointer. Transform, opacity, colour
+// and filter only.
 // Readers who prefer reduced motion, or open ?motion=off, get the end states at once; loops pause while
 // the tab is hidden. Nothing here touches the document at load, so bun can test the pure parts.
 window.SSMotion = (function () {
@@ -51,56 +52,102 @@ window.SSMotion = (function () {
   }
   const rafThrottle = (fn) => { let waiting = false; return () => { if (waiting) return; waiting = true; requestAnimationFrame(() => { waiting = false; fn(); }); }; };
 
-  // the nav, as the ui-refresh branch's motion.js has it (updateNav there): hidden over a full-bleed hero, then slides
-  // in; the sun fills as you scroll. This site has no .hero--full, so the nav shows on every page from the first paint.
+  // ---------- colour helpers for the sky (pure) ----------
+  const hexRgb = (hex) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || "").trim()); const n = m ? parseInt(m[1], 16) : 0xfbfcfd; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+  const mixRgb = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * clamp01(t)));
+  const rgbCss = (c) => `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+  // WCAG relative luminance, 0 (black) to 1 (white)
+  const luminance = (c) => { const l = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2]; };
+  // below this the sky counts as night: white text then reads better on it than navy does
+  const NIGHT = 0.18;
+  // The sky colour at viewport height yv. Each section names its own sky; across each boundary the colour blends over a
+  // zone of up to 40% of the screen, so the change is gradual and every section sits on its own colour once it fills the view.
+  function skyColour(rects, cols, yv, vh) {
+    const n = rects.length;
+    if (!n) return hexRgb("#fbfcfd");
+    let i = 0;
+    while (i < n - 1 && yv >= rects[i].bottom) i++;
+    const zone = (j, k) => Math.max(1, Math.min(vh * 0.4, rects[j].height / 2, rects[k].height / 2));
+    if (i > 0) { const z = zone(i - 1, i), b = rects[i].top; if (yv < b + z) return mixRgb(cols[i - 1], cols[i], smooth((yv - (b - z)) / (2 * z))); }
+    if (i < n - 1) { const z = zone(i, i + 1), b = rects[i].bottom; if (yv > b - z) return mixRgb(cols[i], cols[i + 1], smooth((yv - (b - z)) / (2 * z))); }
+    return cols[i].slice();
+  }
+
+  // ---------- the nav: its drawn sun lights one ray at a time as the page is scrolled; on the front page the nav takes the sky's colour ----------
   const $ = (sel, root = document) => root.querySelector(sel);
-  let route = "index";
+  let route = "index", skyCtl = null;
   function updateNav() {
     const nav = $(".nav");
     if (!nav) return;
     const y = scrollY, max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    const progress = clamp01(y / max).toFixed(3);
-    const sun = $(".nav__sun");
-    if (sun) sun.style.setProperty("--p", progress);
-    document.documentElement.style.setProperty("--day", progress);
-    const sky = $(".sky");
-    if (sky) sky.style.setProperty("--day", progress);
+    const p = clamp01(y / max);
+    const rays = nav.querySelectorAll(".nav__sun line");
+    rays.forEach((r, i) => r.classList.toggle("is-lit", p >= (i + 1) / (rays.length + 1) || p > 0.995));   // none at the top, all eight at the bottom
     nav.classList.toggle("is-scrolled", y > 8);
-    // never tuck the header — keep it visible while scrolling
-    nav.classList.remove("is-tucked");
+    if (skyCtl) skyCtl.update();
   }
-  function initSpaceLayer() {
-    const layer = document.querySelector(".space-layer");
-    if (!layer) return;
-    const stars = layer.querySelector(".space-layer__stars");
-    const meteors = layer.querySelector(".space-layer__meteors");
+
+  // ---------- the front page's sky: night at the top, sunrise at the why, daylight for the product, noon at the end ----------
+  // Stars and a moon fade out as the sky lightens; a drawn sun rises from below the screen and hands over to the
+  // finale's own sun. Colour is driven by the scroll position, so it follows the reader whatever their speed.
+  function seeded(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function sky(view) {
+    const layer = $(".sky"), nav = $(".nav"), body = document.body;
+    const secs = [...view.querySelectorAll("[data-sky]")];
+    const clear = () => {
+      body.style.backgroundColor = ""; body.classList.remove("is-night");
+      if (nav) { nav.style.removeProperty("--nav-bg"); nav.classList.remove("is-night"); }
+    };
+    if (!secs.length || !layer) { clear(); return null; }
+    const stars = layer.querySelector(".sky__stars");
     if (stars && !stars.children.length) {
-      for (let i = 0; i < 40; i++) {
-        const s = document.createElement("span");
-        s.className = "star";
-        s.style.left = Math.random() * 100 + "%";
-        s.style.top = Math.random() * 100 + "%";
-        s.style.animationDelay = Math.random() * 3 + "s";
-        stars.appendChild(s);
+      const rnd = seeded(20261017);   // the same sky on every visit
+      for (let i = 0; i < 90; i++) {
+        const st = document.createElement("span");
+        st.className = "star" + (rnd() < 0.18 ? " is-big" : "");
+        st.style.left = (rnd() * 100).toFixed(2) + "%";
+        st.style.top = (rnd() * 88).toFixed(2) + "%";
+        st.style.setProperty("--tw", (2.5 + rnd() * 4).toFixed(2) + "s");
+        st.style.animationDelay = (-rnd() * 6).toFixed(2) + "s";
+        stars.appendChild(st);
       }
     }
-    if (meteors && !meteors.children.length) {
-      for (let i = 0; i < 3; i++) {
-        const m = document.createElement("span");
-        m.className = "meteor";
-        m.style.animationDelay = i * 2.7 + "s";
-        m.style.top = Math.random() * 40 + "%";
-        meteors.appendChild(m);
+    const cols = secs.map((el) => hexRgb(el.dataset.sky));
+    const why = view.querySelector(".why"), how = view.querySelector(".how"), hero = view.querySelector("[data-hero]"), cue = view.querySelector(".opening__cue");
+    function update() {
+      const vh = innerHeight, rects = secs.map((el) => el.getBoundingClientRect());
+      const mid = skyColour(rects, cols, vh * 0.5, vh);
+      const navH = nav ? nav.offsetHeight : 0;
+      const top = skyColour(rects, cols, navH / 2, vh);
+      const L = luminance(mid);
+      body.style.backgroundColor = rgbCss(mid);
+      body.classList.toggle("is-night", L < NIGHT);
+      if (nav) { nav.style.setProperty("--nav-bg", rgbCss(top)); nav.classList.toggle("is-night", luminance(top) < NIGHT); }
+      const night = clamp01((NIGHT + 0.04 - L) / 0.17);   // 1 in deep night, 0 once the sky has lightened
+      // the sun: below the screen until the why section comes up, fully risen once the bench's steps are half way up,
+      // and gone before the finale, which draws its own sun beside the panel
+      let rise = 0, shown = 0;
+      if (why && hero) {
+        const w = why.getBoundingClientRect(), h = hero.getBoundingClientRect();
+        const end = (how ? how.getBoundingClientRect().bottom : h.top) - vh * 0.5;   // where the rise ends, relative to now
+        rise = clamp01((vh - w.top) / Math.max(1, (vh - w.top) + end));
+        shown = clamp01(rise * 5) * clamp01((h.top - vh * 0.7) / (vh * 0.4));
       }
+      layer.style.setProperty("--night", night.toFixed(3));
+      layer.style.setProperty("--rise", smooth(rise).toFixed(4));
+      layer.style.setProperty("--sun-on", shown.toFixed(3));
+      if (cue) cue.classList.toggle("is-gone", scrollY > 40);
     }
+    update();
+    return { update, destroy: clear };
   }
+
   function init() {
     document.documentElement.classList.add(reduced() ? "reduced" : "has-motion");
     const onNav = rafThrottle(updateNav);
     addEventListener("scroll", onNav, { passive: true });
     addEventListener("resize", onNav, { passive: true });
     updateNav();
-    initSpaceLayer();
     hidden = document.hidden;
     document.addEventListener("visibilitychange", () => {
       hidden = document.hidden;
@@ -125,7 +172,7 @@ window.SSMotion = (function () {
     const sections = [...view.querySelectorAll("[data-in]")];
     const rest = [];
     sections.forEach((el) => {
-      if (el.hasAttribute("data-hero") || el.classList.contains("is-in")) { el.classList.add("is-in"); return; }  // the hero is on screen at first paint; its moves are its own
+      if (el.hasAttribute("data-hero") || el.hasAttribute("data-opening") || el.classList.contains("is-in")) { el.classList.add("is-in"); return; }  // the opening and the finale reveal their own parts
       const kids = el.children.length === 1 ? el.children[0].children : el.children;
       [...kids].forEach((c, i) => { c.classList.add("m-part"); c.style.setProperty("--i", String(Math.min(i, 6))); });
       rest.push(el);
@@ -158,7 +205,7 @@ window.SSMotion = (function () {
   function repairing(view) {
     const hero = view.querySelector("[data-hero]");
     const none = { setHook() {}, destroy() {}, progress: () => 1 };
-    if (!hero) return none;
+    if (!hero || !hero.querySelector(".rp")) return none;   // the front page no longer draws it; kept for a page that does
     const diagram = hero.querySelector(".rp"), numEl = hero.querySelector("[data-rp-num]"), scrollWord = hero.querySelector(".hero__scroll");
     const gain = () => Number(hero.dataset.gain) || 0;
     const setVars = (k, w, g) => { hero.style.setProperty("--k", k.toFixed(4)); hero.style.setProperty("--w", w.toFixed(4)); hero.style.setProperty("--g", g.toFixed(4)); };
@@ -249,7 +296,7 @@ window.SSMotion = (function () {
   // The hidden state lives in CSS under html.has-motion only, so a failed script never hides a word.
   const revealNow = (el) => { if (el) el.classList.add("is-revealed"); };
   function revealHero(view) {
-    const els = [...view.querySelectorAll("[data-hero] [data-reveal]")];
+    const els = [...view.querySelectorAll("[data-opening] [data-reveal]")];   // on screen at first paint
     if (!els.length) return () => {};
     if (reduced()) { els.forEach(revealNow); return () => {}; }
     // one frame in the hidden state so the transition has somewhere to start from; a timer in case no frame comes
@@ -261,9 +308,9 @@ window.SSMotion = (function () {
   }
   const revealedKeys = new Set(); // once per page load, per section: a redrawn section shows its title at once
   function watchReveal(view) {
-    const els = [...view.querySelectorAll("[data-reveal]")].filter((el) => !el.closest("[data-hero]") && !el.classList.contains("is-revealed"));
+    const els = [...view.querySelectorAll("[data-reveal]")].filter((el) => !el.closest("[data-opening]") && !el.classList.contains("is-revealed"));
     if (!els.length) return () => {};
-    const keyOf = (el) => (el.closest("section") || el).className.split(" ")[0] + ":" + el.tagName;
+    const keyOf = (el) => (el.closest("section") || el).className.split(" ")[0] + ":" + el.tagName + ":" + [...el.classList].join(".");
     const pending = [];
     els.forEach((el) => { if (reduced() || revealedKeys.has(keyOf(el))) revealNow(el); else pending.push(el); });
     if (!pending.length) return () => {};
@@ -371,7 +418,8 @@ window.SSMotion = (function () {
   function mount(view, page) {
     const cleanups = [];
     route = page === "front" ? "index" : page;
-    document.body.classList.toggle("has-hero", !!$(".hero--full", view));
+    if (skyCtl) { skyCtl.destroy(); skyCtl = null; }
+    if (page === "front") skyCtl = sky(view);
     updateNav();
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
@@ -395,9 +443,9 @@ window.SSMotion = (function () {
     return {
       // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new heading
       refresh() { updateNav(); safe(() => countUps(view)); if (rpCtl && rpCtl.redraw) rpCtl.redraw(); if (stripCtl) stripCtl.size(); if (stepsCtl) stepsCtl.rebuild(); safe(() => watchReveal(view)); },
-      destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); },
+      destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); if (skyCtl) { skyCtl.destroy(); skyCtl = null; } },
     };
   }
 
-  return { init, mount, transition, reduced, parseCount, formatCount, easeOut, supports, progressOf };
+  return { init, mount, transition, reduced, parseCount, formatCount, easeOut, supports, progressOf, skyColour, hexRgb, luminance, NIGHT };
 })();

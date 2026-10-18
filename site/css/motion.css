@@ -1,6 +1,6 @@
 /* Second String site: the motion layer. Loaded after site.css; nothing here changes layout or colour at rest.
    Transform, opacity and filter only, so it stays smooth on a phone; readers who prefer reduced motion get
-   the end states at once. The moves (entrances, the re-pairing, the headline reveal, the strip, route slides) come from
+   the end states at once. The moves (entrances, the headline reveal, the strip, route slides) come from
    motion.js and the rules it relies on further down. */
 
 :root {
@@ -47,10 +47,6 @@ a, .btn, .nav__links a, .pool label, .chipcell, .field input, .field select, .fi
 .batch__row:nth-child(3) .batch__bar { animation-delay: calc(var(--m-stagger) * 4); }
 .batch__row:nth-child(n + 4) .batch__bar { animation-delay: calc(var(--m-stagger) * 5); }
 
-@media (prefers-reduced-motion: reduce) {
-  .space-layer, .nav__sun { animation: none !important; }
-  .star, .meteor { animation: none !important; opacity: 0.3; }
-}
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-5px); }
@@ -73,20 +69,10 @@ a, .btn, .nav__links a, .pool label, .chipcell, .field input, .field select, .fi
 .m-part { transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1), filter 1s cubic-bezier(0.2, 0.8, 0.2, 1); transition-delay: calc(var(--i, 0) * 110ms); }
 html.has-motion [data-in]:not(.is-in) .m-part { opacity: 0; transform: translateY(40px); filter: blur(6px); }
 
-/* the re-pairing: --k moves cells 2 and 3 into the other string, --w draws the wires, --g lights the strong pair and the gain */
-.rp-cell[data-cell="2"] { transform: translate(calc(var(--k, 0) * -140px), calc(var(--k, 0) * 90px)); }
-.rp-cell[data-cell="3"] { transform: translate(calc(var(--k, 0) * 140px), calc(var(--k, 0) * -90px)); }
-.rp-wire { stroke-dasharray: 320px; stroke-dashoffset: calc(320px * (1 - var(--w, 1))); }
-.rp-num, .rp-label { opacity: calc(0.3 + 0.7 * var(--g, 1)); }
-.hero__scroll { transition: opacity var(--m-fast) ease; }
-.hero__scroll.is-gone { opacity: 0; }
-html.reduced [data-hero] { --k: 1; --w: 1; --g: 1; }
-html.reduced .hero__scroll { display: none; }
-
 /* cards wipe in from the top edge once their section is on screen, one after another */
-.wiring, .ppass, .teaser__box { transition: clip-path 760ms var(--m-ease); transition-delay: calc(var(--j, 0) * 90ms); }
+.wiring, .ppass { transition: clip-path 760ms var(--m-ease); transition-delay: calc(var(--j, 0) * 90ms); }
 .wiring:nth-child(2), .ppass:nth-child(2) { --j: 1; } .wiring:nth-child(3), .ppass:nth-child(3) { --j: 2; } .ppass:nth-child(4) { --j: 3; }
-html.has-motion .strip:not(.is-in) .wiring, html.has-motion .fpass:not(.is-in) .ppass, html.has-motion .teaser:not(.is-in) .teaser__box { clip-path: inset(0 0 100% 0); }
+html.has-motion .strip:not(.is-in) .wiring, html.has-motion .fpass:not(.is-in) .ppass { clip-path: inset(0 0 100% 0); }
 /* how the bench works: the rail draws across as the reader scrolls through the section (motion.js sets the offset), and
    each step lights and settles in turn; without script or under reduced motion all of it is simply there */
 .string__wire path { stroke-dasharray: 1; stroke-dashoffset: 0; }
@@ -125,10 +111,9 @@ html[data-dir="back"] .view.is-leaving { animation-name: vt-out-back; }
 html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
-  .m-part, .line__in, .rise, .grow, .hero__scroll, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
-  .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
+  .m-part, .line__in, .rise, .grow, .step__glyph, .step h3, .wiring, .ppass { transition: none; }
+  .sun__disc, .sun__rays, .sun__beam { animation: none; }
   .hero__panel { --tx: 12; --ty: -3; }
-  [data-hero] { --k: 1; --w: 1; --g: 1; }
   ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
 }
 html.reduced .m-part, html.reduced .line__in, html.reduced .rise, html.reduced .grow { transition: none; }

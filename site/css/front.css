@@ -1,10 +1,24 @@
-/* Second String site: the front page. Sections run full width and wrap their content in .wrap; on large
-   screens the hero pins for one extra screen so the scroll can re-pair the four panels. No gradients, no
-   shadows; the one strong colour is the gain numeral in the navy band. */
+/* Second String site: the front page, from night to day. Sections run full width and wrap their content in .wrap.
+   Each section names a sky colour; motion.js blends the page's background between them as the reader scrolls and
+   sets body.is-night while the sky is dark, which turns the text light. Solid colours only: no gradients, no shadows.
+   The one strong colour is the gain numeral on its navy card. */
 
-/* hero: text first on small screens (the two ways in sit in the first screen), slab beside it on large ones */
-.hero { position: relative; }
-.hero__pin { display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot" "diagram" "caption" "scroll"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
+/* the opening: the first screen, under the night sky. The problem in one line and the two ways in */
+.opening { min-height: calc(100svh - 64px); display: grid; align-content: center; position: relative; padding-block: 72px 112px; text-align: center; }
+.opening__in { display: grid; justify-items: center; gap: 26px; }
+.opening .display { font-size: clamp(2.6rem, 7vw, 6.4rem); max-width: 14ch; }
+.opening .lede { margin: 0; font-size: clamp(1.1rem, 1.6vw, 1.35rem); max-width: 34ch; }
+.opening__actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.opening__cue { position: absolute; left: 0; right: 0; bottom: 32px; text-align: center; transition: opacity var(--m-fast, 260ms) ease; }
+.opening__cue.is-gone { opacity: 0; }
+.btn--sun { background: var(--sun); border-color: var(--sun); color: var(--cell-deep); }
+.btn--sun:hover { background: #ffc61a; border-color: #ffc61a; }
+.btn--night { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.55); }
+.btn--night:hover { border-color: #fff; }
+
+/* the finale: the drawn cell under a drawn sun, beside the closing line and the two ways in; text first on small screens */
+.hero { position: relative; padding-block: clamp(48px, 7vw, 112px); }
+.hero__pin { display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
 .hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
@@ -17,26 +31,10 @@
 .hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; }
 .hero__text .lede { margin: 0; }
 .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.rp { grid-area: diagram; width: min(100%, 900px); height: auto; max-height: 270px; justify-self: center; }
-.rp text { font-family: var(--font); }
-.rp-cell text { fill: #fff; font-weight: 600; font-size: 14px; }
-.rp-wire { fill: none; stroke: var(--cell); stroke-width: 2; }
-.rp-rail { fill: none; stroke: var(--busbar); stroke-width: 2; }
-.rp-num { font-size: 58px; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; fill: var(--cell); }
-.rp-label { font-size: 13px; fill: var(--ink-2); }
-.hero__caption { grid-area: caption; display: none; margin-top: -16px; }  /* the svg's own caption is too small on a phone */
-.hero__scroll { grid-area: scroll; text-align: center; display: none; }  /* the page no longer pins; kept for the markup */
-@media (max-width: 600px) {
-  .rp-label { display: none; }
-  .rp-num { font-size: 76px; }
-  .rp-cell text { font-size: 20px; }
-  .hero__caption { display: block; }
-}
-@media (min-width: 900px) and (min-height: 700px) {
-  .hero__pin { max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
+@media (min-width: 900px) and (min-height: 600px) {
+  .hero__pin { max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text"; gap: 28px 72px; align-items: center; }
   .hero .display { font-size: clamp(2.4rem, 5vw, 5.8rem); }
-  .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
-  .rp { width: min(100%, 1080px); max-height: 340px; }
+  .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; }
   .hero__text { padding-right: 24px; }
 }
 @media (min-width: 1800px) {   /* 1920x1080: the two halves split evenly, the headline stays on two lines, the slab grows */
@@ -44,12 +42,18 @@
   .hero .display { font-size: 5rem; }
 }
 
-/* the problem: three figures, then the two sentences */
-.problem { padding-block: var(--section) 0; }
+/* the problem: a heading, three figures, then the two sentences */
+.problem { padding-block: var(--section); }
+.problem__title { max-width: 22ch; margin-bottom: clamp(36px, 5vw, 64px); }
 .problem__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
 .problem .num-big { font-size: clamp(2.4rem, 4.6vw, 4.2rem); white-space: nowrap; }
 .fig__line { color: var(--ink-2); margin-top: 10px; max-width: 26ch; }
 .problem__text { max-width: var(--measure); margin-top: 56px; font-size: 1.2rem; line-height: 1.45; }
+
+/* why: a short paragraph at sunrise */
+.why { padding-block: clamp(64px, 9vw, 128px); }
+.why__in { max-width: 760px; }
+.why__text { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.5; margin-top: 18px; max-width: 58ch; }
 
 /* how the bench works: the four steps hang in order on one wire, like panels on a string; order comes from position, not numerals */
 .how { padding-block: var(--section); }
@@ -99,8 +103,9 @@
   html.has-motion .strip:not(.is-row) .wiring__svg { max-width: 560px; }
 }
 
-/* the gain: the page's one strong colour */
-.front-band { border-radius: 0; padding: var(--section) 0; }
+/* the gain: a navy card in the daylight, the page's one strong colour */
+.front-gain { padding-block: calc(var(--section) * 0.4) calc(var(--section) * 0.6); }
+.front-band { padding: clamp(36px, 5vw, 64px) clamp(24px, 4.5vw, 64px); }
 
 /* passports: the four newest, or the way to see an example */
 .fpass { padding-block: var(--section); }
@@ -112,13 +117,8 @@
 .ppass__facts { grid-column: 1 / -1; }
 .fpass__actions { margin-top: 28px; gap: 12px; }
 
-/* builder teaser */
-.teaser { padding-block: 0 var(--section); }
-.teaser__box { display: flex; gap: 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--surface); border-radius: var(--radius); padding: 26px 28px; }
-.teaser__text { font-size: 1.15rem; max-width: 46ch; }
-
 /* close */
-.close { background: var(--surface); padding: var(--section) 0 72px; }
+.close { padding: var(--section) 0 72px; }
 .close__name { font-size: var(--display); font-weight: 700; font-stretch: 118%; letter-spacing: -0.03em; line-height: 0.95; color: var(--cell); }
 .close__line { font-size: 1.2rem; margin-top: 22px; max-width: var(--measure); }
 .close__note { margin-top: 24px; max-width: var(--measure); }
@@ -146,55 +146,49 @@
 }
 
 
-/* night-to-day sky driven by scroll progress (--day 0..1) */
-.sky {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(180deg,
-    hsl(230, 45%, calc(8% + var(--day, 0) * 78%)) 0%,
-    hsl(210, 40%, calc(12% + var(--day, 0) * 72%)) 40%,
-    hsl(200, 30%, calc(18% + var(--day, 0) * 68%)) 100%);
-  transition: background 0.1s linear;
-}
-body[data-page="front"] { background: transparent; }
-.why { padding-block: var(--section); background: transparent; }
-.why .lede { font-size: 1.15rem; max-width: 62ch; }
-.space-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; opacity: calc(1 - var(--day, 0)); transition: opacity 0.2s linear; }
-.space-layer__stars, .space-layer__meteors { position: absolute; inset: 0; }
-.star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: 0.4; animation: twinkle 3s ease-in-out infinite; }
-@keyframes twinkle { 50% { opacity: 0.9; } }
-.meteor { position: absolute; width: 120px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6)); transform: rotate(-25deg); opacity: 0; animation: meteor 8s linear infinite; }
-@keyframes meteor { 0% { transform: translate(100vw, -20vh) rotate(-25deg); opacity: 0; } 10% { opacity: 0.7; } 100% { transform: translate(-20vw, 100vh) rotate(-25deg); opacity: 0; } }
-body[data-page="front"] .space-layer { display: block; }
-.space-layer { display: none; }
-
-/* floating planets that drift on scroll (parallax via JS) */
-.float-planet { position: absolute; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f2b705, #15224a); opacity: 0.15; pointer-events: none; filter: blur(1px); }
+/* ---------- night to day ---------- */
+/* the sky itself is the body's background on the front page (motion.js sets it); sections are transparent over it */
 body[data-page="front"] #view > section { position: relative; z-index: 1; }
-.problem, .how { background: var(--surface); }
-.problem { padding-block: var(--section); }
-.how { margin-top: calc(-1 * var(--section) + 24px); padding-top: 24px; }
-.strip { background: var(--cell); }
-.strip .title, .strip__note { color: #fff; }
-.strip__note { opacity: 0.72; }
-.strip__pin { padding-block: var(--section) calc(var(--section) * 0.6); }
-.strip .wiring__label { color: var(--ink-2); }
-.front-band { padding-top: calc(var(--section) * 0.5); }
-.hero__pin { z-index: 1; }
+.sky { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+body[data-page="front"] .sky { display: block; }
+.sky__stars { position: absolute; inset: 0; opacity: var(--night, 1); }
+.star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff; opacity: 0.55; animation: twinkle var(--tw, 4s) ease-in-out infinite alternate; }
+.star.is-big { width: 3px; height: 3px; opacity: 0.8; }
+@keyframes twinkle { from { opacity: 0.15; } to { opacity: 0.85; } }
+/* now and then a shooting star crosses the top of the night sky */
+.sky__meteor { position: absolute; top: 12%; left: 70%; width: 110px; height: 1.5px; border-radius: 1px; background: rgba(255, 255, 255, 0.8); opacity: 0; transform: rotate(-22deg); animation: meteor 13s linear infinite 3s; }
+@keyframes meteor { 0%, 88% { opacity: 0; transform: translate(0, 0) rotate(-22deg); } 90% { opacity: calc(0.8 * var(--night, 1)); } 96% { opacity: 0; transform: translate(-46vw, 18vw) rotate(-22deg); } 100% { opacity: 0; transform: translate(-46vw, 18vw) rotate(-22deg); } }
+/* the moon sets and fades as the sun comes up */
+.sky__moon { position: absolute; left: 7vw; top: 15vh; width: clamp(40px, 5.5vw, 84px); height: auto; fill: #e8ecf6; opacity: calc(var(--night, 1) * 0.92); transform: translateY(calc(var(--rise, 0) * 40vh)); }
+/* the sun rises from below the screen toward the top right, then hands over to the finale's own sun */
+.sky__sun { position: absolute; right: 8vw; top: 13vh; width: clamp(76px, 10vw, 150px); height: auto; opacity: var(--sun-on, 0); transform: translateY(calc((1 - var(--rise, 0)) * 85vh)); }
+.sky__disc { fill: var(--sun); }
+.sky__rays line { stroke: var(--sun); stroke-width: 7; stroke-linecap: round; }
+.sky__rays { transform-origin: 100px 100px; animation: sky-turn 90s linear infinite; }
+@keyframes sky-turn { to { transform: rotate(360deg); } }
+html.reduced .sky__sun, html.reduced .sky__moon { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .star, .sky__meteor, .sky__rays { animation: none; }
+  .sky__meteor { display: none; }
+  .sky__sun, .sky__moon { transform: none; }
+}
+@media (max-width: 760px) {
+  /* phones: a smaller sun tucked into the right edge, so it stays clear of the text column */
+  .sky__sun { right: -14px; top: 15vh; width: 64px; }
+  .sky__moon { top: 12vh; width: 34px; }
+}
+
+/* text follows the sky: navy on a light sky, white on a dark one. Cards keep their own white ground and dark text */
+body[data-page="front"] #view { --t1: var(--cell); --t2: #3e4859; }   /* a shade darker than --ink-2: the sunrise and morning skies are not white */
+body.is-night[data-page="front"] #view { --t1: #ffffff; --t2: rgba(233, 237, 248, 0.84); }
+body[data-page="front"] #view :is(.opening .display, .title, .num-big, .close__name, .hero .display, .step h3) { color: var(--t1); transition: color 400ms ease; }
+body[data-page="front"] #view :is(.opening .lede, .lede, .fig__line, .problem__text, .why__text, .step p, .close__line, .muted, section > .wrap > .label, .strip__note, .close__note, .fpass__actions .label, .opening__cue) { color: var(--t2); transition: color 400ms ease; }
+body[data-page="front"] #view .problem__text { color: var(--t1); }
+/* the bench's drawings sit on small light tiles so they read on any sky */
+.step__glyph { border-radius: 4px; }
 
 @media (max-width: 760px) { .hero__sun { display: none; } }   /* phones: the panel alone */
 
-/* the ticker: a slow band of sourced facts under the hero, paused under the pointer */
-.ticker { overflow: hidden; background: var(--cell); color: #fff; }
-.ticker__track { display: flex; width: max-content; animation: marquee 56s linear infinite; }
-.ticker:hover .ticker__track { animation-play-state: paused; }
-.ticker__item { display: inline-flex; align-items: center; white-space: nowrap; padding: 16px 0; font-size: 1.02rem; font-weight: 600; font-stretch: 105%; }
-.ticker__item::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--sun); margin: 0 30px; flex: none; }
-@keyframes marquee { to { transform: translateX(-50%); } }
-
-/* amber on one key figure per chapter: the hero's gain, the first problem numeral, the best wiring's power */
-.rp-num { fill: var(--sun); }
-.problem .fig:first-child .num-big { color: var(--sun); }
-.wiring.is-best .wiring__w { color: var(--sun); }
+/* amber on one key figure per chapter: the first problem numeral on the night sky; the best wiring's power is navy, underlined in amber */
+.problem .fig:first-child .num-big { color: var(--sun) !important; }
+.wiring.is-best .wiring__w { color: var(--cell); text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 5px; text-underline-offset: 8px; }
