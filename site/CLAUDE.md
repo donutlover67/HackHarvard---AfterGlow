@@ -6,7 +6,7 @@ Plain HTML, CSS and one script, hash-routed, no build step, no framework, nothin
 
 ## Files
 - `index.html` — the shell: nav, `#view`, footer, scripts.
-- `js/app.js` — data loading, validation, every page, the router. `js/builder.js` — the Array Builder's grouping (voltage-balanced, with a brute-force check for up to 8 panels). `js/model.js` — the single-diode panel model (same as `dashboard/js/mock.js`). `vendor/qrcode.js` — QR generator (qrcode-generator, MIT).
+- `js/app.js` — data loading, validation, every page, the router. `js/builder.js` — the Array Builder's grouping (voltage-balanced, with a brute-force check for up to 8 panels). `js/sizing.js` — how many panels go in series for a use (run a device, charge a battery, feed an inverter or converter, or most watts), from installers' hot-day and cold-morning string formulas; pure, sources in its header. `js/model.js` — the single-diode panel model (same as `dashboard/js/mock.js`). `vendor/qrcode.js` — QR generator (qrcode-generator, MIT).
 - `css/site.css` — tokens, layout, phone (760 px, 480 px) and print rules. `css/motion.css` — entrance animations, loaded after site.css; transform and opacity only, all switched off by `prefers-reduced-motion`.
 - `data/sample-run.json` — a sample run made by `tools/sim/make_site_sample.py` ("Load the sample run"). `data/runs/` — published runs, listed in `data/runs/index.json`.
 
