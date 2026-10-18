@@ -182,7 +182,7 @@ window.SSFront = (function () {
     set("#front-gain", gainInner(ctx, g));
     set("#front-passports", passportsInner(ctx));
     const heroEl = root.querySelector("[data-hero]");
-    if (heroEl) { heroEl.dataset.gain = String(Math.round(g.pct)); const n = heroEl.querySelector("[data-rp-num]"); if (n) n.textContent = gainText(g); }
+    if (heroEl) heroEl.dataset.gain = String(Math.round(g.pct));   // motion.js redraws the numeral at the current scroll position
     wire(root, refresh.hooks || {});
   }
   function wire(root, hooks) {

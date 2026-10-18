@@ -139,7 +139,7 @@ window.SSMotion = (function () {
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onScroll);
     update();
-    return { setHook(fn) { hook = fn; if (raw >= 0) fn(raw); }, progress: () => Math.max(0, raw), destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); } };
+    return { setHook(fn) { hook = fn; if (raw >= 0) fn(raw); }, progress: () => Math.max(0, raw), redraw() { if (raw >= 0) apply(raw); else update(); }, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); } };
   }
 
   // ---------- the strip: on fine pointers the section pins; the first stretch of scroll zooms the wirings in and
@@ -312,9 +312,10 @@ window.SSMotion = (function () {
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
     safe(() => countUps(view));
-    let stripCtl = null, stepsCtl = null;
+    let stripCtl = null, stepsCtl = null, rpCtl = null;
     if (page === "front") {
       const rp = safe(() => repairing(view));
+      rpCtl = rp;
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
       safe(() => revealHero(view));
@@ -329,7 +330,7 @@ window.SSMotion = (function () {
     }, 2500);
     return {
       // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new heading
-      refresh() { safe(() => countUps(view)); if (stripCtl) stripCtl.size(); if (stepsCtl) stepsCtl.rebuild(); safe(() => watchReveal(view)); },
+      refresh() { safe(() => countUps(view)); if (rpCtl && rpCtl.redraw) rpCtl.redraw(); if (stripCtl) stripCtl.size(); if (stepsCtl) stepsCtl.rebuild(); safe(() => watchReveal(view)); },
       destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); },
     };
   }
