@@ -117,14 +117,14 @@ window.SSFront = (function () {
     </section>`;
   }
   // a slow band of sourced facts under the hero; it pauses under the pointer
-  const TICKER = ["Most panels still make 80–88% of their rating after 25 years", "About 83% of retired US panels are headed to landfill", "Lab-testing one used panel costs €16–31", "1.2% of retired US panels are reused", "Matched wiring: up to 37% more power from the same four panels, simulated"];
+  const TICKER = ["Most panels still make 80–88% of their rating after 25 years", "About 83% of retired US panels are headed to landfill", "Lab-testing one used panel costs $17–34", "1.2% of retired US panels are reused", "Matched wiring: up to 37% more power from the same four panels, simulated"];
   const ticker = () => `<section class="ticker" aria-hidden="true"><div class="ticker__track">${[...TICKER, ...TICKER].map((t) => `<span class="ticker__item">${t}</span>`).join("")}</div></section>`;
   const problem = () => `<section class="problem" data-in>
       <div class="wrap">
         <div class="problem__grid">
           <div class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of rated output is what most panels still make after 25 years</p></div>
           <div class="fig"><div class="num-big" data-count>1.2%</div><p class="fig__line">of retired US panels are reused; most are landfilled</p></div>
-          <div class="fig"><div class="num-big" data-count>€16–31</div><p class="fig__line">for a lab test of one used panel, against about €50 for a new one</p></div>
+          <div class="fig"><div class="num-big" data-count>$17–34</div><p class="fig__line">for a lab test of one used panel, against about $55 for a new one</p></div>
         </div>
         <p class="problem__text">In a series string every panel carries the same current, so the weakest panel limits the string. Factories sort new panels into current classes; used ones arrive mixed and untested.</p>
       </div>

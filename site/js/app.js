@@ -607,7 +607,7 @@
           <li>Panels lose about 0.5–0.75% of output a year (NREL fleet study, median 0.75%/yr; literature median 0.5%/yr). After 25 years most still make 80–88% of their rating.</li>
           <li>Panels retired early, for upgrades or damage, often still produce 70–95% of their rating (NREL).</li>
           <li>NREL's baseline for US modules 2020–2050: about 83% landfilled, 9.5% recycled, 1.2% reused.</li>
-          <li>Testing a used panel in a lab (flash test plus electroluminescence) costs about €16–31 per module, against about €50 for a new module (IEA PVPS Task 13, 2026; German test labs' price lists).</li>
+          <li>Testing a used panel in a lab (flash test plus electroluminescence) costs about $17–34 per module (€16–31), against about $55 (€50) for a new module (IEA PVPS Task 13, 2026; German test labs' price lists; converted at about 1.08 $/€).</li>
         </ul>
       </div>
       <div class="card">
