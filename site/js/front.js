@@ -20,7 +20,27 @@ window.SSFront = (function () {
   // The hero's drawing. Both svgs share the slot's box; the sun's frame reaches 14% above it (400x342 against the
   // panel's 400x300, so nothing is stretched), which puts the sun in the hero's top left corner without meeting text.
   // The panel is drawn after the sun, so the beams end where they land on its face.
-  const SUN = { cx: 30, cy: 58, r: 18 };   // above and left of the face's corner; clear of the nav and the viewport's edge at 1920x1080 and 1440x900
+  const SUN = { cx: 26, cy: 50, r: 18 };   // where the beams start: under the page's sun at the top of the page
+  // the page's one sun, drawn by hand and fixed to the screen; motion.js walks it from left to right as the page scrolls
+  function skySun() {
+    const cx = 40, cy = 40, r = 17;
+    const rays = Array.from({ length: 11 }, (_, i) => { const a = (i / 11) * Math.PI * 2 - 0.4, len = 7 + ((i * 7) % 5), r0 = r + 6 + ((i * 3) % 3); const p = (rr) => `${(cx + Math.cos(a) * rr).toFixed(1)} ${(cy + Math.sin(a) * rr).toFixed(1)}`; return `<path d="M${p(r0)} L${p(r0 + len)}"/>`; }).join("");
+    const d = `M${cx} ${cy - r} C${cx + 12} ${cy - r - 1} ${cx + r + 1} ${cy - 11} ${cx + r} ${cy + 1} C${cx + r - 1} ${cy + 13} ${cx + 10} ${cy + r + 1} ${cx - 1} ${cy + r} C${cx - 13} ${cy + r - 1} ${cx - r - 1} ${cy + 10} ${cx - r} ${cy - 1} C${cx - r + 1} ${cy - 12} ${cx - 11} ${cy - r + 1} ${cx} ${cy - r} Z`;
+    return `<div class="skysun" aria-hidden="true"><svg viewBox="0 0 80 80" focusable="false"><g class="sun__rays">${rays}</g><path class="sun__disc" d="${d}"/></svg></div>`;
+  }
+  // a hand-drawn landscape along the bottom of a white block: three hills in sage, a few blades of grass, two trees
+  function landscape() {
+    const grass = [[150, 262], [162, 258], [640, 232], [652, 236], [1180, 248], [1192, 244], [1410, 266]].map(([x, y]) => `<path d="M${x} ${y} l -3 -11 M${x + 5} ${y - 1} l 2 -10"/>`).join("");
+    const tree = (x, y, s) => `<path d="M${x} ${y} C ${x + 1} ${y - 10 * s}, ${x - 1} ${y - 18 * s}, ${x} ${y - 26 * s}"/><path class="land__crown" d="M${x} ${y - 24 * s} C ${x + 14 * s} ${y - 30 * s}, ${x + 16 * s} ${y - 54 * s}, ${x} ${y - 56 * s} C ${x - 16 * s} ${y - 54 * s}, ${x - 14 * s} ${y - 30 * s}, ${x} ${y - 24 * s} Z"/>`;
+    return `<svg class="landscape" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+      <path class="land__back" d="M-20 222 C 180 150, 390 158, 570 202 C 700 234, 820 170, 960 150 C 1110 128, 1260 196, 1400 182 C 1480 174, 1540 190, 1620 204 V320 H-20 Z"/>
+      <path class="land__mid" d="M-20 254 C 240 188, 500 236, 740 212 C 900 196, 1040 166, 1220 190 C 1380 212, 1500 236, 1620 240 V320 H-20 Z"/>
+      ${tree(1010, 206, 1)}${tree(1046, 212, 0.7)}
+      <path class="land__front" d="M-20 278 C 290 236, 610 268, 900 246 C 1120 230, 1360 226, 1620 268 V320 H-20 Z"/>
+      ${tree(300, 268, 0.9)}
+      <g class="land__grass">${grass}</g>
+    </svg>`;
+  }   // above and left of the face's corner; clear of the nav and the viewport's edge at 1920x1080 and 1440x900
   const FACE = { x: 48, y: 64, w: 304, h: 172, c: 30 };
   function sunSvg() {
     const { cx, cy, r } = SUN;
@@ -31,16 +51,12 @@ window.SSFront = (function () {
     }).join("");
     // three beams fan out from the disc's edge and run down onto the face (sun frame = panel frame shifted down by 42)
     const beams = [[130, 172], [205, 156], [285, 146]].map(([ex, ey], i) => {
-      const a = Math.atan2(ey - cy, ex - cx), sx = cx + Math.cos(a) * (r + 9), sy = cy + Math.sin(a) * (r + 9);
+      const a = Math.atan2(ey - cy, ex - cx), sx = cx + Math.cos(a) * (r + 2), sy = cy + Math.sin(a) * (r + 2);
       const mx = (sx + ex) / 2, my = (sy + ey) / 2 - 12;   // a slight sag, like a drawn line
       return `<path class="sun__beam" style="--b:${i}" d="M${sx.toFixed(1)} ${sy.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex} ${ey}"/>`;
     }).join("");
     const d = `M${cx} ${cy - r} C${cx + 12} ${cy - r - 1} ${cx + r + 1} ${cy - 11} ${cx + r} ${cy + 1} C${cx + r - 1} ${cy + 13} ${cx + 10} ${cy + r + 1} ${cx - 1} ${cy + r} C${cx - 13} ${cy + r - 1} ${cx - r - 1} ${cy + 10} ${cx - r} ${cy - 1} C${cx - r + 1} ${cy - 12} ${cx - 11} ${cy - r + 1} ${cx} ${cy - r} Z`;
-    return `<svg class="hero__sun" viewBox="0 0 400 342" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <g class="sun__rays">${rays}</g>
-      <path class="sun__disc" d="${d}"/>
-      <g class="sun__beams">${beams}</g>
-    </svg>`;
+    return `<svg class="hero__sun" viewBox="0 0 400 342" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g class="sun__beams">${beams}</g></svg>`;   // the sun itself is the page's (skySun), fixed to the screen
   }
   // the cell as a drawing: its shadow, its thickness, its face with fingers and busbars, and the sunlight on the face
   // as an amber wash and hatching from the top left corner, whose reach motion.js sets from the way the panel turns.
@@ -231,7 +247,7 @@ window.SSFront = (function () {
     </section>`;
   // the white block: the problem and the steps on one sheet of paper, with "recycle" written across it from the
   // sheet's bottom left corner, behind both
-  const paper = () => `<div class="paper">${recycleSvg()}${problem()}${how()}</div>`;
+  const paper = () => `<div class="paper">${landscape()}${recycleSvg()}${problem()}${how()}</div>`;
   // the bench's four steps hang in order on one wire, the way panels hang on a string; each carries a drawing of what happens
   const tiny = (x, y, w, h, strong) => `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--cell)"/>${strong ? "" : `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--film)"/>`}`;
   const GLYPHS = {
@@ -305,7 +321,7 @@ window.SSFront = (function () {
   const passportsSection = (ctx) => `<section class="fpass" id="front-passports" data-in>${passportsInner(ctx)}</section>`;
   const teaser = () => `<section class="teaser" data-in>
       <div class="wrap"><div class="teaser__box"><p class="teaser__text">Have passports? The Array Builder groups them into strings so no strong panel is held back.</p><a class="btn" href="#/build">Try the Array Builder</a></div></div></section>`;
-  const close = () => `<section class="close" data-in><div class="wrap">
+  const close = () => `<section class="close" data-in>${landscape()}<div class="wrap">
       <p class="close__name">Second String</p>
       <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>
       <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
@@ -315,7 +331,7 @@ window.SSFront = (function () {
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    return hero() + repair(ctx, g) + paper() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
+    return skySun() + hero() + repair(ctx, g) + paper() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {

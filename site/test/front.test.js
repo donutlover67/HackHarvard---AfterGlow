@@ -97,7 +97,9 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect(Math.max(...widths.slice(1).map((w, i) => Math.abs(w - widths[i])))).toBeLessThan(9);     // and never a sudden jump
   expect((html.match(/class="doodle /g) || []).length).toBe(3);       // the sun, the cell, the string
   expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
-  expect(html).toContain('class="hero__sun"');
+  expect(html).toContain('class="hero__sun"');                          // the beams onto the panel
+  expect((html.match(/class="skysun"/g) || []).length).toBe(1);        // one sun for the page, fixed to the screen
+  expect((html.match(/class="landscape"/g) || []).length).toBe(2);     // hills under the paper block and the close
   expect((html.match(/class="sun__beam"/g) || []).length).toBe(3);   // three beams of light onto the panel
   expect(html.indexOf('class="hero__sun"')).toBeLessThan(html.indexOf('class="hero__panel"'));   // drawn first, so the panel paints over the beams
   expect(html).toContain('data-lit-poly');                              // the sunlit corner motion.js resizes

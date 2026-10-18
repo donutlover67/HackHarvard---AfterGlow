@@ -225,3 +225,18 @@ html.reduced .recycle path { stroke-dashoffset: 0; }
 }
 html.has-motion .ppass { filter: grayscale(1); opacity: 0.72; }
 html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-motion .ppass.is-near { filter: none; opacity: 1; }
+
+/* the page's sun: fixed to the screen below the nav, drawn by hand, walking from left to right along a shallow arc as the
+   page scrolls (--sx in vw and --sy in vh from motion.js); above the chapters, under the nav */
+.skysun { position: fixed; left: calc(var(--sx, 6) * 1vw); top: calc(var(--sy, 13) * 1vh); width: 78px; height: 78px; transform: translate(-50%, -50%); z-index: 4; pointer-events: none; }
+.skysun svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.skysun .sun__disc { fill: var(--sun); }
+body:not([data-page="front"]) .skysun { display: none; }
+@media (max-width: 760px) { .skysun { width: 50px; height: 50px; } }
+/* the landscape along the bottom of a white block: sage hills with a drawn edge, grass, two trees; under the text */
+.landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 30%; z-index: 0; pointer-events: none; stroke: #5f8a55; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
+.land__back { fill: #d3e3ca; } .land__mid { fill: #b7d2a9; } .land__front { fill: #98bd88; }
+.land__crown { fill: #a7c898; }
+.land__grass { fill: none; }
+.close { position: relative; overflow: clip; }
+.close .wrap { position: relative; z-index: 1; }

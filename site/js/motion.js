@@ -322,6 +322,20 @@ window.SSMotion = (function () {
     }, 160));
   }
 
+  // ---------- the page's sun: fixed to the screen, walking from the left to the right as the page scrolls ----------
+  function sky(view) {
+    const sun = view.querySelector(".skysun");
+    if (!sun) return () => {};
+    const set = (p) => { sun.style.setProperty("--sx", (6 + 84 * p).toFixed(3)); sun.style.setProperty("--sy", (13 - 6 * Math.sin(p * Math.PI)).toFixed(3)); };   // a shallow arc, high in the middle
+    if (reduced()) { set(0); return () => {}; }
+    const update = () => set(clamp01(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)));
+    const onScroll = rafThrottle(update);
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+    update();
+    return () => { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); };
+  }
+
   // ---------- the passports collage: pans diagonally with the scroll; a card near the middle of the screen wakes ----------
   function collage(view) {
     const section = view.querySelector(".fpass");
@@ -411,6 +425,7 @@ window.SSMotion = (function () {
       const rp = safe(() => repairing(view));
       rpCtl = rp;
       collageCtl = safe(() => collage(view));
+      safe(() => sky(view));
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
       safe(() => revealHero(view));
