@@ -196,7 +196,7 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 /* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
    is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
 /* anchored to the sheet's bottom left corner (xMinYMax), mostly transparent, under the text of both sections */
-.recycle { position: absolute; left: 0.5%; bottom: 1%; width: 99%; height: 92%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.3; shape-rendering: geometricPrecision; }
+.recycle { position: absolute; left: 0.5%; bottom: 1%; width: 99%; height: 92%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.2; shape-rendering: geometricPrecision; }
 .recycle path { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; }   /* parked just past the start, so no round cap shows before the pen arrives */
 .paper:has(.problem.is-in) .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
 html.reduced .recycle path { stroke-dashoffset: 0; }
