@@ -1,0 +1,33 @@
+{
+ "advisor": "tool-check_use",
+ "all": {
+  "cases": 212,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 100.0,
+  "false_yes_pct": 0.0,
+  "false_no_pct": 0.0,
+  "alternatives_valid_pct": 100.0,
+  "alternatives_given": 468
+ },
+ "real": {
+  "cases": 12,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 100.0,
+  "false_yes_pct": 0.0,
+  "false_no_pct": 0.0,
+  "alternatives_valid_pct": 100.0,
+  "alternatives_given": 23
+ },
+ "sim": {
+  "cases": 200,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 100.0,
+  "false_yes_pct": 0.0,
+  "false_no_pct": 0.0,
+  "alternatives_valid_pct": 100.0,
+  "alternatives_given": 445
+ }
+}

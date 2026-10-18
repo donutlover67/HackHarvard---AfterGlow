@@ -1,0 +1,33 @@
+{
+ "advisor": "naive-voc-x-isc",
+ "all": {
+  "cases": 212,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 62.7,
+  "false_yes_pct": 51.3,
+  "false_no_pct": 20.6,
+  "alternatives_valid_pct": 37.2,
+  "alternatives_given": 1257
+ },
+ "real": {
+  "cases": 12,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 66.7,
+  "false_yes_pct": 28.6,
+  "false_no_pct": 40.0,
+  "alternatives_valid_pct": 31.5,
+  "alternatives_given": 73
+ },
+ "sim": {
+  "cases": 200,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 62.5,
+  "false_yes_pct": 52.8,
+  "false_no_pct": 19.6,
+  "alternatives_valid_pct": 37.6,
+  "alternatives_given": 1184
+ }
+}

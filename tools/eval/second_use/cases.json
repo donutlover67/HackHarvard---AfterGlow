@@ -1,0 +1,6238 @@
+{
+ "meta": {
+  "system_efficiency": 0.65,
+  "devices": {
+   "ble_beacon": {
+    "name": "Bluetooth beacon",
+    "watts": 0.01,
+    "typical_hours": 24
+   },
+   "garden_marker": {
+    "name": "LED garden marker light",
+    "watts": 0.1,
+    "typical_hours": 6
+   },
+   "soil_sensor": {
+    "name": "LoRa soil-moisture sensor",
+    "watts": 0.05,
+    "typical_hours": 24
+   },
+   "epaper_sign": {
+    "name": "E-paper bus-stop sign",
+    "watts": 0.2,
+    "typical_hours": 24
+   },
+   "trail_camera": {
+    "name": "Trail camera on standby",
+    "watts": 0.3,
+    "typical_hours": 24
+   },
+   "led_path_light": {
+    "name": "LED path light",
+    "watts": 0.5,
+    "typical_hours": 6
+   },
+   "weather_station": {
+    "name": "Wi-Fi weather station",
+    "watts": 0.6,
+    "typical_hours": 24
+   },
+   "small_fan": {
+    "name": "Small 5 V fan",
+    "watts": 1.0,
+    "typical_hours": 6
+   },
+   "pi_server": {
+    "name": "Raspberry Pi camera server",
+    "watts": 3.0,
+    "typical_hours": 24
+   },
+   "fountain_pump": {
+    "name": "12 V fountain pump",
+    "watts": 5.0,
+    "typical_hours": 3
+   },
+   "phone_charging": {
+    "name": "Phone charging",
+    "watts": 10.0,
+    "typical_hours": 1.5
+   },
+   "clothes_dryer": {
+    "name": "Electric clothes dryer",
+    "watts": 2500.0,
+    "typical_hours": 1
+   }
+  },
+  "seed": 11,
+  "note": "Device draws are illustrative. Truth: su.check_use (single-diode model, tools/eval/model.py)."
+ },
+ "cases": [
+  {
+   "case_id": "real-001-1",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0001",
+    "isc_ma": 149.7,
+    "voc_v": 6.82,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.392,
+    "pmax_w": 0.7895,
+    "usable_wh_per_day": 2.8225,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "real-001-2",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0001",
+    "isc_ma": 149.7,
+    "voc_v": 6.82,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run a 12 V fountain pump for 1 hours a day.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 1,
+    "feasible": false,
+    "margin": 0.565,
+    "pmax_w": 0.7895,
+    "usable_wh_per_day": 2.8225,
+    "need_wh_per_day": 5.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "real-001-3",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0001",
+    "isc_ma": 149.7,
+    "voc_v": 6.82,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 12 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 12,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.7895,
+    "usable_wh_per_day": 1.283,
+    "need_wh_per_day": 30000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "real-002-1",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0002",
+    "isc_ma": 52.7,
+    "voc_v": 6.39,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I want a soil moisture sensor in my garden that reports all day and night.",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.492,
+    "pmax_w": 0.2595,
+    "usable_wh_per_day": 0.5904,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "real-002-2",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0002",
+    "isc_ma": 52.7,
+    "voc_v": 6.39,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": false,
+    "margin": 0.59,
+    "pmax_w": 0.2595,
+    "usable_wh_per_day": 0.5904,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "real-002-3",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0002",
+    "isc_ma": 52.7,
+    "voc_v": 6.39,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I'd like a garden path lamp on for 1 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.518,
+    "pmax_w": 0.2595,
+    "usable_wh_per_day": 0.759,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "real-003-1",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0003",
+    "isc_ma": 149.7,
+    "voc_v": 6.82,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want to top up my phone, about 3 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.043,
+    "pmax_w": 0.7895,
+    "usable_wh_per_day": 1.283,
+    "need_wh_per_day": 30.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "real-003-2",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0003",
+    "isc_ma": 149.7,
+    "voc_v": 6.82,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 5.346,
+    "pmax_w": 0.7895,
+    "usable_wh_per_day": 1.283,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "real-003-3",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0003",
+    "isc_ma": 149.7,
+    "voc_v": 6.82,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 9.623,
+    "pmax_w": 0.7895,
+    "usable_wh_per_day": 2.3094,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "real-004-1",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0004",
+    "isc_ma": 52.4,
+    "voc_v": 6.39,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 24 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.258,
+    "usable_wh_per_day": 0.587,
+    "need_wh_per_day": 60000.0,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "real-004-2",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0004",
+    "isc_ma": 52.4,
+    "voc_v": 6.39,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I'd like a garden path lamp on for 1 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.845,
+    "pmax_w": 0.258,
+    "usable_wh_per_day": 0.9225,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "real-004-3",
+   "kind": "real",
+   "panel": {
+    "id": "SS-0004",
+    "isc_ma": 52.4,
+    "voc_v": 6.39,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.747,
+    "pmax_w": 0.258,
+    "usable_wh_per_day": 0.4193,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": []
+   }
+  },
+  {
+   "case_id": "sim-0001",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0001",
+    "isc_ma": 139.2,
+    "voc_v": 6.52,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light a small LED garden marker for 24 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.66,
+    "pmax_w": 0.696,
+    "usable_wh_per_day": 1.5834,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0002",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0002",
+    "isc_ma": 117.7,
+    "voc_v": 6.66,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light an LED path light for 1 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.967,
+    "pmax_w": 0.6052,
+    "usable_wh_per_day": 0.9834,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0003",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0003",
+    "isc_ma": 150.0,
+    "voc_v": 6.74,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 24 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.528,
+    "pmax_w": 0.7799,
+    "usable_wh_per_day": 1.2673,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0004",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0004",
+    "isc_ma": 63.6,
+    "voc_v": 6.53,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light a small LED garden marker for 4 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 4,
+    "feasible": true,
+    "margin": 1.826,
+    "pmax_w": 0.3211,
+    "usable_wh_per_day": 0.7305,
+    "need_wh_per_day": 0.4,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0005",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0005",
+    "isc_ma": 70.2,
+    "voc_v": 6.73,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light an LED path light for 24 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.07,
+    "pmax_w": 0.3673,
+    "usable_wh_per_day": 0.8355,
+    "need_wh_per_day": 12.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0006",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0006",
+    "isc_ma": 48.2,
+    "voc_v": 6.75,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.126,
+    "pmax_w": 0.2536,
+    "usable_wh_per_day": 0.9066,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0007",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0007",
+    "isc_ma": 139.3,
+    "voc_v": 6.7,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a soil moisture sensor in my garden that reports all day and night.",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 2.144,
+    "pmax_w": 0.7198,
+    "usable_wh_per_day": 2.5734,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0008",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0008",
+    "isc_ma": 143.8,
+    "voc_v": 6.76,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 6 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 6,
+    "feasible": true,
+    "margin": 2.033,
+    "pmax_w": 0.7508,
+    "usable_wh_per_day": 1.22,
+    "need_wh_per_day": 0.6,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0009",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0009",
+    "isc_ma": 113.2,
+    "voc_v": 6.52,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light a small LED garden marker for 3 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 3,
+    "feasible": true,
+    "margin": 4.304,
+    "pmax_w": 0.5675,
+    "usable_wh_per_day": 1.2911,
+    "need_wh_per_day": 0.3,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0010",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0010",
+    "isc_ma": 135.5,
+    "voc_v": 6.69,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 2 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.6992,
+    "usable_wh_per_day": 2.0452,
+    "need_wh_per_day": 5000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0011",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0011",
+    "isc_ma": 141.7,
+    "voc_v": 4.37,
+    "grade": "A",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 3 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.43,
+    "usable_wh_per_day": 1.5373,
+    "need_wh_per_day": 7500.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0012",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0012",
+    "isc_ma": 127.6,
+    "voc_v": 6.86,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run an electric clothes dryer for 24 hour(s) a day.",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.6792,
+    "usable_wh_per_day": 2.428,
+    "need_wh_per_day": 60000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0013",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0013",
+    "isc_ma": 117.6,
+    "voc_v": 6.73,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 4.146,
+    "pmax_w": 0.6123,
+    "usable_wh_per_day": 0.995,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0014",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0014",
+    "isc_ma": 63.7,
+    "voc_v": 6.79,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.004,
+    "pmax_w": 0.337,
+    "usable_wh_per_day": 1.2049,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0015",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0015",
+    "isc_ma": 120.9,
+    "voc_v": 6.59,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 3 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.731,
+    "pmax_w": 0.6135,
+    "usable_wh_per_day": 2.1933,
+    "need_wh_per_day": 3.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0016",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0016",
+    "isc_ma": 146.1,
+    "voc_v": 6.58,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 3 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.72,
+    "pmax_w": 0.7381,
+    "usable_wh_per_day": 2.1591,
+    "need_wh_per_day": 3.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0017",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0017",
+    "isc_ma": 113.3,
+    "voc_v": 6.75,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it power a Raspberry Pi that records video 24/7?",
+   "truth": {
+    "device_id": "pi_server",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.019,
+    "pmax_w": 0.5923,
+    "usable_wh_per_day": 1.3475,
+    "need_wh_per_day": 72.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0018",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0018",
+    "isc_ma": 139.6,
+    "voc_v": 6.64,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I'd like a garden path lamp on for 3 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.773,
+    "pmax_w": 0.7135,
+    "usable_wh_per_day": 1.1595,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0019",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0019",
+    "isc_ma": 135.5,
+    "voc_v": 6.83,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.356,
+    "pmax_w": 0.7169,
+    "usable_wh_per_day": 2.5629,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0020",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0020",
+    "isc_ma": 40.3,
+    "voc_v": 6.78,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.087,
+    "pmax_w": 0.2133,
+    "usable_wh_per_day": 0.624,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0021",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0021",
+    "isc_ma": 111.3,
+    "voc_v": 6.81,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Could this run an e-paper sign at a bus stop, on 24 hours a day?",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.279,
+    "pmax_w": 0.5882,
+    "usable_wh_per_day": 1.3381,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0022",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0022",
+    "isc_ma": 126.6,
+    "voc_v": 6.82,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 1 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.522,
+    "pmax_w": 0.6692,
+    "usable_wh_per_day": 1.5224,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0023",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0023",
+    "isc_ma": 106.2,
+    "voc_v": 6.59,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I want a tiny marker light by the gate on for 12 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": true,
+    "margin": 1.023,
+    "pmax_w": 0.5397,
+    "usable_wh_per_day": 1.2279,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0024",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0024",
+    "isc_ma": 143.4,
+    "voc_v": 6.75,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a small weather station online 24 hours a day.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.186,
+    "pmax_w": 0.7474,
+    "usable_wh_per_day": 2.672,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0025",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0025",
+    "isc_ma": 149.8,
+    "voc_v": 6.54,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 1 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.22,
+    "pmax_w": 0.751,
+    "usable_wh_per_day": 1.2203,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0026",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0026",
+    "isc_ma": 146.6,
+    "voc_v": 6.51,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.188,
+    "pmax_w": 0.7311,
+    "usable_wh_per_day": 1.188,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0027",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0027",
+    "isc_ma": 148.4,
+    "voc_v": 4.45,
+    "grade": "A",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Run a 12 V fountain pump for 24 hours a day.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.011,
+    "pmax_w": 0.4605,
+    "usable_wh_per_day": 1.3469,
+    "need_wh_per_day": 120.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0028",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0028",
+    "isc_ma": 98.3,
+    "voc_v": 6.71,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run a small 5 V fan for 4 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.457,
+    "pmax_w": 0.511,
+    "usable_wh_per_day": 1.8267,
+    "need_wh_per_day": 4.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0029",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0029",
+    "isc_ma": 67.2,
+    "voc_v": 6.72,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I want a soil moisture sensor in my garden that reports all day and night.",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.665,
+    "pmax_w": 0.351,
+    "usable_wh_per_day": 0.7986,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0030",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0030",
+    "isc_ma": 139.7,
+    "voc_v": 6.72,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 2.158,
+    "pmax_w": 0.7245,
+    "usable_wh_per_day": 2.59,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0031",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0031",
+    "isc_ma": 149.6,
+    "voc_v": 6.71,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 12 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": true,
+    "margin": 1.048,
+    "pmax_w": 0.7736,
+    "usable_wh_per_day": 1.2571,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0032",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0032",
+    "isc_ma": 136.6,
+    "voc_v": 6.87,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I'd like a garden path lamp on for 3 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": true,
+    "margin": 1.734,
+    "pmax_w": 0.7277,
+    "usable_wh_per_day": 2.6016,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0033",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0033",
+    "isc_ma": 143.0,
+    "voc_v": 6.51,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 8 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 1.449,
+    "pmax_w": 0.7134,
+    "usable_wh_per_day": 1.1593,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0034",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0034",
+    "isc_ma": 142.3,
+    "voc_v": 6.75,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Run a Wi-Fi weather station continuously.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.084,
+    "pmax_w": 0.7418,
+    "usable_wh_per_day": 1.2053,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0035",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0035",
+    "isc_ma": 96.8,
+    "voc_v": 6.51,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a Wi-Fi weather station continuously.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.077,
+    "pmax_w": 0.4852,
+    "usable_wh_per_day": 1.1039,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0036",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0036",
+    "isc_ma": 78.8,
+    "voc_v": 6.84,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Charge a phone for 6 hours each day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 6,
+    "feasible": false,
+    "margin": 0.02,
+    "pmax_w": 0.42,
+    "usable_wh_per_day": 1.2284,
+    "need_wh_per_day": 60.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0037",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0037",
+    "isc_ma": 150.0,
+    "voc_v": 6.86,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 7.552,
+    "pmax_w": 0.7967,
+    "usable_wh_per_day": 1.8124,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0038",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0038",
+    "isc_ma": 148.0,
+    "voc_v": 6.67,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 7.204,
+    "pmax_w": 0.76,
+    "usable_wh_per_day": 1.7289,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0039",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0039",
+    "isc_ma": 116.8,
+    "voc_v": 6.83,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Light a small LED garden marker for 24 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.754,
+    "pmax_w": 0.6191,
+    "usable_wh_per_day": 1.8108,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0040",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0040",
+    "isc_ma": 147.1,
+    "voc_v": 6.75,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Light a small LED garden marker for 12 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": true,
+    "margin": 2.283,
+    "pmax_w": 0.7664,
+    "usable_wh_per_day": 2.7399,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0041",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0041",
+    "isc_ma": 100.1,
+    "voc_v": 4.36,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 4.541,
+    "pmax_w": 0.3049,
+    "usable_wh_per_day": 1.0899,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0042",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0042",
+    "isc_ma": 122.0,
+    "voc_v": 6.67,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Run an electric clothes dryer for 4 hour(s) a day.",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.6281,
+    "usable_wh_per_day": 1.0207,
+    "need_wh_per_day": 10000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0043",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0043",
+    "isc_ma": 116.9,
+    "voc_v": 6.65,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 5.688,
+    "pmax_w": 0.6,
+    "usable_wh_per_day": 1.365,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0044",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0044",
+    "isc_ma": 85.1,
+    "voc_v": 6.84,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a tiny marker light by the gate on for 24 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.675,
+    "pmax_w": 0.4533,
+    "usable_wh_per_day": 1.6205,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0045",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0045",
+    "isc_ma": 139.4,
+    "voc_v": 6.8,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I'd like a garden path lamp on for 3 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": true,
+    "margin": 1.748,
+    "pmax_w": 0.7334,
+    "usable_wh_per_day": 2.6217,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0046",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0046",
+    "isc_ma": 64.9,
+    "voc_v": 4.53,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 2.543,
+    "pmax_w": 0.2086,
+    "usable_wh_per_day": 0.6103,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0047",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0047",
+    "isc_ma": 149.3,
+    "voc_v": 6.77,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a small weather station online 24 hours a day.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.194,
+    "pmax_w": 0.7805,
+    "usable_wh_per_day": 2.7902,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0048",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0048",
+    "isc_ma": 121.4,
+    "voc_v": 6.59,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run an electric clothes dryer for 2 hour(s) a day.",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.616,
+    "usable_wh_per_day": 2.2023,
+    "need_wh_per_day": 5000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0049",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0049",
+    "isc_ma": 54.8,
+    "voc_v": 4.44,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 2 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.172,
+    "usable_wh_per_day": 0.3913,
+    "need_wh_per_day": 5000.0,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0050",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0050",
+    "isc_ma": 148.9,
+    "voc_v": 6.72,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.261,
+    "pmax_w": 0.7715,
+    "usable_wh_per_day": 1.2536,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0051",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0051",
+    "isc_ma": 48.3,
+    "voc_v": 6.69,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.125,
+    "pmax_w": 0.2514,
+    "usable_wh_per_day": 0.8989,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0052",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0052",
+    "isc_ma": 65.9,
+    "voc_v": 6.71,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 3 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.335,
+    "pmax_w": 0.3437,
+    "usable_wh_per_day": 1.0053,
+    "need_wh_per_day": 3.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0053",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0053",
+    "isc_ma": 147.3,
+    "voc_v": 6.73,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 6 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 6,
+    "feasible": false,
+    "margin": 0.456,
+    "pmax_w": 0.7647,
+    "usable_wh_per_day": 2.7337,
+    "need_wh_per_day": 6.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0054",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0054",
+    "isc_ma": 149.9,
+    "voc_v": 4.59,
+    "grade": "A",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.101,
+    "pmax_w": 0.4838,
+    "usable_wh_per_day": 1.1007,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0055",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0055",
+    "isc_ma": 135.9,
+    "voc_v": 6.79,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.338,
+    "pmax_w": 0.7139,
+    "usable_wh_per_day": 1.6242,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0056",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0056",
+    "isc_ma": 148.3,
+    "voc_v": 6.64,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 2 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.108,
+    "pmax_w": 0.7574,
+    "usable_wh_per_day": 2.2153,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0057",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0057",
+    "isc_ma": 129.5,
+    "voc_v": 6.83,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want a tiny marker light by the gate on for 24 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.835,
+    "pmax_w": 0.6855,
+    "usable_wh_per_day": 2.0052,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0058",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0058",
+    "isc_ma": 145.3,
+    "voc_v": 6.79,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light a small LED garden marker for 24 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.723,
+    "pmax_w": 0.7626,
+    "usable_wh_per_day": 1.7349,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0059",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0059",
+    "isc_ma": 40.2,
+    "voc_v": 6.52,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 3.025,
+    "pmax_w": 0.2031,
+    "usable_wh_per_day": 0.726,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0060",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0060",
+    "isc_ma": 107.4,
+    "voc_v": 6.53,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I want to top up my phone, about 12 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 12,
+    "feasible": false,
+    "margin": 0.01,
+    "pmax_w": 0.5398,
+    "usable_wh_per_day": 1.228,
+    "need_wh_per_day": 120.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0061",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0061",
+    "isc_ma": 116.2,
+    "voc_v": 6.7,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 1 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": false,
+    "margin": 0.978,
+    "pmax_w": 0.6019,
+    "usable_wh_per_day": 0.978,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0062",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0062",
+    "isc_ma": 113.5,
+    "voc_v": 6.82,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 2.196,
+    "pmax_w": 0.6007,
+    "usable_wh_per_day": 1.7571,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0063",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0063",
+    "isc_ma": 115.7,
+    "voc_v": 6.72,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run a small 5 V fan for 3 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.717,
+    "pmax_w": 0.6015,
+    "usable_wh_per_day": 2.1502,
+    "need_wh_per_day": 3.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0064",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0064",
+    "isc_ma": 148.9,
+    "voc_v": 6.74,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a Raspberry Pi camera server running all the time.",
+   "truth": {
+    "device_id": "pi_server",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.038,
+    "pmax_w": 0.7742,
+    "usable_wh_per_day": 2.7679,
+    "need_wh_per_day": 72.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0065",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0065",
+    "isc_ma": 145.9,
+    "voc_v": 6.63,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a small weather station online 24 hours a day.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.151,
+    "pmax_w": 0.7439,
+    "usable_wh_per_day": 2.176,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0066",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0066",
+    "isc_ma": 137.7,
+    "voc_v": 6.68,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I'd like a garden path lamp on for 3 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": true,
+    "margin": 1.075,
+    "pmax_w": 0.7091,
+    "usable_wh_per_day": 1.6132,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0067",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0067",
+    "isc_ma": 87.4,
+    "voc_v": 6.65,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.142,
+    "pmax_w": 0.4499,
+    "usable_wh_per_day": 1.0236,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0068",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0068",
+    "isc_ma": 143.5,
+    "voc_v": 6.84,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.24,
+    "pmax_w": 0.76,
+    "usable_wh_per_day": 1.7289,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0069",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0069",
+    "isc_ma": 81.5,
+    "voc_v": 4.55,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Could this run an e-paper sign at a bus stop, on 24 hours a day?",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.16,
+    "pmax_w": 0.2628,
+    "usable_wh_per_day": 0.7688,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0070",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0070",
+    "isc_ma": 139.3,
+    "voc_v": 4.42,
+    "grade": "A",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I'd like a garden path lamp on for 1 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.952,
+    "pmax_w": 0.4291,
+    "usable_wh_per_day": 0.9762,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0071",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0071",
+    "isc_ma": 72.7,
+    "voc_v": 6.81,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want to top up my phone, about 2 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.056,
+    "pmax_w": 0.3857,
+    "usable_wh_per_day": 1.1281,
+    "need_wh_per_day": 20.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0072",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0072",
+    "isc_ma": 131.6,
+    "voc_v": 6.53,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light an LED path light for 2 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.072,
+    "pmax_w": 0.6598,
+    "usable_wh_per_day": 1.0721,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0073",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0073",
+    "isc_ma": 102.2,
+    "voc_v": 6.76,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Keep a Raspberry Pi camera server running all the time.",
+   "truth": {
+    "device_id": "pi_server",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.012,
+    "pmax_w": 0.5358,
+    "usable_wh_per_day": 0.8707,
+    "need_wh_per_day": 72.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0074",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0074",
+    "isc_ma": 139.9,
+    "voc_v": 6.75,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Run a small 5 V fan for 2 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.067,
+    "pmax_w": 0.7294,
+    "usable_wh_per_day": 2.1336,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0075",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0075",
+    "isc_ma": 129.1,
+    "voc_v": 6.62,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a small 5 V fan for 3 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.499,
+    "pmax_w": 0.6582,
+    "usable_wh_per_day": 1.4974,
+    "need_wh_per_day": 3.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0076",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0076",
+    "isc_ma": 140.4,
+    "voc_v": 6.64,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I'd like a garden path lamp on for 8 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 8,
+    "feasible": false,
+    "margin": 0.641,
+    "pmax_w": 0.7176,
+    "usable_wh_per_day": 2.5653,
+    "need_wh_per_day": 4.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0077",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0077",
+    "isc_ma": 147.1,
+    "voc_v": 6.62,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.372,
+    "pmax_w": 0.7486,
+    "usable_wh_per_day": 2.6762,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0078",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0078",
+    "isc_ma": 112.3,
+    "voc_v": 6.52,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.28,
+    "pmax_w": 0.5631,
+    "usable_wh_per_day": 2.0129,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0079",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0079",
+    "isc_ma": 53.5,
+    "voc_v": 6.5,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 3.277,
+    "pmax_w": 0.2689,
+    "usable_wh_per_day": 0.7865,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0080",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0080",
+    "isc_ma": 130.5,
+    "voc_v": 6.56,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a Wi-Fi weather station continuously.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.104,
+    "pmax_w": 0.6579,
+    "usable_wh_per_day": 1.4968,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0081",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0081",
+    "isc_ma": 147.2,
+    "voc_v": 6.5,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.347,
+    "pmax_w": 0.7327,
+    "usable_wh_per_day": 1.6668,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0082",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0082",
+    "isc_ma": 43.1,
+    "voc_v": 6.8,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 2.79,
+    "pmax_w": 0.2289,
+    "usable_wh_per_day": 0.6695,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0083",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0083",
+    "isc_ma": 144.5,
+    "voc_v": 6.71,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 2 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.093,
+    "pmax_w": 0.7477,
+    "usable_wh_per_day": 2.1869,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0084",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0084",
+    "isc_ma": 42.0,
+    "voc_v": 6.53,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Could this run an e-paper sign at a bus stop, on 24 hours a day?",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.158,
+    "pmax_w": 0.2125,
+    "usable_wh_per_day": 0.7597,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0085",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0085",
+    "isc_ma": 85.5,
+    "voc_v": 6.69,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 3.002,
+    "pmax_w": 0.4434,
+    "usable_wh_per_day": 0.7205,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0086",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0086",
+    "isc_ma": 142.5,
+    "voc_v": 6.72,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.3,
+    "pmax_w": 0.7388,
+    "usable_wh_per_day": 2.161,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0087",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0087",
+    "isc_ma": 142.5,
+    "voc_v": 6.54,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want to top up my phone, about 12 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 12,
+    "feasible": false,
+    "margin": 0.017,
+    "pmax_w": 0.7149,
+    "usable_wh_per_day": 2.0911,
+    "need_wh_per_day": 120.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0088",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0088",
+    "isc_ma": 139.7,
+    "voc_v": 6.54,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.595,
+    "pmax_w": 0.7011,
+    "usable_wh_per_day": 1.595,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0089",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0089",
+    "isc_ma": 138.4,
+    "voc_v": 6.89,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.202,
+    "pmax_w": 0.7398,
+    "usable_wh_per_day": 1.2021,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0090",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0090",
+    "isc_ma": 92.9,
+    "voc_v": 6.65,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a Raspberry Pi camera server running all the time.",
+   "truth": {
+    "device_id": "pi_server",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.024,
+    "pmax_w": 0.478,
+    "usable_wh_per_day": 1.7088,
+    "need_wh_per_day": 72.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0091",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0091",
+    "isc_ma": 78.6,
+    "voc_v": 6.51,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.155,
+    "pmax_w": 0.3948,
+    "usable_wh_per_day": 1.1546,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0092",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0092",
+    "isc_ma": 131.0,
+    "voc_v": 6.83,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.315,
+    "pmax_w": 0.6934,
+    "usable_wh_per_day": 1.5775,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0093",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0093",
+    "isc_ma": 121.9,
+    "voc_v": 6.73,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run an electric clothes dryer for 4 hour(s) a day.",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.6344,
+    "usable_wh_per_day": 1.4434,
+    "need_wh_per_day": 10000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0094",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0094",
+    "isc_ma": 143.7,
+    "voc_v": 6.67,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want to top up my phone, about 4 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.03,
+    "pmax_w": 0.7382,
+    "usable_wh_per_day": 1.1996,
+    "need_wh_per_day": 40.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0095",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0095",
+    "isc_ma": 68.0,
+    "voc_v": 6.79,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light an LED path light for 3 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.39,
+    "pmax_w": 0.3596,
+    "usable_wh_per_day": 0.5844,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0096",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0096",
+    "isc_ma": 147.9,
+    "voc_v": 6.62,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Charge a phone for 2 hours each day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.086,
+    "pmax_w": 0.7526,
+    "usable_wh_per_day": 1.7122,
+    "need_wh_per_day": 20.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0097",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0097",
+    "isc_ma": 131.8,
+    "voc_v": 6.68,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.545,
+    "pmax_w": 0.6791,
+    "usable_wh_per_day": 1.545,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0098",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0098",
+    "isc_ma": 143.6,
+    "voc_v": 6.56,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 2.154,
+    "pmax_w": 0.723,
+    "usable_wh_per_day": 2.5848,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0099",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0099",
+    "isc_ma": 147.4,
+    "voc_v": 6.79,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.576,
+    "pmax_w": 0.7734,
+    "usable_wh_per_day": 2.7651,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0100",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0100",
+    "isc_ma": 70.3,
+    "voc_v": 6.9,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.282,
+    "pmax_w": 0.3789,
+    "usable_wh_per_day": 1.3547,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0101",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0101",
+    "isc_ma": 119.3,
+    "voc_v": 6.86,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 1 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.033,
+    "pmax_w": 0.6355,
+    "usable_wh_per_day": 1.0327,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0102",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0102",
+    "isc_ma": 96.7,
+    "voc_v": 6.6,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it power a Raspberry Pi that records video 24/7?",
+   "truth": {
+    "device_id": "pi_server",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.016,
+    "pmax_w": 0.4928,
+    "usable_wh_per_day": 1.1212,
+    "need_wh_per_day": 72.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0103",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0103",
+    "isc_ma": 73.0,
+    "voc_v": 6.6,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.278,
+    "pmax_w": 0.3729,
+    "usable_wh_per_day": 1.3333,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0104",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0104",
+    "isc_ma": 110.4,
+    "voc_v": 6.76,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Could this run an e-paper sign at a bus stop, on 24 hours a day?",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.196,
+    "pmax_w": 0.5783,
+    "usable_wh_per_day": 0.9398,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0105",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0105",
+    "isc_ma": 76.4,
+    "voc_v": 6.68,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want a tiny marker light by the gate on for 6 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 6,
+    "feasible": true,
+    "margin": 1.93,
+    "pmax_w": 0.3959,
+    "usable_wh_per_day": 1.1579,
+    "need_wh_per_day": 0.6,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0106",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0106",
+    "isc_ma": 146.3,
+    "voc_v": 6.59,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want to top up my phone, about 6 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 6,
+    "feasible": false,
+    "margin": 0.044,
+    "pmax_w": 0.7405,
+    "usable_wh_per_day": 2.6473,
+    "need_wh_per_day": 60.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0107",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0107",
+    "isc_ma": 147.3,
+    "voc_v": 6.81,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 7.353,
+    "pmax_w": 0.7757,
+    "usable_wh_per_day": 1.7647,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0108",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0108",
+    "isc_ma": 61.4,
+    "voc_v": 6.69,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": false,
+    "margin": 0.908,
+    "pmax_w": 0.3192,
+    "usable_wh_per_day": 0.7262,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0109",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0109",
+    "isc_ma": 147.8,
+    "voc_v": 6.88,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Power a small pond pump 1 hours daily.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 1,
+    "feasible": false,
+    "margin": 0.563,
+    "pmax_w": 0.7879,
+    "usable_wh_per_day": 2.8168,
+    "need_wh_per_day": 5.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0110",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0110",
+    "isc_ma": 140.7,
+    "voc_v": 6.62,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I want a tiny marker light by the gate on for 8 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 2.037,
+    "pmax_w": 0.7165,
+    "usable_wh_per_day": 1.63,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0111",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0111",
+    "isc_ma": 126.8,
+    "voc_v": 6.85,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Power a small pond pump 4 hours daily.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.077,
+    "pmax_w": 0.6738,
+    "usable_wh_per_day": 1.5329,
+    "need_wh_per_day": 20.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0112",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0112",
+    "isc_ma": 146.0,
+    "voc_v": 4.46,
+    "grade": "A",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 1 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 1,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.4545,
+    "usable_wh_per_day": 0.7386,
+    "need_wh_per_day": 2500.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0113",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0113",
+    "isc_ma": 119.0,
+    "voc_v": 6.73,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light an LED path light for 1 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 2.819,
+    "pmax_w": 0.6195,
+    "usable_wh_per_day": 1.4094,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0114",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0114",
+    "isc_ma": 47.7,
+    "voc_v": 6.86,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a tiny marker light by the gate on for 4 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 4,
+    "feasible": true,
+    "margin": 2.287,
+    "pmax_w": 0.2559,
+    "usable_wh_per_day": 0.9148,
+    "need_wh_per_day": 0.4,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0115",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0115",
+    "isc_ma": 143.8,
+    "voc_v": 6.51,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Power a small pond pump 2 hours daily.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.163,
+    "pmax_w": 0.7173,
+    "usable_wh_per_day": 1.6319,
+    "need_wh_per_day": 10.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0116",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0116",
+    "isc_ma": 143.3,
+    "voc_v": 6.81,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.431,
+    "pmax_w": 0.7549,
+    "usable_wh_per_day": 1.7174,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0117",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0117",
+    "isc_ma": 145.2,
+    "voc_v": 6.79,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.445,
+    "pmax_w": 0.7621,
+    "usable_wh_per_day": 1.7337,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0118",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0118",
+    "isc_ma": 128.9,
+    "voc_v": 4.56,
+    "grade": "B",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.093,
+    "pmax_w": 0.4139,
+    "usable_wh_per_day": 0.6726,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0119",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0119",
+    "isc_ma": 143.1,
+    "voc_v": 6.78,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Run a small 5 V fan for 6 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 6,
+    "feasible": false,
+    "margin": 0.366,
+    "pmax_w": 0.7499,
+    "usable_wh_per_day": 2.1934,
+    "need_wh_per_day": 6.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0120",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0120",
+    "isc_ma": 113.2,
+    "voc_v": 6.7,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 2.097,
+    "pmax_w": 0.5865,
+    "usable_wh_per_day": 2.0968,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0121",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0121",
+    "isc_ma": 147.1,
+    "voc_v": 6.74,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run an electric clothes dryer for 1 hour(s) a day.",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 1,
+    "feasible": false,
+    "margin": 0.001,
+    "pmax_w": 0.765,
+    "usable_wh_per_day": 2.735,
+    "need_wh_per_day": 2500.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0122",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0122",
+    "isc_ma": 122.3,
+    "voc_v": 6.54,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 9.159,
+    "pmax_w": 0.6148,
+    "usable_wh_per_day": 2.1981,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0123",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0123",
+    "isc_ma": 139.4,
+    "voc_v": 6.84,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want to top up my phone, about 4 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.03,
+    "pmax_w": 0.7385,
+    "usable_wh_per_day": 1.2001,
+    "need_wh_per_day": 40.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0124",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0124",
+    "isc_ma": 99.8,
+    "voc_v": 6.59,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.115,
+    "pmax_w": 0.5076,
+    "usable_wh_per_day": 0.8248,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0125",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0125",
+    "isc_ma": 100.6,
+    "voc_v": 6.59,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 4 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 4,
+    "feasible": true,
+    "margin": 2.078,
+    "pmax_w": 0.5116,
+    "usable_wh_per_day": 0.8313,
+    "need_wh_per_day": 0.4,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0126",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0126",
+    "isc_ma": 140.6,
+    "voc_v": 6.69,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a tiny marker light by the gate on for 4 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 4,
+    "feasible": true,
+    "margin": 6.481,
+    "pmax_w": 0.7251,
+    "usable_wh_per_day": 2.5924,
+    "need_wh_per_day": 0.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0127",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0127",
+    "isc_ma": 106.6,
+    "voc_v": 6.61,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light an LED path light for 4 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.442,
+    "pmax_w": 0.5437,
+    "usable_wh_per_day": 0.8836,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0128",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0128",
+    "isc_ma": 142.3,
+    "voc_v": 6.56,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 2.62,
+    "pmax_w": 0.7166,
+    "usable_wh_per_day": 2.096,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0129",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0129",
+    "isc_ma": 94.1,
+    "voc_v": 6.68,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.45,
+    "pmax_w": 0.4867,
+    "usable_wh_per_day": 1.74,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0130",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0130",
+    "isc_ma": 121.1,
+    "voc_v": 6.58,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light an LED path light for 2 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.395,
+    "pmax_w": 0.6134,
+    "usable_wh_per_day": 1.3954,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0131",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0131",
+    "isc_ma": 123.1,
+    "voc_v": 6.63,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a tiny marker light by the gate on for 12 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": true,
+    "margin": 1.874,
+    "pmax_w": 0.6291,
+    "usable_wh_per_day": 2.2491,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0132",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0132",
+    "isc_ma": 144.2,
+    "voc_v": 6.64,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want a tiny marker light by the gate on for 8 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 2.694,
+    "pmax_w": 0.7367,
+    "usable_wh_per_day": 2.1549,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0133",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0133",
+    "isc_ma": 131.7,
+    "voc_v": 6.89,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light a small LED garden marker for 24 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.477,
+    "pmax_w": 0.7044,
+    "usable_wh_per_day": 1.1447,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0134",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0134",
+    "isc_ma": 96.1,
+    "voc_v": 6.59,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.166,
+    "pmax_w": 0.4889,
+    "usable_wh_per_day": 0.7945,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0135",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0135",
+    "isc_ma": 142.6,
+    "voc_v": 6.63,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 1 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 2.127,
+    "pmax_w": 0.7273,
+    "usable_wh_per_day": 2.1275,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0136",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0136",
+    "isc_ma": 53.7,
+    "voc_v": 6.54,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Run a small 5 V fan for 2 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.486,
+    "pmax_w": 0.2719,
+    "usable_wh_per_day": 0.972,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0137",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0137",
+    "isc_ma": 45.6,
+    "voc_v": 6.86,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want a tiny marker light by the gate on for 4 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 4,
+    "feasible": true,
+    "margin": 1.789,
+    "pmax_w": 0.2447,
+    "usable_wh_per_day": 0.7157,
+    "need_wh_per_day": 0.4,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0138",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0138",
+    "isc_ma": 97.3,
+    "voc_v": 4.35,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.12,
+    "pmax_w": 0.2956,
+    "usable_wh_per_day": 0.8646,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0139",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0139",
+    "isc_ma": 97.4,
+    "voc_v": 6.76,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Charge a phone for 1 hours each day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 1,
+    "feasible": false,
+    "margin": 0.149,
+    "pmax_w": 0.5109,
+    "usable_wh_per_day": 1.4943,
+    "need_wh_per_day": 10.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0140",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0140",
+    "isc_ma": 79.8,
+    "voc_v": 6.75,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 6.235,
+    "pmax_w": 0.4186,
+    "usable_wh_per_day": 1.4964,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0141",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0141",
+    "isc_ma": 135.0,
+    "voc_v": 6.52,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Light an LED path light for 2 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.975,
+    "pmax_w": 0.6753,
+    "usable_wh_per_day": 1.9753,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0142",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0142",
+    "isc_ma": 113.9,
+    "voc_v": 6.6,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Keep a Raspberry Pi camera server running all the time.",
+   "truth": {
+    "device_id": "pi_server",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.013,
+    "pmax_w": 0.5795,
+    "usable_wh_per_day": 0.9417,
+    "need_wh_per_day": 72.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0143",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0143",
+    "isc_ma": 133.0,
+    "voc_v": 4.54,
+    "grade": "B",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 5.173,
+    "pmax_w": 0.4244,
+    "usable_wh_per_day": 1.2414,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0144",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0144",
+    "isc_ma": 51.5,
+    "voc_v": 6.66,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Power a small pond pump 8 hours daily.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 8,
+    "feasible": false,
+    "margin": 0.015,
+    "pmax_w": 0.2666,
+    "usable_wh_per_day": 0.6064,
+    "need_wh_per_day": 40.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0145",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0145",
+    "isc_ma": 57.3,
+    "voc_v": 6.67,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 1.327,
+    "pmax_w": 0.2969,
+    "usable_wh_per_day": 1.0616,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0146",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0146",
+    "isc_ma": 87.3,
+    "voc_v": 6.85,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I'd like a garden path lamp on for 3 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.505,
+    "pmax_w": 0.4657,
+    "usable_wh_per_day": 0.7568,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0147",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0147",
+    "isc_ma": 145.5,
+    "voc_v": 6.67,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.822,
+    "pmax_w": 0.7473,
+    "usable_wh_per_day": 2.1859,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0148",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0148",
+    "isc_ma": 54.5,
+    "voc_v": 6.79,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want a tiny marker light by the gate on for 12 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": false,
+    "margin": 0.703,
+    "pmax_w": 0.2886,
+    "usable_wh_per_day": 0.8442,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0149",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0149",
+    "isc_ma": 109.1,
+    "voc_v": 6.8,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a small 5 V fan for 1 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.31,
+    "pmax_w": 0.5757,
+    "usable_wh_per_day": 1.3096,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0150",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0150",
+    "isc_ma": 103.2,
+    "voc_v": 6.69,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I'd like a garden path lamp on for 2 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.216,
+    "pmax_w": 0.5343,
+    "usable_wh_per_day": 1.2155,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0151",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0151",
+    "isc_ma": 104.2,
+    "voc_v": 6.52,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 12 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": false,
+    "margin": 0.708,
+    "pmax_w": 0.5229,
+    "usable_wh_per_day": 0.8497,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0152",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0152",
+    "isc_ma": 138.3,
+    "voc_v": 6.72,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Run a small 5 V fan for 2 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.049,
+    "pmax_w": 0.7173,
+    "usable_wh_per_day": 2.0982,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0153",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0153",
+    "isc_ma": 125.4,
+    "voc_v": 6.81,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a tiny marker light by the gate on for 24 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.986,
+    "pmax_w": 0.6618,
+    "usable_wh_per_day": 2.3658,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0154",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0154",
+    "isc_ma": 139.3,
+    "voc_v": 6.87,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a tiny marker light by the gate on for 12 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": true,
+    "margin": 2.21,
+    "pmax_w": 0.7419,
+    "usable_wh_per_day": 2.6524,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0155",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0155",
+    "isc_ma": 109.7,
+    "voc_v": 6.75,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 1.631,
+    "pmax_w": 0.5737,
+    "usable_wh_per_day": 1.3051,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0156",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0156",
+    "isc_ma": 138.1,
+    "voc_v": 6.8,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 1 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.181,
+    "pmax_w": 0.7266,
+    "usable_wh_per_day": 1.1807,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0157",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0157",
+    "isc_ma": 118.7,
+    "voc_v": 6.82,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light an LED path light for 2 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.02,
+    "pmax_w": 0.6279,
+    "usable_wh_per_day": 1.0204,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0158",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0158",
+    "isc_ma": 67.4,
+    "voc_v": 6.83,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a 12 V fountain pump for 2 hours a day.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.082,
+    "pmax_w": 0.359,
+    "usable_wh_per_day": 0.8167,
+    "need_wh_per_day": 10.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0159",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0159",
+    "isc_ma": 138.3,
+    "voc_v": 4.48,
+    "grade": "A",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 1.937,
+    "pmax_w": 0.4335,
+    "usable_wh_per_day": 1.5498,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0160",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0160",
+    "isc_ma": 55.4,
+    "voc_v": 6.6,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 4.224,
+    "pmax_w": 0.2835,
+    "usable_wh_per_day": 1.0137,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0161",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0161",
+    "isc_ma": 65.1,
+    "voc_v": 6.86,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 12 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": false,
+    "margin": 0.472,
+    "pmax_w": 0.3486,
+    "usable_wh_per_day": 0.5665,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0162",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0162",
+    "isc_ma": 114.1,
+    "voc_v": 6.9,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I'd like a garden path lamp on for 4 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 4,
+    "feasible": true,
+    "margin": 1.095,
+    "pmax_w": 0.6124,
+    "usable_wh_per_day": 2.1894,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0163",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0163",
+    "isc_ma": 113.7,
+    "voc_v": 6.59,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a soil moisture sensor in my garden that reports all day and night.",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.782,
+    "pmax_w": 0.5774,
+    "usable_wh_per_day": 0.9383,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0164",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0164",
+    "isc_ma": 139.9,
+    "voc_v": 6.65,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 4.85,
+    "pmax_w": 0.7164,
+    "usable_wh_per_day": 1.1641,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0165",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0165",
+    "isc_ma": 144.4,
+    "voc_v": 6.88,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.46,
+    "pmax_w": 0.77,
+    "usable_wh_per_day": 1.7519,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0166",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0166",
+    "isc_ma": 136.0,
+    "voc_v": 6.7,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.333,
+    "pmax_w": 0.703,
+    "usable_wh_per_day": 1.5994,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0167",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0167",
+    "isc_ma": 90.0,
+    "voc_v": 4.47,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 4 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 4,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.2834,
+    "usable_wh_per_day": 1.0132,
+    "need_wh_per_day": 10000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0168",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0168",
+    "isc_ma": 95.3,
+    "voc_v": 6.75,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I'd like a garden path lamp on for 1 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.622,
+    "pmax_w": 0.4991,
+    "usable_wh_per_day": 0.811,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0169",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0169",
+    "isc_ma": 65.8,
+    "voc_v": 6.65,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Could it dry our laundry in an electric dryer, 24 hour(s) daily?",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.3395,
+    "usable_wh_per_day": 0.5517,
+    "need_wh_per_day": 60000.0,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0170",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0170",
+    "isc_ma": 138.6,
+    "voc_v": 6.52,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Light an LED path light for 3 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": true,
+    "margin": 1.652,
+    "pmax_w": 0.6931,
+    "usable_wh_per_day": 2.4777,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0171",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0171",
+    "isc_ma": 104.3,
+    "voc_v": 6.66,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Run a small 5 V fan for 2 hours in the afternoon.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.611,
+    "pmax_w": 0.537,
+    "usable_wh_per_day": 1.2217,
+    "need_wh_per_day": 2.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0172",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0172",
+    "isc_ma": 91.3,
+    "voc_v": 6.7,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 3.21,
+    "pmax_w": 0.4741,
+    "usable_wh_per_day": 0.7704,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0173",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0173",
+    "isc_ma": 116.5,
+    "voc_v": 4.39,
+    "grade": "B",
+    "flags": [
+     "low_voc"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Light an LED path light for 1 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 2.553,
+    "pmax_w": 0.357,
+    "usable_wh_per_day": 1.2763,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0174",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0174",
+    "isc_ma": 143.3,
+    "voc_v": 6.8,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Run an electric clothes dryer for 2 hour(s) a day.",
+   "truth": {
+    "device_id": "clothes_dryer",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.0,
+    "pmax_w": 0.7536,
+    "usable_wh_per_day": 1.2246,
+    "need_wh_per_day": 5000.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0175",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0175",
+    "isc_ma": 49.6,
+    "voc_v": 6.63,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Could this run an e-paper sign at a bus stop, on 24 hours a day?",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.121,
+    "pmax_w": 0.2554,
+    "usable_wh_per_day": 0.581,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0176",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0176",
+    "isc_ma": 106.0,
+    "voc_v": 6.77,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Light a small LED garden marker for 12 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 12,
+    "feasible": true,
+    "margin": 1.658,
+    "pmax_w": 0.5565,
+    "usable_wh_per_day": 1.9895,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0177",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0177",
+    "isc_ma": 137.8,
+    "voc_v": 6.65,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Light an LED path light for 6 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 6,
+    "feasible": false,
+    "margin": 0.688,
+    "pmax_w": 0.7058,
+    "usable_wh_per_day": 2.0643,
+    "need_wh_per_day": 3.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0178",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0178",
+    "isc_ma": 139.5,
+    "voc_v": 6.78,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I'd like a garden path lamp on for 3 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 3,
+    "feasible": true,
+    "margin": 1.109,
+    "pmax_w": 0.7313,
+    "usable_wh_per_day": 1.6636,
+    "need_wh_per_day": 1.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0179",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0179",
+    "isc_ma": 138.1,
+    "voc_v": 6.53,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a Raspberry Pi camera server running all the time.",
+   "truth": {
+    "device_id": "pi_server",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.028,
+    "pmax_w": 0.6919,
+    "usable_wh_per_day": 2.0237,
+    "need_wh_per_day": 72.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0180",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0180",
+    "isc_ma": 141.2,
+    "voc_v": 6.65,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.762,
+    "pmax_w": 0.7229,
+    "usable_wh_per_day": 2.1145,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0181",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0181",
+    "isc_ma": 118.8,
+    "voc_v": 6.7,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I'd like a garden path lamp on for 2 hours a night.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 1.0,
+    "pmax_w": 0.6152,
+    "usable_wh_per_day": 0.9997,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0182",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0182",
+    "isc_ma": 143.7,
+    "voc_v": 6.58,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it run a BLE tracker beacon 24/7 at our shed?",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 6.884,
+    "pmax_w": 0.7262,
+    "usable_wh_per_day": 1.6521,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0183",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0183",
+    "isc_ma": 145.0,
+    "voc_v": 6.76,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light a small LED garden marker for 24 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.513,
+    "pmax_w": 0.757,
+    "usable_wh_per_day": 1.2301,
+    "need_wh_per_day": 2.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0184",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0184",
+    "isc_ma": 133.6,
+    "voc_v": 6.66,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.155,
+    "pmax_w": 0.6858,
+    "usable_wh_per_day": 1.1144,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0185",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0185",
+    "isc_ma": 111.9,
+    "voc_v": 4.54,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Run a Wi-Fi weather station continuously.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.04,
+    "pmax_w": 0.3582,
+    "usable_wh_per_day": 0.5821,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0186",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0186",
+    "isc_ma": 48.0,
+    "voc_v": 6.53,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Light an LED path light for 1 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 1,
+    "feasible": true,
+    "margin": 1.42,
+    "pmax_w": 0.2427,
+    "usable_wh_per_day": 0.71,
+    "need_wh_per_day": 0.5,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0187",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0187",
+    "isc_ma": 64.2,
+    "voc_v": 6.83,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "We need a low-power e-ink timetable display that never turns off.",
+   "truth": {
+    "device_id": "epaper_sign",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.116,
+    "pmax_w": 0.342,
+    "usable_wh_per_day": 0.5558,
+    "need_wh_per_day": 4.8,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0188",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0188",
+    "isc_ma": 100.4,
+    "voc_v": 6.71,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 2.332,
+    "pmax_w": 0.5218,
+    "usable_wh_per_day": 1.8654,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0189",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0189",
+    "isc_ma": 149.5,
+    "voc_v": 6.78,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Cool a chicken coop with a little USB fan, 3 hours a day.",
+   "truth": {
+    "device_id": "small_fan",
+    "hours_per_day": 3,
+    "feasible": false,
+    "margin": 0.763,
+    "pmax_w": 0.7829,
+    "usable_wh_per_day": 2.29,
+    "need_wh_per_day": 3.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0190",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0190",
+    "isc_ma": 105.5,
+    "voc_v": 6.84,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light a small LED garden marker for 8 hours after dark.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 1.139,
+    "pmax_w": 0.5608,
+    "usable_wh_per_day": 0.9113,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0191",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0191",
+    "isc_ma": 43.9,
+    "voc_v": 6.9,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Power a small pond pump 2 hours daily.",
+   "truth": {
+    "device_id": "fountain_pump",
+    "hours_per_day": 2,
+    "feasible": false,
+    "margin": 0.039,
+    "pmax_w": 0.2372,
+    "usable_wh_per_day": 0.3855,
+    "need_wh_per_day": 10.0,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0192",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0192",
+    "isc_ma": 147.3,
+    "voc_v": 6.6,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Run a Wi-Fi weather station continuously.",
+   "truth": {
+    "device_id": "weather_station",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.084,
+    "pmax_w": 0.7469,
+    "usable_wh_per_day": 1.2136,
+    "need_wh_per_day": 14.4,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0193",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0193",
+    "isc_ma": 120.2,
+    "voc_v": 6.84,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "I want a soil moisture sensor in my garden that reports all day and night.",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.21,
+    "pmax_w": 0.638,
+    "usable_wh_per_day": 1.4515,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0194",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0194",
+    "isc_ma": 105.4,
+    "voc_v": 6.56,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 5.5
+   },
+   "request": "I want a soil moisture sensor in my garden that reports all day and night.",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 1.587,
+    "pmax_w": 0.5328,
+    "usable_wh_per_day": 1.9047,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0195",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0195",
+    "isc_ma": 135.1,
+    "voc_v": 6.72,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "Light an LED path light for 2 hours every evening.",
+   "truth": {
+    "device_id": "led_path_light",
+    "hours_per_day": 2,
+    "feasible": true,
+    "margin": 1.139,
+    "pmax_w": 0.701,
+    "usable_wh_per_day": 1.139,
+    "need_wh_per_day": 1.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0196",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0196",
+    "isc_ma": 65.8,
+    "voc_v": 6.86,
+    "grade": "C",
+    "flags": [
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Can it keep a LoRa soil probe running around the clock?",
+   "truth": {
+    "device_id": "soil_sensor",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.668,
+    "pmax_w": 0.3524,
+    "usable_wh_per_day": 0.8016,
+    "need_wh_per_day": 1.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0197",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0197",
+    "isc_ma": 113.8,
+    "voc_v": 6.74,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 2.5
+   },
+   "request": "I want a tiny marker light by the gate on for 8 hours a night.",
+   "truth": {
+    "device_id": "garden_marker",
+    "hours_per_day": 8,
+    "feasible": true,
+    "margin": 1.206,
+    "pmax_w": 0.5938,
+    "usable_wh_per_day": 0.965,
+    "need_wh_per_day": 0.8,
+    "feasible_alternatives": [
+     "ble_beacon"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0198",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0198",
+    "isc_ma": 139.4,
+    "voc_v": 6.62,
+    "grade": "A",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 3.5
+   },
+   "request": "Keep a wildlife camera armed 24/7.",
+   "truth": {
+    "device_id": "trail_camera",
+    "hours_per_day": 24,
+    "feasible": false,
+    "margin": 0.224,
+    "pmax_w": 0.71,
+    "usable_wh_per_day": 1.6151,
+    "need_wh_per_day": 7.2,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0199",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0199",
+    "isc_ma": 83.1,
+    "voc_v": 4.52,
+    "grade": "C",
+    "flags": [
+     "low_voc",
+     "weak"
+    ]
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "Keep a Bluetooth beacon broadcasting around the clock.",
+   "truth": {
+    "device_id": "ble_beacon",
+    "hours_per_day": 24,
+    "feasible": true,
+    "margin": 3.238,
+    "pmax_w": 0.2657,
+    "usable_wh_per_day": 0.7771,
+    "need_wh_per_day": 0.24,
+    "feasible_alternatives": [
+     "garden_marker"
+    ]
+   }
+  },
+  {
+   "case_id": "sim-0200",
+   "kind": "sim",
+   "panel": {
+    "id": "SU-0200",
+    "isc_ma": 124.6,
+    "voc_v": 6.54,
+    "grade": "B",
+    "flags": []
+   },
+   "site": {
+    "sun_hours": 4.5
+   },
+   "request": "I want to top up my phone, about 6 hours of charging a day.",
+   "truth": {
+    "device_id": "phone_charging",
+    "hours_per_day": 6,
+    "feasible": false,
+    "margin": 0.031,
+    "pmax_w": 0.6263,
+    "usable_wh_per_day": 1.8318,
+    "need_wh_per_day": 60.0,
+    "feasible_alternatives": [
+     "ble_beacon",
+     "garden_marker",
+     "soil_sensor"
+    ]
+   }
+  }
+ ]
+}

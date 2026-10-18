@@ -1,0 +1,292 @@
+{
+ "system_efficiency": 0.65,
+ "devices": [
+  {
+   "id": "ble_beacon",
+   "name": "Bluetooth beacon",
+   "watts": 0.01,
+   "hours": 24
+  },
+  {
+   "id": "garden_marker",
+   "name": "LED garden marker light",
+   "watts": 0.1,
+   "hours": 6
+  },
+  {
+   "id": "soil_sensor",
+   "name": "LoRa soil-moisture sensor",
+   "watts": 0.05,
+   "hours": 24
+  },
+  {
+   "id": "epaper_sign",
+   "name": "E-paper bus-stop sign",
+   "watts": 0.2,
+   "hours": 24
+  },
+  {
+   "id": "trail_camera",
+   "name": "Trail camera on standby",
+   "watts": 0.3,
+   "hours": 24
+  },
+  {
+   "id": "led_path_light",
+   "name": "LED path light",
+   "watts": 0.5,
+   "hours": 6
+  },
+  {
+   "id": "weather_station",
+   "name": "Wi-Fi weather station",
+   "watts": 0.6,
+   "hours": 24
+  },
+  {
+   "id": "small_fan",
+   "name": "Small 5 V fan",
+   "watts": 1.0,
+   "hours": 6
+  },
+  {
+   "id": "pi_server",
+   "name": "Raspberry Pi camera server",
+   "watts": 3.0,
+   "hours": 24
+  },
+  {
+   "id": "fountain_pump",
+   "name": "12 V fountain pump",
+   "watts": 5.0,
+   "hours": 3
+  },
+  {
+   "id": "phone_charging",
+   "name": "Phone charging",
+   "watts": 10.0,
+   "hours": 1.5
+  },
+  {
+   "id": "clothes_dryer",
+   "name": "Electric clothes dryer",
+   "watts": 2500.0,
+   "hours": 1
+  }
+ ],
+ "examples": [
+  {
+   "passport_id": "SS-0001",
+   "sun_hours": 5.5,
+   "request": "Power a trail camera that sits on standby all day and night.",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "soil_sensor",
+    "garden_marker",
+    "ble_beacon"
+   ],
+   "note": "SS-0001 provides about 2.82 usable Wh per day at your site, short of the 7.2 Wh needed for continuous trail-camera standby. It can instead support a soil sensor or Bluetooth beacon for 24 hours daily, or a garden marker light for 6 hours daily.",
+   "trace": [
+    {
+     "tool": "get_passport",
+     "args": {
+      "passport_id": "SS-0001"
+     },
+     "result": {
+      "id": "SS-0001",
+      "isc_ma": 149.7,
+      "voc_v": 6.82,
+      "grade": "A",
+      "flags": []
+     }
+    },
+    {
+     "tool": "check_use",
+     "args": {
+      "passport_id": "SS-0001",
+      "device_id": "trail_camera",
+      "hours_per_day": 24
+     },
+     "result": {
+      "device_id": "trail_camera",
+      "device": "Trail camera on standby",
+      "device_w": 0.3,
+      "hours_per_day": 24.0,
+      "need_wh_per_day": 7.2,
+      "pmax_w": 0.7895,
+      "usable_wh_per_day": 2.8225,
+      "feasible": false,
+      "margin": 0.392,
+      "max_hours_per_day": 9.41
+     }
+    },
+    {
+     "tool": "check_use",
+     "args": {
+      "passport_id": "SS-0001",
+      "device_id": "soil_sensor",
+      "hours_per_day": 24
+     },
+     "result": {
+      "device_id": "soil_sensor",
+      "device": "LoRa soil-moisture sensor",
+      "device_w": 0.05,
+      "hours_per_day": 24.0,
+      "need_wh_per_day": 1.2,
+      "pmax_w": 0.7895,
+      "usable_wh_per_day": 2.8225,
+      "feasible": true,
+      "margin": 2.352,
+      "max_hours_per_day": 24.0
+     }
+    },
+    {
+     "tool": "check_use",
+     "args": {
+      "passport_id": "SS-0001",
+      "device_id": "garden_marker",
+      "hours_per_day": 6
+     },
+     "result": {
+      "device_id": "garden_marker",
+      "device": "LED garden marker light",
+      "device_w": 0.1,
+      "hours_per_day": 6.0,
+      "need_wh_per_day": 0.6,
+      "pmax_w": 0.7895,
+      "usable_wh_per_day": 2.8225,
+      "feasible": true,
+      "margin": 4.704,
+      "max_hours_per_day": 24.0
+     }
+    },
+    {
+     "tool": "check_use",
+     "args": {
+      "passport_id": "SS-0001",
+      "device_id": "ble_beacon",
+      "hours_per_day": 24
+     },
+     "result": {
+      "device_id": "ble_beacon",
+      "device": "Bluetooth beacon",
+      "device_w": 0.01,
+      "hours_per_day": 24.0,
+      "need_wh_per_day": 0.24,
+      "pmax_w": 0.7895,
+      "usable_wh_per_day": 2.8225,
+      "feasible": true,
+      "margin": 11.76,
+      "max_hours_per_day": 24.0
+     }
+    }
+   ]
+  },
+  {
+   "passport_id": "SS-0002",
+   "sun_hours": 4.5,
+   "request": "I'd like a garden path lamp on for 1 hours a night.",
+   "device_id": "led_path_light",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [],
+   "note": "SS-0002 can support a 0.5 W LED path lamp for 1 hour nightly: it provides about 0.759 Wh per day against the lamp\u2019s 0.5 Wh requirement. Nighttime use requires a suitable battery and charge controller.",
+   "trace": [
+    {
+     "tool": "get_passport",
+     "args": {
+      "passport_id": "SS-0002"
+     },
+     "result": {
+      "id": "SS-0002",
+      "isc_ma": 52.7,
+      "voc_v": 6.39,
+      "grade": "C",
+      "flags": [
+       "weak"
+      ]
+     }
+    },
+    {
+     "tool": "check_use",
+     "args": {
+      "passport_id": "SS-0002",
+      "device_id": "led_path_light",
+      "hours_per_day": 1
+     },
+     "result": {
+      "device_id": "led_path_light",
+      "device": "LED path light",
+      "device_w": 0.5,
+      "hours_per_day": 1.0,
+      "need_wh_per_day": 0.5,
+      "pmax_w": 0.2595,
+      "usable_wh_per_day": 0.759,
+      "feasible": true,
+      "margin": 1.518,
+      "max_hours_per_day": 1.52
+     }
+    }
+   ]
+  }
+ ],
+ "eval": {
+  "cases": 212,
+  "real_cases": 12,
+  "feasible": 97,
+  "rows": [
+   {
+    "advisor": "naive-voc-x-isc",
+    "label": "The first prototype's rule (watts under Voc \u00d7 Isc)",
+    "cases": 212,
+    "device_pct": 100.0,
+    "verdict_pct": 62.7,
+    "false_yes_pct": 51.3,
+    "false_no_pct": 20.6,
+    "alternatives_valid_pct": 37.2
+   },
+   {
+    "advisor": "chalk-gateway:openai/gpt-6.1-sol:plain",
+    "label": "Agent on Chalk, openai/gpt-6.1-sol, a plain assistant, no formula or tools",
+    "cases": 166,
+    "device_pct": 100.0,
+    "verdict_pct": 94.0,
+    "false_yes_pct": 3.2,
+    "false_no_pct": 9.6,
+    "alternatives_valid_pct": 90.9
+   },
+   {
+    "advisor": "chalk-gateway:openai/gpt-6.1-sol:alone",
+    "label": "Agent on Chalk, openai/gpt-6.1-sol, model alone, told the formula",
+    "cases": 212,
+    "device_pct": 100.0,
+    "verdict_pct": 98.1,
+    "false_yes_pct": 0.0,
+    "false_no_pct": 4.1,
+    "alternatives_valid_pct": 100.0
+   },
+   {
+    "advisor": "chalk-gateway:openai/gpt-6.1-sol:tools",
+    "label": "Agent on Chalk, openai/gpt-6.1-sol, with the passport and physics tools",
+    "cases": 212,
+    "device_pct": 99.5,
+    "verdict_pct": 99.5,
+    "false_yes_pct": 0.0,
+    "false_no_pct": 0.0,
+    "alternatives_valid_pct": 100.0
+   },
+   {
+    "advisor": "tool-check_use",
+    "label": "The answer key: the physics tool handed the right device (100% by construction)",
+    "cases": 212,
+    "device_pct": 100.0,
+    "verdict_pct": 100.0,
+    "false_yes_pct": 0.0,
+    "false_no_pct": 0.0,
+    "alternatives_valid_pct": 100.0
+   }
+  ]
+ }
+}

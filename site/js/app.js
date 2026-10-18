@@ -631,7 +631,7 @@
       if (r.page === "passport") view.innerHTML = pagePassport(r.id);
       else if (r.page === "build") { view.innerHTML = pageBuild(); wireBuild(); }
       else if (r.page === "impact") { if (reason === "data" && view.querySelector(".imp-open")) inPlace = true; else view.innerHTML = pageImpact(); }   // it does not depend on runs: never rebuilt under the reader
-      else if (r.page === "reuse") { const ctx = { passports: passports(), loading, esc, num }; if (loading) loadingShown = true; if (reason === "data" && view.querySelector("#reuse-form")) { window.SSReuse.refresh(view, ctx, r.id); inPlace = true; } else { view.innerHTML = window.SSReuse.page(ctx, r.id); window.SSReuse.wire(view, ctx); } }
+      else if (r.page === "reuse") { const ctx = { passports: passports(), loading, esc, num }; if (loading) loadingShown = true; if (reason === "data" && view.querySelector("#reuse-panel")) { window.SSReuse.refresh(view, ctx, r.id); inPlace = true; } else { view.innerHTML = window.SSReuse.page(ctx, r.id); window.SSReuse.wire(view, ctx); } }
       else if (r.page === "print") view.innerHTML = pagePrint();
       else if (r.page === "passports") { view.innerHTML = pageIndex(); wireIndex(); }
       else if (reason === "data" && view.querySelector("[data-hero]")) { window.SSFront.refresh(view, frontCtx()); inPlace = true; }

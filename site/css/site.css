@@ -365,25 +365,45 @@ body[data-page="impact"] .view { max-width: none; padding: 0; }
   .imp-points, .imp-sum__grid { grid-template-columns: 1fr; }
 }
 
-/* Second Use (#/reuse): a panel's passport numbers against what a customer needs powered */
-.reuse__how { padding-left: 1.3em; margin: 0 0 28px; display: grid; gap: 8px; max-width: var(--measure); color: var(--ink-2); }
-.reuse__how b { color: var(--ink); font-weight: 600; }
-.reuse__form { display: grid; gap: 16px; }
-.reuse__form .card + .card { margin-top: 0; }
-.reuse__facts { margin: 16px 0 10px; grid-template-columns: repeat(3, 1fr); }
-.reuse__facts dd .small { display: block; font-weight: 400; margin-top: 2px; }
-.reuse__go { gap: 16px; }
-.reuse__result { display: grid; gap: 16px; margin-top: 28px; }
-.reuse__result[hidden] { display: none; }
-.reuse__result .card + .card { margin-top: 0; }
-.reuse__decision { font-size: var(--title); font-weight: 700; font-stretch: 106%; letter-spacing: -0.01em; color: var(--cell); line-height: 1.15; margin-bottom: 6px; }
-.reuse__scroll { overflow-x: auto; }
-.reuse__result tr.is-fit td { color: var(--cell); font-weight: 600; }
-.reuse__ideas { white-space: pre-wrap; line-height: 1.6; max-width: var(--measure); overflow-wrap: anywhere; }
-.reuse__list { padding-left: 1.2em; display: grid; gap: 4px; }
-.reuse__note { margin-top: 28px; }
+/* Second Use (#/reuse): pick a panel and a site, see what it can run, ask the agent, how the agent is tested */
+.reuse__steps { display: grid; gap: 16px; }
+.reuse__steps .card + .card { margin-top: 0; }
+.reuse__pick { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: end; }
+.reuse__sun { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.reuse__sun legend { font-size: var(--label); color: var(--ink-3); font-stretch: 88%; margin-bottom: 6px; padding: 0; }
+.reuse__sun label { cursor: pointer; }
+.reuse__sun input { position: absolute; opacity: 0; pointer-events: none; }
+.reuse__chip { display: inline-block; padding: 7px 14px; border: 1px solid var(--busbar); border-radius: 999px; font-size: 0.9rem; background: var(--surface); }
+.reuse__sun input:checked + .reuse__chip { background: var(--cell); border-color: var(--cell); color: #fff; }
+.reuse__h { color: var(--ink-2); }
+.reuse__sun input:checked + .reuse__chip .reuse__h { color: rgba(255, 255, 255, 0.75); }
+.reuse__sun input:focus-visible + .reuse__chip { outline: 2px solid var(--focus); outline-offset: 2px; }
+.reuse__facts { margin: 18px 0 10px; grid-template-columns: repeat(3, 1fr); }
+.reuse__answer { font-size: 1.15rem; font-weight: 600; color: var(--cell); margin-bottom: 14px; }
+.reuse__runs { list-style: none; padding: 0; display: grid; }
+.reuse__runs li { display: grid; grid-template-columns: 1.6em 1fr auto; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--busbar-2); }
+.reuse__runs li:last-child { border-bottom: 0; }
+.reuse__runs li.is-no { color: var(--ink-3); }
+.reuse__runs li.is-yes .reuse__mark { color: var(--pair-c); font-weight: 700; }
+.reuse__runs li.is-yes .reuse__dev { font-weight: 600; color: var(--ink); }
+.reuse__why { text-align: right; }
+.reuse__ask { display: flex; gap: 10px; margin-top: 12px; }
+.reuse__q { flex: 1; min-width: 0; font-size: 1rem; padding: 10px 12px; border: 1px solid var(--busbar); border-radius: var(--radius); background: var(--surface); }
+#reuse-status { margin-top: 10px; }
+#reuse-answer { margin-top: 14px; display: grid; gap: 8px; }
+#reuse-answer[hidden] { display: none; }
+.reuse__trace { padding-left: 1.3em; color: var(--ink-2); display: grid; gap: 3px; }
+.reuse__where { display: inline-block; margin-left: 6px; padding: 0 8px; border-radius: 999px; background: var(--busbar-2); color: var(--cell); font-size: 0.78rem; font-weight: 600; }
+.reuse__proof { padding: 10px 12px; border: 1px solid var(--busbar); border-radius: var(--radius); color: var(--ink-2); }
+.reuse__proof code { font-size: 0.8rem; color: var(--cell); }
+.reuse__scroll { overflow-x: auto; margin-top: 10px; }
+.reuse__steps tr.is-fit td { color: var(--cell); font-weight: 600; }
 @media (max-width: 760px) {
   .reuse__facts { grid-template-columns: 1fr; }
+  .reuse__runs li { grid-template-columns: 1.6em 1fr; }
+  .reuse__why { grid-column: 2; text-align: left; }
+  .reuse__ask { flex-direction: column; }
+  .reuse__steps .table th:first-child, .reuse__steps .table td:first-child { white-space: normal; min-width: 11em; }
 }
 
 /* ---------- the nav, restyled: a transparent bar, the Afterglow mark, rounded pills. These rules come after the

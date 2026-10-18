@@ -1,0 +1,33 @@
+{
+ "advisor": "chalk-gateway:openai/gpt-6.1-sol:alone",
+ "all": {
+  "cases": 212,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 98.1,
+  "false_yes_pct": 0.0,
+  "false_no_pct": 4.1,
+  "alternatives_valid_pct": 100.0,
+  "alternatives_given": 469
+ },
+ "real": {
+  "cases": 12,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 100.0,
+  "false_yes_pct": 0.0,
+  "false_no_pct": 0.0,
+  "alternatives_valid_pct": 100.0,
+  "alternatives_given": 22
+ },
+ "sim": {
+  "cases": 200,
+  "answered_pct": 100.0,
+  "device_understood_pct": 100.0,
+  "verdict_accuracy_pct": 98.0,
+  "false_yes_pct": 0.0,
+  "false_no_pct": 4.3,
+  "alternatives_valid_pct": 100.0,
+  "alternatives_given": 447
+ }
+}

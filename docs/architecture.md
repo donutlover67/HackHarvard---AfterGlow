@@ -1,4 +1,4 @@
-# How Second String fits together
+# How Afterglow fits together
 
 Read this first if you are new to the repo. It explains what each part does, how data moves from a solar panel to a QR code on a judge's phone, and where to look when you change something. Each area has its own guide with the details:
 

@@ -1,4 +1,4 @@
-# Second String
+# Afterglow
 
 Grades used solar panels, then rewires them for the most power. HackHarvard 2026.
 
@@ -16,7 +16,7 @@ Every working panel that is landfilled is solar power nobody gets to use. A chea
 
 - **Businesses.** A warehouse roof, a barn, a parking lot or a remote site can add solar with tested used panels for less than new ones. Each panel's passport says what it still makes, and the Array Builder wires a mixed batch to the voltage the site needs.
 - **Households.** A few used panels on a balcony, a shed or a backyard can run a pump, light a garden or charge a battery, without starting from a new roof.
-- **Governments.** Cities, schools and public agencies own roofs, bus shelters and street furniture that could make power, and they answer for the panels their region throws away. Graded used panels let a public budget buy more solar per dollar. The passports give procurement a measured record to check each panel against, and the weakest panels can still power sensors, chargers and emergency kits through Second Use (`#/reuse`). Where take-back rules already cover panels (the EU counts them as electronic waste under its WEEE directive), a cheap test lets reuse come before recycling, and the bench's runs give a count of panels kept out of landfill to report.
+- **Governments.** Cities, schools and public agencies own roofs, bus shelters and street furniture that could make power, and they answer for the panels their region throws away. Graded used panels let a public budget buy more solar per dollar. The passports give procurement a measured record to check each panel against, and the weakest panels can still power sensors, beacons and small lights through Second Use (`#/reuse`). Where take-back rules already cover panels (the EU counts them as electronic waste under its WEEE directive), a cheap test lets reuse come before recycling, and the bench's runs give a count of panels kept out of landfill to report.
 
 The site's impact page (`#/impact`) tells the same story with the sourced figures from [Why](#why) and the simulated gain on the demo batch, labelled as simulated.
 

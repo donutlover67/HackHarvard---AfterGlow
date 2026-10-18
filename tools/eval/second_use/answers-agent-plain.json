@@ -1,0 +1,2273 @@
+{
+ "advisor": "chalk-gateway:openai/gpt-6.1-sol:plain",
+ "cases_run": 166,
+ "errors": 46,
+ "seconds": 298.1,
+ "answers": [
+  {
+   "case_id": "real-002-1",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The sensor needs about 1.2 Wh per day, but this panel\u2019s voltage and current give an optimistic ceiling of only 1.18 Wh per day at 3.5 peak sun hours; actual output will be lower. A Bluetooth beacon or garden marker is a better fit, with suitable battery storage and charging electronics for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-001-3",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 12,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your dryer needs about 30,000 Wh per day; this panel\u2019s voltage and current imply an optimistic ceiling of just 2.55 Wh per day at 2.5 peak sun hours, with actual output lower. The listed low-power alternatives are practical targets with suitable voltage regulation and battery storage for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-001-1",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "The camera needs about 7.2 Wh per day. Even using short-circuit current \u00d7 open-circuit voltage as an optimistic ceiling, this panel yields only 5.6 Wh per day before losses; the lower-power alternatives need suitable battery storage and regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-002-2",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "This weak panel\u2019s voltage and current imply an upper power bound of just 0.34 W, with actual usable output lower\u2014insufficient for a 1 W fan. A Bluetooth beacon or garden marker is a better fit, with suitable battery storage and regulation; verify usable output before buying.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-001-2",
+   "device_id": "fountain_pump",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your pump needs 5 Wh per day at 12 V; this panel\u2019s optimistic ceiling is only 5.6 Wh per day before real-world losses, and its voltage is too low to power the pump directly. Choose a larger panel with a suitable 12 V supply system; the listed alternatives need appropriate voltage regulation and battery storage for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-002-3",
+   "device_id": "led_path_light",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "A 0.5 W path lamp for 1 hour needs 0.5 Wh nightly; this panel could provide about 0.76 Wh daily with 4.5 peak sun hours and a conservative 50% allowance for output and system losses. You'll need a battery and compatible charging electronics; because the panel is weak and its rated operating power is unknown, confirm its actual output before relying on it.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-003-1",
+   "device_id": "phone_charging",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Three hours of phone charging needs about 30 Wh daily; this panel\u2019s voltage and current imply an upper limit of only 2.55 Wh daily at 2.5 peak sun hours, with actual output lower. The listed low-power alternatives need suitable voltage regulation and battery storage for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-003-2",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, comfortably below this panel\u2019s estimated daily production with 2.5 peak sun hours. Use a suitable charge controller, voltage regulator, and rechargeable battery for overnight operation; actual output will be lower than the open-circuit voltage \u00d7 short-circuit current estimate.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-003-3",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, comfortably below this panel\u2019s estimated output with 4.5 peak sun hours. Use a suitable rechargeable battery and charge controller for overnight broadcasting; actual usable output will be below the voltage-times-current upper estimate of 4.59 Wh per day.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-004-1",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon"
+   ],
+   "note": "A dryer running 24 hours needs about 60,000 Wh daily; this panel\u2019s measurements imply an optimistic ceiling of just 1.17 Wh daily, with actual output lower given its weak condition. A Bluetooth beacon is a more realistic option, with suitable energy storage and power regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0001",
+   "device_id": "garden_marker",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Running the 0.1 W marker for 24 hours needs 2.4 Wh; this panel\u2019s voltage and current suggest roughly 2 Wh/day after practical losses, so it is not a reliable match. A garden marker running for the typical 6 hours is more realistic, with a suitable rechargeable battery and charge controller for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-004-3",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, which this panel should supply with 2.5 peak sun hours despite its weak grade. Use a suitable charge controller and rechargeable battery for overnight operation, and verify actual output because the passport lists only open-circuit voltage and short-circuit current.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "real-004-2",
+   "device_id": "led_path_light",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "A 0.5 W path lamp for one hour needs 0.5 Wh nightly, which this panel can plausibly replenish with 5.5 peak sun hours. You\u2019ll need a battery and suitable charging circuitry; because this weak, grade-C panel\u2019s actual output is below its 1.84 Wh/day theoretical ceiling, test its charging performance before relying on it.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0002",
+   "device_id": "led_path_light",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The panel should supply the light\u2019s 0.5 Wh daily requirement: a conservative estimate is about 1 Wh/day with 2.5 peak sun hours, though actual output needs testing. Evening use requires a battery, a suitable charge controller, and compatible voltage regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0004",
+   "device_id": "garden_marker",
+   "hours_per_day": 4,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The marker needs about 0.4 Wh per night; this weak panel should provide enough with 3.5 peak sun hours, though its actual output should be tested. You'll need a suitable rechargeable battery and charging circuit for operation after dark.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0003",
+   "device_id": "garden_marker",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Interpreting your request as 24 hours per day, the marker needs 2.4 Wh daily. This panel\u2019s theoretical ceiling is only about 2.53 Wh daily before real-world losses, so it cannot reliably meet that target; running the marker for its typical 6 hours is more realistic, with a suitable battery and charge controller.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0006",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your camera needs about 7.2 Wh/day; even an optimistic ceiling from this panel\u2019s readings is only 1.79 Wh/day at 5.5 peak sun hours, with actual output lower given its weak condition. A Bluetooth beacon or garden marker is a more realistic load, with suitable battery storage and charging electronics for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0007",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your sensor needs about 1.2 Wh per day, which this panel should supply with 5.5 peak sun hours; the passport values are not a measured operating-power rating, so confirm its usable output. A compatible charge controller and rechargeable battery are needed for overnight operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0005",
+   "device_id": "led_path_light",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Running the path light for 24 hours needs 12 Wh/day; this panel\u2019s voltage and current give an optimistic ceiling of only 1.65 Wh/day, with actual output lower because it is weak and grade C. A Bluetooth beacon or garden marker is a better match, with suitable battery storage and charging electronics for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0008",
+   "device_id": "garden_marker",
+   "hours_per_day": 6,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "soil_sensor"
+   ],
+   "note": "Your marker light needs about 0.6 Wh per night, which this panel should supply with 2.5 peak sun hours daily, allowing for typical losses. You\u2019ll need a suitable rechargeable battery and charge controller for nighttime operation; actual output should be verified because the passport lists open-circuit voltage and short-circuit current rather than rated power.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0010",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your dryer needs about 5,000 Wh daily; this panel\u2019s voltage and current imply a theoretical ceiling of only 4.1 Wh daily at 4.5 peak sun hours, with actual output lower. It is better suited to the listed low-power alternatives with suitable voltage regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0009",
+   "device_id": "garden_marker",
+   "hours_per_day": 3,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your marker needs about 0.3 Wh per night, which this panel should comfortably replenish with 3.5 peak sun hours, allowing for typical losses. After-dark operation requires a rechargeable battery and a compatible charge controller; the passport\u2019s voltage and current are not guaranteed operating output.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0011",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your dryer needs about 7,500 Wh daily; this panel\u2019s voltage and current imply a theoretical ceiling of only 3.4 Wh per day at 5.5 peak sun hours, with actual output lower. The listed low-power alternatives would need compatible voltage regulation and battery storage for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0012",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The dryer needs about 60,000 Wh per day; this panel\u2019s voltage and current imply a theoretical ceiling of just 4.8 Wh per day at 5.5 peak sun hours, with actual output lower. The listed low-power alternatives are more suitable, with an appropriate battery and charge controller for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0013",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The beacon needs about 0.24 Wh/day, so this panel should support it with 2.5 peak sun hours, allowing for typical panel and charging losses. You\u2019ll need a suitable rechargeable battery and charge controller for overnight operation; the supplied voltage and current are open/short-circuit measurements, not a measured operating-power rating.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0015",
+   "device_id": "small_fan",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "This panel is not a reliable match for a 1 W USB fan for 3 hours daily: even its voltage \u00d7 current rating gives an upper bound of only 0.80 W, with actual usable output lower. Choose a larger panel with regulated 5 V output; a battery would help keep the fan running through shade.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0017",
+   "device_id": "pi_server",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The Raspberry Pi needs about 72 Wh/day; SU-0017\u2019s voltage and current give an optimistic ceiling of only 2.68 Wh/day at 3.5 peak sun hours, with actual usable energy lower. The listed low-power alternatives are suitable candidates with appropriate voltage regulation and battery storage for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0014",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The probe needs about 1.2 Wh daily; this panel\u2019s voltage and current give only a theoretical ceiling of 2.38 Wh daily at 5.5 peak sun hours, not usable output. With its grade C/weak condition and charging losses, I would not recommend it for reliable round-the-clock operation without a measured output test; the lower-power alternatives also need suitable battery storage for nighttime.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0016",
+   "device_id": "small_fan",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your fan needs about 3 Wh daily. The panel\u2019s voltage and current give only a theoretical ceiling of 4.33 Wh per day\u2014not usable output\u2014so after real-world losses it is too marginal to recommend; choose a larger panel with regulated 5 V output and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0019",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "The camera needs about 7.2 Wh/day, but this panel\u2019s voltage and current give an optimistic ceiling of only 5.1 Wh/day at 5.5 peak sun hours; actual usable energy will be lower. The listed lower-power alternatives are better fits with suitable battery storage and voltage regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0018",
+   "device_id": "led_path_light",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "A 0.5 W path lamp needs 1.5 Wh for 3 hours nightly; this panel is unlikely to supply that reliably after charging and battery losses with 2.5 peak sun hours. A lower-power garden marker is a better fit, with a suitable rechargeable battery and charge controller for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0020",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The camera needs about 7.2 Wh per day, but this panel\u2019s current and voltage imply an absolute upper limit of only 1.23 Wh per day at 4.5 peak sun hours; actual output will be lower, especially with its weak grade-C condition. A Bluetooth beacon or garden marker is a more suitable small load, with a compatible charge controller and battery for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0021",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The sign needs about 4.8 Wh/day, but this panel\u2019s voltage and current imply an optimistic ceiling of only 2.65 Wh/day at 3.5 peak sun hours; actual output will be lower, especially with its weak grade-C condition. The listed lower-power alternatives are more realistic with suitable voltage regulation and battery storage, though usable output should be tested.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0022",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Estimated usable production is roughly 1.8\u20132.1 Wh per day in 3.5 peak sun hours, enough for a 1 W USB fan for one hour with suitable battery storage and a regulated 5 V output. The panel cannot reliably power that fan directly, and this small fan will provide only limited coop cooling.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0025",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "With 2.5 peak sun hours, this panel should provide enough daily energy for a 1 W USB fan running for one hour, allowing for reasonable losses. Use a suitable battery buffer and regulated 5 V output: the panel cannot reliably power the fan directly, and this small fan will provide only limited coop cooling.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0024",
+   "device_id": "weather_station",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The weather station needs about 14.4 Wh/day, but this panel\u2019s voltage and current give a theoretical ceiling of only 5.3 Wh/day at 5.5 peak sun hours; actual usable energy will be lower. The listed alternatives have much smaller daily demands and would need suitable voltage regulation and battery storage for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0023",
+   "device_id": "garden_marker",
+   "hours_per_day": 12,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker needs about 1.2 Wh per night; conservatively allowing for this weak Grade C panel and system losses, estimate about 1 Wh/day from 3.5 peak sun hours, so 12 hours is not reliable. A 6-hour marker or Bluetooth beacon is a better fit, with a suitable rechargeable battery and charge controller.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0027",
+   "device_id": "fountain_pump",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your pump needs 120 Wh per day, while this panel\u2019s voltage and current give an optimistic ceiling of about 3 Wh per day at 4.5 peak sun hours; actual output will be lower. Its 4.45 V open-circuit voltage also cannot directly power a 12 V pump; the listed low-power alternatives would need suitable voltage regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0026",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The fan needs about 1 Wh daily; this panel could provide roughly 1.4\u20131.7 Wh with 2.5 peak sun hours, allowing for typical losses. Use a small battery and regulated 5 V output: the panel cannot reliably supply the fan\u2019s 1 W directly, and actual output should be verified.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0028",
+   "device_id": "small_fan",
+   "hours_per_day": 4,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The fan needs 4 Wh per day, but even an optimistic ceiling from this panel\u2019s ratings is only 0.66 W and 3.63 Wh per day; its weak condition and system losses reduce that further. The listed lower-power alternatives are better matches, with suitable voltage regulation and battery storage for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0029",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your sensor needs about 1.2 Wh per day; this panel\u2019s voltage/current figures give only a theoretical ceiling of 1.58 Wh per day, with actual output lower. Given its weak grade-C condition and storage losses, it is not a reliable choice for round-the-clock sensing; the lower-power alternatives would still need a suitable battery and controller.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0030",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The probe needs about 1.2 Wh per day; with 5.5 peak sun hours, this panel should provide enough even allowing for typical losses, though its actual loaded output should be verified. Use a suitable charge controller and rechargeable battery to keep the probe running overnight and through cloudy periods.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0031",
+   "device_id": "garden_marker",
+   "hours_per_day": 12,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your marker light needs about 1.2 Wh per night; this panel should cover that with 2.5 peak sun hours, allowing for typical losses. You\u2019ll need a suitable rechargeable battery and charge controller for nighttime use; actual output should be verified because the passport lists open-circuit voltage and short-circuit current, not rated operating power.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0032",
+   "device_id": "led_path_light",
+   "hours_per_day": 3,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your 0.5 W path lamp needs about 1.5 Wh per night, which this panel should supply with 5.5 peak sun hours, allowing for typical losses. You'll need a suitable rechargeable battery and charge controller for nighttime use; output is estimated because short-circuit current and open-circuit voltage are not operating-power ratings.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0034",
+   "device_id": "weather_station",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The weather station needs about 14.4 Wh daily, but this panel's voltage and current imply an optimistic ceiling of only 2.4 Wh daily at 2.5 peak sun hours; actual usable energy will be lower. The listed alternatives have much smaller daily needs and would require suitable power regulation and battery storage for operation without sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0033",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker light needs about 0.8 Wh per night; this panel should provide enough with 2.5 peak sun hours, allowing for its output being below the voltage \u00d7 current headline estimate. You\u2019ll need a compatible rechargeable battery and charging circuit for nighttime use; cloudy days may require extra battery reserve.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0037",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, comfortably within this panel\u2019s estimated output with 3.5 peak sun hours. Use a suitable charge controller, regulated supply, and rechargeable battery to keep it running overnight and through cloudy periods.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0036",
+   "device_id": "phone_charging",
+   "hours_per_day": 6,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Phone charging for 6 hours needs about 60 Wh daily; this panel\u2019s measurements imply an optimistic ceiling of only 2.43 Wh daily at 4.5 peak sun hours, with actual output lower due to its weak condition and system losses. The listed low-power alternatives are more suitable, with appropriate voltage regulation and battery storage for overnight use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0035",
+   "device_id": "weather_station",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The weather station needs about 14.4 Wh/day, but this panel\u2019s voltage and current imply an optimistic ceiling of only 2.2 Wh/day at 3.5 peak sun hours; its weak grade means actual output will be lower. The listed low-power alternatives are better fits, with suitable battery storage and regulation; confirm measured output before relying on continuous operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0038",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, which this panel should comfortably supply with 3.5 peak sun hours, even allowing for losses. Use a suitable rechargeable battery and charge controller to keep it broadcasting overnight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0039",
+   "device_id": "garden_marker",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "A 0.1 W garden marker needs 2.4 Wh for 24 hours; this panel\u2019s voltage and current give only a theoretical ceiling of 3.59 Wh/day, so actual output and storage losses make that runtime unreliable. A marker used for its typical 6 hours nightly is a better fit, with a suitable rechargeable battery and charge controller.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0040",
+   "device_id": "garden_marker",
+   "hours_per_day": 12,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your marker needs about 1.2 Wh daily; these panel readings and 5.5 peak sun hours suggest roughly 3.3 Wh daily after a conservative allowance for operating and charging losses. It should work with a suitable rechargeable battery and charge controller for after-dark use, though actual output should be verified under load.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0041",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The beacon needs about 0.24 Wh daily, which this weak panel should supply with 5.5 peak sun hours, though actual output needs testing because its voltage and current ratings are not usable-power measurements. For 24/7 operation, add a rechargeable battery and a compatible low-voltage solar charging circuit.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0042",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 4,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your dryer needs about 10,000 Wh per day, while this panel could provide less than 2.04 Wh per day at 2.5 peak sun hours\u2014and less still after real-world losses. A Bluetooth beacon or garden marker is a more realistic use, with suitable battery storage and charging electronics.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0043",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker"
+   ],
+   "note": "The beacon needs about 0.24 Wh/day; these panel readings suggest enough energy with 3.5 peak sun hours, allowing conservatively for losses, though actual working output is unverified. For round-the-clock broadcasting, use a suitable rechargeable battery and compatible charge controller/voltage regulator.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0044",
+   "device_id": "garden_marker",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Taking your request as 24 hours per day, the marker needs 2.4 Wh daily. SU-0044\u2019s voltage and current give only a theoretical ceiling of 3.2 Wh/day before losses; with its weak grade-C condition, I would not recommend it for continuous lighting, though a 6-hour marker light is a more realistic option with a suitable battery and controller.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0045",
+   "device_id": "led_path_light",
+   "hours_per_day": 3,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your path lamp needs about 1.5 Wh per night; these panel readings suggest roughly 3\u20134 Wh per day at 5.5 peak sun hours, though actual output needs testing. Use a compatible rechargeable battery and charge controller for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0048",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your dryer needs about 5,000 Wh per day; this panel\u2019s voltage and current imply an upper bound of just 4.4 Wh per day at 5.5 peak sun hours, with actual output lower. The listed low-power alternatives are more suitable, with a compatible battery and charge controller for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0047",
+   "device_id": "weather_station",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "The weather station needs about 14.4 Wh per day, but this panel would produce less than 5.6 Wh per day even before practical losses. The listed alternatives have much lower daily energy needs; suitable voltage regulation and a rechargeable battery are needed for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0046",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [],
+   "note": "The beacon needs about 0.24 Wh daily, which this weak panel should supply with 4.5 peak sun hours, allowing for reduced output and losses. Use a suitable low-voltage charge controller and battery for overnight broadcasting; no other listed device is a confident fit from these ratings alone.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0050",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The always-on e-ink display needs about 4.8 Wh/day. This panel\u2019s current and voltage give an optimistic ceiling of 2.5 Wh/day at your site, with actual usable energy lower; choose a larger panel with battery storage and suitable voltage regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0049",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your dryer needs about 5,000 Wh daily; this weak panel provides less than 0.85 Wh daily even before system losses. A Bluetooth beacon or garden marker is a more suitable load, with appropriate battery storage and voltage regulation; the marker would need verification given the panel\u2019s condition.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0051",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "A wildlife camera on standby needs about 7.2 Wh/day, but this panel\u2019s voltage and current imply an optimistic ceiling of only 1.78 Wh/day at 5.5 peak sun hours; its weak condition and system losses reduce that further. A Bluetooth beacon or garden marker is a more realistic choice, with suitable battery storage and charging electronics.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0052",
+   "device_id": "small_fan",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your fan needs about 3 Wh per day, but this panel\u2019s voltage and current give an optimistic ceiling of only 2 Wh per day at 4.5 peak sun hours; its weak condition and system losses reduce that further. The listed low-power alternatives are better fits with suitable battery storage and voltage regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0054",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "This panel cannot directly run a 5 V fan: its open-circuit voltage is only 4.59 V, and its working voltage will be lower. The listed lower-power alternatives would need suitable voltage regulation and battery storage for operation outside sunny hours.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0055",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The always-on e-ink display needs about 4.8 Wh/day, but this panel supplies less than 3.23 Wh/day even using an optimistic voltage-current upper bound at 3.5 peak sun hours. The listed lower-power alternatives are better fits with suitable voltage regulation and battery storage for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0053",
+   "device_id": "small_fan",
+   "hours_per_day": 6,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your fan needs about 6 Wh per day, but this panel\u2019s voltage and current give an optimistic ceiling of only 5.45 Wh per day at 5.5 peak sun hours; actual usable energy will be lower. The listed lower-power alternatives are better fits with suitable voltage regulation and battery storage for use outside sunlight hours.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0056",
+   "device_id": "small_fan",
+   "hours_per_day": 2,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Estimated output is about 3 Wh per day after allowing for losses, enough for a 1 W USB fan for 2 hours. Use a suitable solar charger, battery and regulated 5 V output; the panel cannot reliably power the fan directly, and actual output needs confirmation because maximum-power ratings are not provided.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0060",
+   "device_id": "phone_charging",
+   "hours_per_day": 12,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Charging your phone for 12 hours needs about 120 Wh daily; this panel\u2019s voltage and current imply an optimistic ceiling of just 2.45 Wh daily, with actual output lower because it is weak and grade C. The listed low-power alternatives would need suitable power regulation and battery storage for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0058",
+   "device_id": "garden_marker",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "A 0.1 W garden marker needs 2.4 Wh for 24 hours; this panel is too marginal to supply that reliably once realistic output and charging losses are included. It should support the marker\u2019s typical 6-hour schedule with a suitable battery and charge controller.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0059",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker"
+   ],
+   "note": "This weak, grade-C panel should support a Bluetooth beacon\u2019s roughly 0.24 Wh daily demand in 5.5 peak sun hours, though its actual output needs testing because short-circuit current and open-circuit voltage overstate usable power. A suitable rechargeable battery and charge controller are needed for overnight broadcasting.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0057",
+   "device_id": "garden_marker",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Treating your request as 24 hours daily, the marker needs 2.4 Wh/day; this panel could supply roughly 2.8 Wh/day assuming 70% of its voltage-current upper bound is usable. That is a narrow margin, so verify its actual output and use a suitable rechargeable battery and charge controller for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0061",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "A 1 W USB fan for 1 hour needs about 1 Wh daily; this panel could just supply that in 2.5 peak sun hours, though losses make it marginal. Use a small battery and regulated 5 V USB output\u2014the panel cannot reliably drive the fan directly, and a larger panel would provide a safer margin.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0062",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "soil_sensor"
+   ],
+   "note": "Your marker needs about 0.8 Wh per night, which this panel should supply with 4.5 peak sun hours, allowing for typical losses. You\u2019ll need a battery and suitable charge controller for after-dark use; actual output should be checked because the passport lists short-circuit current and open-circuit voltage, not operating power.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0065",
+   "device_id": "weather_station",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your weather station needs about 14.4 Wh per day, while this panel\u2019s voltage and current give an optimistic ceiling of only 4.35 Wh per day at 4.5 peak sun hours; actual output will be lower. The listed lower-power alternatives are plausible with suitable charging electronics and battery storage for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0063",
+   "device_id": "small_fan",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "This panel\u2019s theoretical power ceiling is only 0.78 W, with actual output lower, so it cannot directly power the 1 W fan reliably. Choose a larger panel with regulated 5 V output; the listed alternatives are lower-energy options, with battery storage needed outside sunny hours.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0064",
+   "device_id": "pi_server",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your Raspberry Pi camera server needs about 72 Wh daily; this panel\u2019s voltage and current imply an optimistic ceiling of only 5.5 Wh daily at 5.5 peak sun hours, with actual output lower. The listed low-power alternatives are more suitable, with a compatible controller and battery for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0066",
+   "device_id": "led_path_light",
+   "hours_per_day": 3,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "A 0.5 W path lamp needs 1.5 Wh for 3 hours, which this panel should provide with 3.5 peak sun hours daily, allowing for typical losses. You\u2019ll need a compatible rechargeable battery and charge controller for nighttime use; actual output should be checked because the passport lists short-circuit current and open-circuit voltage, not operating power.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0069",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The sign needs 4.8 Wh/day, but this panel\u2019s voltage and current give an optimistic ceiling of only 1.67 Wh/day before losses; its weak, grade-C condition reduces usable output further. A Bluetooth beacon or garden marker is a more realistic option, with suitable battery storage and voltage regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0068",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The camera needs about 7.2 Wh/day; this panel\u2019s voltage and current imply an optimistic ceiling of only 3.44 Wh/day at 3.5 peak sun hours, with actual usable energy lower. The listed alternatives are more suitable, with a compatible battery and charge controller for overnight operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0067",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The camera needs about 7.2 Wh/day, but even an optimistic estimate from this panel\u2019s voltage, current, and 3.5 peak sun hours is only 2.0 Wh/day; actual output will be lower. A Bluetooth beacon or small garden marker is a more realistic match, with suitable battery storage and charging electronics.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0070",
+   "device_id": "led_path_light",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "A 0.5 W path lamp for one hour needs 0.5 Wh nightly, which this panel should supply with 3.5 peak sun hours, allowing for typical losses. You\u2019ll need a battery for nighttime use and a compatible charging circuit; the low 4.42 V open-circuit voltage may require a boost converter.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0072",
+   "device_id": "led_path_light",
+   "hours_per_day": 2,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your path light needs about 1 Wh per evening, which this panel should provide with 2.5 peak sun hours, allowing for typical output below its voltage\u2013current upper bound. You\u2019ll need a suitable battery and charge controller for evening use; shade or poor weather may reduce runtime.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0071",
+   "device_id": "phone_charging",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Two hours of phone charging needs about 20 Wh/day, while this panel\u2019s voltage and current imply an upper bound of only 2.23 Wh/day at 4.5 peak sun hours; actual output will be lower, especially with its weak flag. A Bluetooth beacon or garden marker is a more realistic option, with suitable voltage regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0073",
+   "device_id": "pi_server",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The server needs about 72 Wh/day; this panel\u2019s voltage and current give a theoretical ceiling of only 1.73 Wh/day at 2.5 peak sun hours, with actual output lower because of its weak condition and system losses. A Bluetooth beacon or garden marker is a better fit, with suitable regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0075",
+   "device_id": "small_fan",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "This panel\u2019s voltage and current imply an upper power bound of about 0.85 W, below the fan\u2019s 1 W requirement; actual usable power will be lower. At 3.5 peak sun hours, it also falls short of the fan\u2019s 3 Wh daily requirement; the smaller alternatives need suitable power regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0074",
+   "device_id": "small_fan",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "This panel cannot reliably power the 1 W fan directly: even multiplying its open-circuit voltage by its short-circuit current gives only 0.94 W, and actual output is lower. A battery and regulated 5 V supply might allow two hours of operation using stored solar energy, but a measured operating-power rating is needed to confirm.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0078",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your trail camera needs about 7.2 Wh/day, but this panel's voltage and current give an optimistic ceiling of only 4 Wh/day at 5.5 peak sun hours; actual output will be lower, especially with its weak grade-C condition. The listed lower-power alternatives are more realistic with suitable battery storage and charging electronics.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0077",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your trail camera needs about 7.2 Wh per day, while this panel\u2019s voltage and current imply an optimistic ceiling of only 5.36 Wh per day at 5.5 peak sun hours; actual usable energy will be lower. The listed lower-power alternatives are more suitable, with a compatible charge controller and battery for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0076",
+   "device_id": "led_path_light",
+   "hours_per_day": 8,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "An 0.5 W path lamp needs 4 Wh for 8 hours; allowing a conservative 30% reduction from the panel\u2019s voltage-current upper bound gives about 3.6 Wh/day, so this panel is too marginal for that schedule. A 6-hour schedule is more realistic, with a suitable battery and charge controller for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0079",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, which this weak panel should cover with 4.5 peak sun hours, allowing for substantial derating. Use a suitable charge controller and rechargeable battery for overnight broadcasting; the passport figures are not a measured operating-power rating.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0080",
+   "device_id": "weather_station",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The weather station needs about 14.4 Wh/day, but this panel\u2019s voltage and current give an optimistic ceiling of only 3 Wh/day at 3.5 peak sun hours; actual output will be lower. The listed low-power alternatives are more suitable, with a compatible battery and charge controller for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0081",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your always-on e-ink display needs about 4.8 Wh per day. At 3.5 peak sun hours, this panel\u2019s voltage and current give an optimistic ceiling of 3.35 Wh per day before losses; the smaller alternatives need suitable battery storage and voltage regulation for continuous or nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0084",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The sign needs about 4.8 Wh per day, but this panel\u2019s voltage and current give an optimistic ceiling of only 1.51 Wh per day at 5.5 peak sun hours; its weak condition and system losses reduce that further. A Bluetooth beacon or garden marker is a more realistic choice, with a suitable battery and charge controller for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0083",
+   "device_id": "small_fan",
+   "hours_per_day": 2,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your 1 W USB fan needs about 2 Wh daily; this panel could provide roughly 3 Wh with 4.5 peak sun hours, so it should work in good conditions. Use a regulated 5 V supply and a small battery for steady operation; actual output needs testing because the passport lists only open-circuit voltage and short-circuit current.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0086",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your wildlife camera needs about 7.2 Wh per day on standby, but this panel\u2019s voltage and current give an optimistic ceiling of only 4.3 Wh per day at 4.5 peak sun hours; actual usable output will be lower. The listed lower-power alternatives would need suitable battery storage and power regulation for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0085",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, which this panel should supply at 2.5 peak sun hours despite its weak grade. Use suitable charging electronics and a small rechargeable battery for overnight operation; the listed voltage and current are not simultaneous operating outputs.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0082",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker"
+   ],
+   "note": "A BLE beacon needs about 0.24 Wh/day, so this panel should support it with 4.5 peak sun hours, provided you use a battery and suitable low-loss charging electronics for overnight operation. Its weak, grade-C condition means actual output should be tested; the voltage and current listed are not usable operating-power ratings.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0087",
+   "device_id": "phone_charging",
+   "hours_per_day": 12,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your phone charging would need about 120 Wh per day. This panel\u2019s voltage and current give an optimistic ceiling of only 4.2 Wh per day at 4.5 peak sun hours, with actual usable energy lower; the listed alternatives would need suitable power regulation and battery storage for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0092",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The soil probe needs about 1.2 Wh per day; this panel should cover that at 3.5 peak sun hours, allowing for typical output and system losses. You'll need a suitable rechargeable battery and charge controller for overnight operation; confirm the used panel's actual output before installation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0088",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The fan needs about 1 Wh per day, which this panel should be able to collect with 3.5 peak sun hours, allowing for typical losses. Use a suitable battery and regulated 5 V output: the panel cannot reliably supply the fan\u2019s 1 W directly, and its actual working output is not specified.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0090",
+   "device_id": "pi_server",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your Raspberry Pi camera server needs about 72 Wh/day, while this panel\u2019s voltage and current imply an optimistic ceiling of only 3.4 Wh/day at 5.5 peak sun hours; actual output will be lower, especially with its weak grade-C condition. The listed low-power alternatives are more suitable, with a compatible charge controller and battery for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0091",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "SU-0091 cannot directly power a 1 W fan: even voltage \u00d7 current gives an optimistic ceiling of only 0.51 W, and its actual output will be lower given its weak, grade-C condition. A battery-buffered setup might accumulate enough energy for an hour of fan use, but that requires measured output and suitable charging electronics to confirm.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0089",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The panel should provide enough daily energy for a 1 W fan running for one hour at 2.5 peak sun hours, allowing for typical losses. Use a battery buffer and regulated 5 V output: the panel\u2019s voltage and current figures do not guarantee enough power to run the fan directly.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0093",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 4,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your dryer needs about 10,000 Wh per day, while this panel\u2019s voltage and current imply an optimistic ceiling of just 2.87 Wh per day at 3.5 peak sun hours; actual usable output will be lower. The listed low-power alternatives are realistic options with suitable voltage regulation and battery storage for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0094",
+   "device_id": "phone_charging",
+   "hours_per_day": 4,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Four hours of phone charging needs about 40 Wh/day; this panel\u2019s voltage and current give an optimistic ceiling of only 2.4 Wh/day at 2.5 peak sun hours, with actual output lower. The listed low-power alternatives are practical candidates with suitable charging electronics and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0095",
+   "device_id": "led_path_light",
+   "hours_per_day": 3,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The path light needs 1.5 Wh per evening, but this panel yields less than 1.15 Wh per day even before losses; its weak grade further reduces output. A Bluetooth beacon or garden marker is a better fit, with a suitable battery and charge controller for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0096",
+   "device_id": "phone_charging",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Phone charging for 2 hours needs about 20 Wh daily. This panel\u2019s voltage and current imply an optimistic ceiling of only 3.43 Wh daily at 3.5 peak sun hours, with actual usable energy lower; the listed alternatives need suitable power regulation and a battery for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0097",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "With 3.5 peak sun hours, this panel should collect enough energy for the fan\u2019s 1 Wh daily requirement, allowing for typical losses. It cannot supply the fan\u2019s 1 W directly, so you\u2019ll need a suitable rechargeable battery, solar charge controller, and regulated 5 V output.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0098",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The probe needs about 1.2 Wh per day; this panel should provide roughly 3\u20134 Wh daily with 5.5 peak sun hours, allowing for estimated operating losses. Use a compatible charge controller and rechargeable battery for overnight operation, with extra storage for cloudy days.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0099",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "The always-on display needs about 4.8 Wh/day; this panel would yield roughly 3.9 Wh/day assuming usable power is 70% of its voltage\u2013current limits, before storage losses. Choose a larger panel with a suitable battery and regulator for overnight operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0101",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your fan needs about 1 Wh per day; this panel should provide enough with 2.5 peak sun hours, allowing for typical losses. Use a small battery and regulated 5 V USB output, since the panel is unlikely to power the fan directly.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0100",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "SU-0100 cannot sustain your always-on timetable display; choose a larger, tested panel with battery storage for nighttime operation. The listed lower-power alternatives are plausible with suitable regulation and storage, but confirm usable output because this panel is flagged weak.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0103",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The display needs about 4.8 Wh/day, but this panel\u2019s voltage and current give an optimistic ceiling of only 2.65 Wh/day at 5.5 peak sun hours; its weak condition and system losses reduce that further. The listed lower-power alternatives are better fits, with suitable storage and regulation for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0104",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The sign needs about 4.8 Wh/day, but this panel\u2019s voltage and current give an optimistic ceiling of only 1.87 Wh/day at 2.5 peak sun hours; its weak condition and system losses reduce that further. The lower-power alternatives need suitable charging electronics and battery storage, with the soil sensor\u2019s margin requiring verification.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0102",
+   "device_id": "pi_server",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The Raspberry Pi needs about 72 Wh daily; this panel\u2019s voltage and current give an optimistic ceiling of just 2.2 Wh daily at 3.5 peak sun hours, with actual output lower given its weak condition. A Bluetooth beacon or garden marker is a more realistic option, with suitable voltage regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0105",
+   "device_id": "garden_marker",
+   "hours_per_day": 6,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon"
+   ],
+   "note": "Your marker needs about 0.6 Wh per night; this panel could provide roughly 1.1 Wh/day at 4.5 peak sun hours using a conservative 50% allowance against its voltage-current upper bound. Because it is grade C and flagged weak, confirm its actual output under load and use a suitable rechargeable battery and charge controller for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0107",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The beacon needs about 0.24 Wh/day, comfortably below this panel\u2019s estimated output with 3.5 peak sun hours; its voltage and current figures imply a theoretical ceiling of about 3.5 Wh/day, not guaranteed production. Use a suitable charge controller and rechargeable battery for overnight operation and cloudy periods.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0110",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your marker light needs about 0.8 Wh per night, which this panel should comfortably supply with 3.5 peak sun hours daily. You\u2019ll need a suitable rechargeable battery and charge controller for nighttime use; actual panel output will be below the voltage-times-current upper estimate of 3.26 Wh per day.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0109",
+   "device_id": "fountain_pump",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "The 12 V pond pump needs about 5 Wh daily. This panel\u2019s optimistic ceiling is only 5.6 Wh daily before real-world losses, and its operating voltage is below 6.88 V, so it cannot reliably power the pump; choose a larger panel with suitable voltage conversion and storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0106",
+   "device_id": "phone_charging",
+   "hours_per_day": 6,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Six hours of phone charging needs about 60 Wh/day, while this panel\u2019s voltage and current give an optimistic ceiling of only 5.3 Wh/day at 5.5 peak sun hours; actual usable energy will be lower. The listed low-power alternatives are more suitable, with appropriate voltage regulation and battery storage for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0111",
+   "device_id": "fountain_pump",
+   "hours_per_day": 4,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your pump needs about 20 Wh daily at 12 V; this panel\u2019s voltage and current give an optimistic ceiling of only 3 Wh daily, with actual output lower. It could support the listed low-power alternatives with suitable voltage regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0108",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker needs 0.8 Wh per night. Allowing conservatively for this weak Grade C panel and system losses gives roughly 0.72 Wh/day, so plan on about 6 hours instead, with a suitable rechargeable battery and charge controller for after-dark use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0112",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your dryer needs about 2,500 Wh daily; this panel\u2019s voltage and current give an optimistic ceiling of only 1.63 Wh daily at 2.5 peak sun hours, with actual output lower. A Bluetooth beacon or garden marker is a more realistic option, with suitable low-voltage charging electronics and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0113",
+   "device_id": "led_path_light",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "This panel should support a 0.5 W LED path light for 1 hour each evening (0.5 Wh/day) with 3.5 peak sun hours, allowing for typical output and charging losses. You\u2019ll need a suitable rechargeable battery and compatible charging circuitry for evening operation; actual output should be checked because short-circuit current and open-circuit voltage are not operating-power ratings.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0114",
+   "device_id": "garden_marker",
+   "hours_per_day": 4,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker light needs about 0.4 Wh per night; this weak grade-C panel could provide roughly 0.9 Wh daily using a conservative 50% allowance on its voltage-current upper bound at 5.5 peak sun hours. Use a compatible rechargeable battery and charge controller for nighttime operation, and verify actual output because the passport does not specify operating power.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0116",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The probe needs about 1.2 Wh per day; this panel should cover that with 3.5 peak sun hours, allowing for reasonable losses, though its exact operating power is not specified. A compatible charge controller and rechargeable battery are needed for overnight operation and cloudy periods.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0115",
+   "device_id": "fountain_pump",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The pump needs about 10 Wh daily at 12 V; this panel\u2019s voltage and current imply an upper bound of only 3.28 Wh daily before losses, with actual output lower. The listed low-power alternatives are more suitable, with appropriate voltage regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0117",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Yes\u2014your LoRa soil probe needs about 1.2 Wh/day, and this panel should provide roughly 2\u20132.5 Wh/day with 3.5 peak sun hours, allowing for typical losses. Use a suitable charge controller and battery for overnight operation; extra storage is needed for cloudy days.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0118",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The camera needs about 7.2 Wh per day; this panel\u2019s voltage and current give a theoretical ceiling of only 1.47 Wh per day at 2.5 peak sun hours, with actual output lower. A Bluetooth beacon or garden marker is a better fit, using suitable voltage regulation and a battery for nighttime operation; the low-voltage flag requires attention.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0119",
+   "device_id": "small_fan",
+   "hours_per_day": 6,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Even using voltage \u00d7 current as an optimistic ceiling, this panel provides under 0.97 W and 4.37 Wh per day; the fan needs about 6 Wh. Actual output is lower, and the alternatives need suitable voltage regulation and battery storage for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0122",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The beacon needs about 0.24 Wh per day, comfortably within this panel\u2019s estimated output with 5.5 peak sun hours, allowing for losses. Use a suitable rechargeable battery and regulated power supply to keep it broadcasting overnight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0124",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The camera needs about 7.2 Wh/day; this panel\u2019s voltage and current imply an optimistic ceiling of only 1.64 Wh/day at 2.5 peak sun hours, with actual output lower given its weak grade-C condition. A Bluetooth beacon or garden marker is a more realistic option, with suitable battery storage and charging electronics.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0121",
+   "device_id": "clothes_dryer",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your dryer needs about 2,500 Wh per day, while this panel\u2019s specifications imply a theoretical ceiling of only 5.45 Wh per day, with actual output lower. The listed low-power alternatives are more realistic with suitable voltage regulation and a battery for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0123",
+   "device_id": "phone_charging",
+   "hours_per_day": 4,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Four hours of phone charging needs about 40 Wh per day; this panel\u2019s voltage and current give an upper bound of only 2.4 Wh per day at 2.5 peak sun hours, with actual usable energy lower. The listed low-power alternatives are better fits, with suitable regulation and battery storage for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0120",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "This panel cannot directly supply the fan\u2019s 1 W: even its voltage-times-current upper bound is only about 0.76 W, and actual output is lower. With 5.5 peak sun hours, running the fan for one hour may be possible using a suitable battery and regulated 5 V converter; the lower-power alternatives also need appropriate regulation and storage for operation outside sunlight.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0125",
+   "device_id": "garden_marker",
+   "hours_per_day": 4,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker needs about 0.4 Wh per night, which this panel should likely supply with 2.5 peak sun hours, even allowing for its weak condition and losses. The passport figures are not a measured power rating, so verify output and use a suitable rechargeable battery and charge controller for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0126",
+   "device_id": "garden_marker",
+   "hours_per_day": 4,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor",
+    "led_path_light"
+   ],
+   "note": "Your marker light needs about 0.4 Wh per night; these panel readings suggest roughly 3\u20134 Wh per sunny day after estimated losses, though actual output needs testing. Add a suitable rechargeable battery and charge controller for nighttime use.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0128",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The marker needs about 0.8 Wh per night; allowing 50% of the panel\u2019s voltage-current upper bound gives roughly 2.1 Wh per day with 4.5 peak sun hours. It should work with a suitable rechargeable battery and charge controller for nighttime use, though actual output should be tested.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0129",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The soil probe needs about 1.2 Wh/day; with 5.5 peak sun hours, this weak panel could provide roughly 1.7 Wh/day using a conservative 50% allowance against its voltage\u2013current upper bound. You'll need a battery and suitable charge controller for overnight operation, and should confirm actual output because the grade-C panel's margin is small.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0127",
+   "device_id": "led_path_light",
+   "hours_per_day": 4,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your light needs 2 Wh each evening, but this panel\u2019s voltage and current give an optimistic ceiling of only 1.76 Wh per day at 2.5 peak sun hours; its weak condition and charging losses reduce that further. A Bluetooth beacon or garden marker is a better fit, with a suitable rechargeable battery and charge controller.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0130",
+   "device_id": "led_path_light",
+   "hours_per_day": 2,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your path light needs about 1 Wh per day, which this panel should provide with 3.5 peak sun hours, allowing for typical output losses. Evening use requires a suitable rechargeable battery and charge controller; actual output should be checked because the passport lists only open-circuit voltage and short-circuit current.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0132",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your marker light needs about 0.8 Wh per night; this panel should produce roughly 2\u20133 Wh daily with 4.5 peak sun hours, allowing for practical losses. Use a suitable rechargeable battery and charge controller for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0131",
+   "device_id": "garden_marker",
+   "hours_per_day": 12,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your marker light needs about 1.2 Wh per night, which this panel should supply with 5.5 peak sun hours, allowing for typical losses. You\u2019ll need a rechargeable battery and compatible charge controller for nighttime operation; actual output should be checked because short-circuit current and open-circuit voltage are not operating-power ratings.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0133",
+   "device_id": "garden_marker",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Running the marker for 24 hours needs about 2.4 Wh; this panel's voltage and current imply an ideal upper bound of only 2.27 Wh per day, with actual output lower. A garden marker used for its typical 6 hours daily is a better fit, with a suitable rechargeable battery and charging controller for after-dark operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0134",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The always-on e-ink display needs about 4.8 Wh/day, but this panel\u2019s voltage and current imply an absolute ceiling below 1.6 Wh/day at 2.5 peak sun hours, with actual output lower. A Bluetooth beacon or garden marker is a more realistic match, with suitable battery storage and regulation; confirm output because the panel is graded C and flagged weak.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0135",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The panel should generate roughly 2\u20133 Wh per day at 4.5 peak sun hours, enough for a 1 W USB fan for one hour. Use a suitable battery and regulated 5 V USB output, since the panel likely cannot supply the fan\u2019s full power directly.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0137",
+   "device_id": "garden_marker",
+   "hours_per_day": 4,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker needs about 0.4 Wh per night; this panel could provide roughly 0.7 Wh/day using a conservative 50% allowance against its voltage-current upper bound and 4.5 peak sun hours. You\u2019ll need a suitable battery and charging circuit, and should verify actual output because the panel is graded C and flagged weak.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0138",
+   "device_id": "trail_camera",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The camera needs about 7.2 Wh/day, but this panel\u2019s voltage and current imply an upper bound of only 1.9 Wh/day at 4.5 peak sun hours; actual output will be lower, especially with its weak, low-voltage condition. A Bluetooth beacon or garden marker is a more realistic choice, with suitable low-voltage charging electronics and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0139",
+   "device_id": "phone_charging",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Phone charging needs about 10 Wh per day; this panel\u2019s voltage and current give an optimistic ceiling of only 3 Wh per day at 4.5 peak sun hours, with actual output lower due to its weak condition and charging losses. The listed low-power alternatives are better fits with suitable battery storage and voltage regulation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0140",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The beacon needs about 0.24 Wh daily, so this panel should be sufficient with 5.5 peak sun hours despite its weak grade; actual output should be tested because the passport gives no operating-power rating. Use a suitable charge controller and rechargeable battery for overnight and cloudy-weather operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0142",
+   "device_id": "pi_server",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Your Raspberry Pi camera server needs about 72 Wh/day; this panel\u2019s voltage and current imply an optimistic ceiling of only 1.88 Wh/day at 2.5 peak sun hours, with actual output lower. The listed low-power alternatives are potential fits with suitable voltage regulation and battery storage, though the soil sensor needs verified real-world output.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0143",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "SU-0143 should support a BLE beacon needing about 0.24 Wh/day with 4.5 peak sun hours, though its short-circuit current and open-circuit voltage are not a measured operating-power rating. For 24/7 use, add a battery and a compatible low-voltage solar charging circuit; the low_voc flag makes charger selection important.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0144",
+   "device_id": "fountain_pump",
+   "hours_per_day": 8,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The 5 W pond pump needs about 40 Wh daily; this panel\u2019s voltage and current give an upper bound of just 1.2 Wh daily at 3.5 peak sun hours, with actual output lower because it is weak and grade C. A Bluetooth beacon or garden marker is a more suitable load, with appropriate regulation and battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0147",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The soil probe needs about 1.2 Wh per day, which this panel should supply with 4.5 peak sun hours, allowing for typical losses. Around-the-clock operation requires a rechargeable battery and suitable charge controller; the passport lists open-circuit and short-circuit values, not measured operating power.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0148",
+   "device_id": "garden_marker",
+   "hours_per_day": 12,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker needs about 1.2 Wh per night; this weak, grade-C panel has a theoretical ceiling of 1.67 Wh per day, with actual usable output lower, so it is not a reliable choice for 12 hours nightly. A Bluetooth beacon or a marker running its typical 6 hours is a better fit, with a suitable rechargeable battery and charging circuit.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0149",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The panel\u2019s voltage \u00d7 current gives an upper bound of only 0.74 W, below the fan\u2019s 1 W draw; actual output will be lower, especially with its weak grade-C condition. The listed low-power alternatives are more suitable with appropriate regulation and battery storage; running the fan would require storage and verified daily charging output, or a larger panel.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0151",
+   "device_id": "garden_marker",
+   "hours_per_day": 12,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your marker needs about 1.2 Wh per night. This weak, grade-C panel has a theoretical ceiling of only 1.7 Wh per day before real-world and battery losses, so it cannot reliably cover 12 hours; a 6-hour marker light or Bluetooth beacon is a better fit with suitable battery storage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0155",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The marker needs about 0.8 Wh per night; this panel likely supplies roughly 1 Wh per day with 3.5 peak sun hours after conservative allowances. Because it is grade C and flagged weak, confirm its loaded output and use a suitable rechargeable battery and charge controller for nighttime operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0156",
+   "device_id": "small_fan",
+   "hours_per_day": 1,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "Estimated usable harvest is roughly 1.4 Wh/day in 2.5 peak sun hours, enough for a 1 W USB fan for one hour under good conditions. Use a suitable battery buffer and regulated 5 V USB output: the panel cannot reliably power the fan directly, and actual output should be tested.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0158",
+   "device_id": "fountain_pump",
+   "hours_per_day": 2,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The pump needs about 10 Wh/day, but this weak panel provides less than 1.61 Wh/day even before system losses, and its 6.83 V open-circuit voltage cannot directly supply 12 V. A Bluetooth beacon or garden marker is a more realistic load with suitable battery storage and charging electronics.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0159",
+   "device_id": "garden_marker",
+   "hours_per_day": 8,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The marker needs about 0.8 Wh per night, which this panel should supply with 5.5 peak sun hours, allowing for typical losses. After-dark operation requires a rechargeable battery and a charging circuit compatible with the panel\u2019s low 4.48 V open-circuit voltage.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0163",
+   "device_id": "soil_sensor",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "Your sensor needs about 1.2 Wh daily; this panel could just cover that at 2.5 peak sun hours, but its short-circuit current and open-circuit voltage do not confirm actual usable output. Around-the-clock operation needs a battery and suitable charge controller, and the margin is tight enough that output testing is recommended before buying.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0166",
+   "device_id": "epaper_sign",
+   "hours_per_day": 24,
+   "feasible": false,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The always-on e-ink sign needs about 4.8 Wh/day, but this panel\u2019s voltage and current give an optimistic ceiling of only 3.2 Wh/day at 3.5 peak sun hours; actual output will be lower. The listed lower-power alternatives are more suitable, with a compatible charge controller and battery for overnight operation.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0172",
+   "device_id": "ble_beacon",
+   "hours_per_day": 24,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker"
+   ],
+   "note": "The beacon needs about 0.24 Wh/day, which this panel should supply with 2.5 peak sun hours even allowing for its weak condition. Use a suitable regulator and rechargeable battery for overnight operation, and verify actual output because the passport does not specify maximum-power performance.",
+   "tool_calls": 0,
+   "trace": []
+  },
+  {
+   "case_id": "sim-0176",
+   "device_id": "garden_marker",
+   "hours_per_day": 12,
+   "feasible": true,
+   "alternatives": [
+    "ble_beacon",
+    "garden_marker",
+    "soil_sensor"
+   ],
+   "note": "The marker needs about 1.2 Wh per night, which this panel should supply with 5.5 peak sun hours, allowing for reduced output versus its voltage/current ratings. You\u2019ll need a suitable battery and charge controller for nighttime use; because the panel is flagged weak, confirm its actual charging output before relying on it.",
+   "tool_calls": 0,
+   "trace": []
+  }
+ ],
+ "note": "46 requests hit the key's token budget (429) and are left out"
+}
