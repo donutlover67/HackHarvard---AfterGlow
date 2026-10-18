@@ -80,7 +80,7 @@ window.SSFront = (function () {
   // the cell as a drawing: its shadow, its thickness, its face with fingers and busbars, and the sunlight on the face
   // as an amber wash and hatching from the top left corner, whose reach motion.js sets from the way the panel turns.
   // Under a fine pointer a liquid window follows the cursor and shows what the bench sees under the skin: the cell's
-  // electroluminescence image, fingers glowing, a dead patch (after the Lando Norris site's helmet reveal).
+  // electroluminescence image, fingers glowing (after the Lando Norris site's helmet reveal).
   function panelSvg() {
     const { x, y, w, h, c } = FACE, face = octagon(x, y, w, h, c);
     let fingers = "", glow = "";
@@ -107,7 +107,6 @@ window.SSFront = (function () {
         <g clip-path="url(#pnl-face)" fill="none" stroke="var(--sun)" stroke-linecap="round">
           ${glow}
           ${[0.25, 0.5, 0.75].map((f) => `<line x1="${x + w * f}" y1="${y + 4}" x2="${x + w * f}" y2="${y + h - 4}" stroke-width="5" opacity="0.95"/>`).join("")}
-          <rect x="${x + 196}" y="${y + 28}" width="74" height="58" fill="#000" stroke="none" opacity="0.6"/>
         </g>
       </g>
     </svg>`;
