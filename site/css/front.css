@@ -3,8 +3,8 @@
    shadows; the one strong colour is the gain numeral in the navy band. */
 
 /* hero: the first screen (the drawn cell, the headline, the two ways in), on the pale ground, pinned to nothing */
-.hero { position: relative; }
-.hero__stage { position: relative; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
+.hero { position: relative; overflow: clip; }   /* the hills along its bottom */
+.hero__stage { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
 /* the headline in a high-contrast serif (the Mac's Bodoni or Didot, else Georgia): each line sits in its own mask and
    slides up out of nothing (motion.css) */
@@ -50,7 +50,7 @@
   .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
   .hero__text { padding-right: 24px; }
   /* the pinned comparison: the section is pale like the hero, and only the bubble brings the navy */
-  .repair { background: var(--page); min-height: 260vh; }
+  .repair { background: transparent; min-height: 260vh; }   /* the page's own ground shows through until the bubble covers it, sun and all */
   .repair__pin { position: sticky; top: 0; height: 100vh; }
   /* the bubble is a layer fixed to the screen (so it can rise before the section pins), a navy circle at the bottom
      centre whose radius motion.js sets in vmax (--r); the pin's own navy (::before) comes with the panels (--show) and
@@ -228,7 +228,9 @@ html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-mot
 
 /* the page's sun: fixed to the screen below the nav, drawn by hand, walking from left to right along a shallow arc as the
    page scrolls (--sx in vw and --sy in vh from motion.js); above the chapters, under the nav */
-.skysun { position: fixed; left: calc(var(--sx, 6) * 1vw); top: calc(var(--sy, 13) * 1vh); width: 78px; height: 78px; transform: translate(-50%, -50%); z-index: 4; pointer-events: none; }
+.skysun { position: fixed; left: calc(var(--sx, 6) * 1vw); top: calc(var(--sy, 13) * 1vh); width: 78px; height: 78px; transform: translate(-50%, -50%); z-index: 2; pointer-events: none; }
+/* the navy chapters sit above the sun and cover it as it passes; the pale ones sit below it */
+body[data-page="front"] #view > .repair, body[data-page="front"] #view > .strip, body[data-page="front"] #view > .front-band { z-index: 3; }
 .skysun svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .skysun .sun__disc { fill: var(--sun); }
 body:not([data-page="front"]) .skysun { display: none; }
