@@ -60,6 +60,7 @@ window.SSMotion = (function () {
     if (!nav) return;
     const y = scrollY, max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
     const progress = clamp01(y / max).toFixed(3);
+    const sun = $(".nav__sun");
     if (sun) sun.style.setProperty("--p", progress);
     document.documentElement.style.setProperty("--day", progress);
     const sky = $(".sky");
