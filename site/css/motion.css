@@ -93,7 +93,9 @@ html.has-motion .step:not(.is-lit) .step__glyph, html.has-motion .step:not(.is-l
 .strip__stage { will-change: transform, opacity; }
 .wiring { transform: translateY(calc((1 - var(--arrive, 1)) * 28px + var(--arc, 0) * 1px)) rotate(calc(var(--rot, 0) * 1deg)); transform-origin: 50% 50%; opacity: calc(0.5 + 0.5 * var(--arrive, 1)); }
 
-/* the hero intro: the headline's three parts, the lede and the buttons rise in turn; the slot fades in */
+/* the hero intro: each headline line slides up out of its own mask, the lede and the buttons rise a beat later; the slot fades in */
+.hline__in { transition: transform 840ms var(--m-ease); transition-delay: var(--d, 0ms); }
+html.has-motion [data-reveal]:not(.is-revealed) .hline__in { transform: translateY(120%); }
 .rise { transition: opacity 600ms var(--m-ease), transform 600ms var(--m-ease); transition-delay: var(--d, 0ms); }
 html.has-motion [data-reveal].rise:not(.is-revealed) { opacity: 0; transform: translateY(14px); }
 .grow { transition: opacity 900ms var(--m-ease), transform 900ms var(--m-ease); }
@@ -117,7 +119,7 @@ html[data-dir="back"] .view.is-leaving { animation-name: vt-out-back; }
 html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
-  .m-part, .rise, .grow, .fade, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
+  .m-part, .rise, .grow, .fade, .hline__in, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
   .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
   .recycle path { animation: none; stroke-dashoffset: 0; }
   .hero__panel { --tx: 12; --ty: -3; }

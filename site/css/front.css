@@ -6,7 +6,11 @@
 .hero { position: relative; }
 .hero__stage { position: relative; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
-.hline { display: block; }   /* the headline's two lines rise in turn */
+/* the headline in a high-contrast serif (the Mac's Bodoni or Didot, else Georgia): each line sits in its own mask and
+   slides up out of nothing (motion.css) */
+.hero .display { font-family: "Bodoni 72", Didot, "Playfair Display", Georgia, "Times New Roman", serif; font-weight: 600; font-stretch: normal; letter-spacing: -0.02em; line-height: 0.98; }
+.hline { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }   /* room for descenders inside the mask */
+.hline__in { display: inline-block; }
 .hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
    the panel leans with the pointer through a perspective transform that motion.js drives (--tx, --ty), its shadow slides (--sx, --sy) */

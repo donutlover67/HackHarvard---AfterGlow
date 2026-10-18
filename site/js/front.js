@@ -193,7 +193,7 @@ window.SSFront = (function () {
       <div class="hero__stage">
         <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
         <div class="hero__text">
-          <h1 class="display" data-reveal><span class="hline rise">Used panels</span> <span class="hline rise" style="--d:110ms">still <span class="hollow">work.</span></span></h1>
+          <h1 class="display" data-reveal><span class="hline"><span class="hline__in">Used panels</span></span> <span class="hline"><span class="hline__in" style="--d:120ms">still <span class="hollow">work.</span></span></span></h1>
           <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
           <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
         </div>
