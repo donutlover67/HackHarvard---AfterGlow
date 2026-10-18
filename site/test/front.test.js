@@ -90,7 +90,8 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect((html.match(/href="https:\/\/doi\.org\//g) || []).length).toBe(3);   // the journal sources link by DOI
   expect((html.match(/class="fn"/g) || []).length).toBeGreaterThanOrEqual(3);   // markers after the three numerals at least
   expect(html).toContain('href="#fn-4"');
-  expect(html.indexOf('class="hero__slot')).toBeLessThan(html.indexOf('class="hero__text"'));   // the cell above the text
+  expect(html.indexOf('class="hero__scene"')).toBeLessThan(html.indexOf('class="hero__text"'));   // the scene first, the text below the fold
+  expect(html).toContain('class="sun__disc" d="M30 40');
   expect(html).toContain('<span class="hollow">work.</span>');
   expect(html).not.toContain("contours");
   expect((html.match(/class="recycle"/g) || []).length).toBe(1);

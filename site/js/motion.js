@@ -243,23 +243,20 @@ window.SSMotion = (function () {
   // ---------- reveals: headline lines rise out of their masks; the lede, the buttons and the slab follow ----------
   // The hidden state lives in CSS under html.has-motion only, so a failed script never hides a word.
   const revealNow = (el) => { if (el) el.classList.add("is-revealed"); };
-  // The intro, on every page load: the first screen shows only the sun and the cell, large and centred (the rays draw
-  // outward, the beams reach the cell), then the cell eases up a little as the headline wipes in and the lede and the
-  // buttons rise beneath it. Coming back to the front page within the app, and reduced motion, skip it.
-  const INTRO = { settle: 1500, text: 1750, done: 3400 };
+  // The intro, on every page load: the sun draws itself (its outline, then its fill, then the rays one by one), comes
+  // alive (breathing, turning, the beams reaching down), and the cell slides up into place under it. The text below the
+  // fold is left to the scroll. Coming back to the front page within the app, and reduced motion, skip it.
+  const INTRO = { place: 2600, done: 4200 };
   let introPlayed = false;
   function intro(view) {
-    const hero = view.querySelector(".hero"), texts = [...view.querySelectorAll(".hero__text [data-reveal]")], slot = view.querySelector(".hero__slot");
-    const show = () => { texts.forEach(revealNow); if (slot) revealNow(slot); };
-    if (!hero || reduced() || introPlayed) { if (slot && !reduced()) requestAnimationFrame(() => requestAnimationFrame(show)); else show(); return () => {}; }
+    const hero = view.querySelector(".hero"), slot = view.querySelector(".hero__slot");
+    if (!hero || reduced() || introPlayed) { if (slot && !reduced()) requestAnimationFrame(() => requestAnimationFrame(() => revealNow(slot))); else if (slot) revealNow(slot); return () => {}; }
     introPlayed = true;
     document.documentElement.classList.add("is-intro");
-    hero.classList.add("is-staging");
     if (slot) requestAnimationFrame(() => requestAnimationFrame(() => revealNow(slot)));
-    const t1 = setTimeout(() => hero.classList.remove("is-staging"), INTRO.settle);
-    const t2 = setTimeout(() => texts.forEach(revealNow), INTRO.text);
-    const t3 = setTimeout(() => document.documentElement.classList.remove("is-intro"), INTRO.done);
-    return () => { [t1, t2, t3].forEach(clearTimeout); hero.classList.remove("is-staging"); document.documentElement.classList.remove("is-intro"); show(); };
+    const t1 = setTimeout(() => hero.classList.add("is-placed"), INTRO.place);
+    const t2 = setTimeout(() => document.documentElement.classList.remove("is-intro"), INTRO.done);
+    return () => { [t1, t2].forEach(clearTimeout); hero.classList.add("is-placed"); document.documentElement.classList.remove("is-intro"); if (slot) revealNow(slot); };
   }
   const revealedKeys = new Set(); // once per page load, per section: a redrawn section shows its title at once
   function watchReveal(view) {

@@ -38,7 +38,7 @@ window.SSFront = (function () {
     const d = `M${cx} ${cy - r} C${cx + 12} ${cy - r - 1} ${cx + r + 1} ${cy - 11} ${cx + r} ${cy + 1} C${cx + r - 1} ${cy + 13} ${cx + 10} ${cy + r + 1} ${cx - 1} ${cy + r} C${cx - 13} ${cy + r - 1} ${cx - r - 1} ${cy + 10} ${cx - r} ${cy - 1} C${cx - r + 1} ${cy - 12} ${cx - 11} ${cy - r + 1} ${cx} ${cy - r} Z`;
     return `<svg class="hero__sun" viewBox="0 0 400 342" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <g class="sun__rays">${rays}</g>
-      <path class="sun__disc" d="${d}"/>
+      <path class="sun__disc" d="${d}" pathLength="1"/>
       <g class="sun__beams">${beams}</g>
     </svg>`;
   }
@@ -222,17 +222,17 @@ window.SSFront = (function () {
     string: `<svg class="doodle doodle--string" viewBox="0 0 64 34" aria-hidden="true" focusable="false"><path d="M3 24 C 12 4, 20 4, 24 18 S 34 34, 40 16 S 52 2, 61 20"/></svg>`,
   };
   const doodle = (k) => DOODLES[k] || "";
-  // The first screen: the drawn cell under its sun, centred and large, and under it the headline and the two ways in.
-  // On load the cell is alone for a moment, then settles up as the text arrives beneath it (motion.js, intro).
+  // The first screen is the scene alone: the sun draws itself, comes alive, and the cell slides into place under it
+  // (motion.js, intro). The headline and the two ways in sit below the fold and show as the reader scrolls to them.
   function hero() {
     return `<section class="hero" data-in>
-      <div class="hero__stage">
+      <div class="hero__scene">
         <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
-        <div class="hero__text">
+      </div>
+      <div class="hero__text">
           <h1 class="display" data-reveal><span class="wipe"><span class="wipe__in">Used panels</span></span> <span class="wipe wipe--rtl" style="--d:140ms"><span class="wipe__in">still <span class="hollow">work.</span></span></span></h1>
           <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
           <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
-        </div>
       </div>
     </section>`;
   }

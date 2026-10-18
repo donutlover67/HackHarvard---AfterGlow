@@ -118,9 +118,14 @@ html.has-motion [data-reveal].is-revealed .wipe__in { animation: wipe-text 1ms l
   100% { transform: scaleX(0); transform-origin: left center; }
 }
 @keyframes wipe-text { from { opacity: 0; } to { opacity: 1; } }
-/* the intro's first screen: the rays draw outward one after another, then the beams grow from the sun to the panel */
-html.is-intro .sun__rays path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ray-out 420ms ease-out both; animation-delay: calc(var(--i, 0) * 55ms + 250ms); }
-html.is-intro .sun__beams { transform-box: fill-box; transform-origin: 0 0; animation: beams-out 800ms cubic-bezier(0.3, 0.7, 0.2, 1) 900ms both; }
+/* the intro's first screen: the sun's outline draws slowly, its fill comes up, the rays draw one after another; then it
+   comes alive (breathing, turning) and the beams grow down toward the cell */
+html.is-intro .sun__disc { fill-opacity: 0; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-disc 1300ms ease-in-out both, fill-in 500ms ease 1150ms both, sun-breathe 5s ease-in-out 2400ms infinite alternate; }
+html.is-intro .sun__rays { animation: sun-turn 80s linear 2400ms infinite; }
+html.is-intro .sun__rays path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ray-out 340ms ease-out both; animation-delay: calc(var(--i, 0) * 90ms + 1400ms); }
+html.is-intro .sun__beams { transform-box: fill-box; transform-origin: 0 0; animation: beams-out 800ms cubic-bezier(0.3, 0.7, 0.2, 1) 2500ms both; }
+@keyframes draw-disc { to { stroke-dashoffset: 0; } }
+@keyframes fill-in { to { fill-opacity: 1; } }
 @keyframes ray-out { to { stroke-dashoffset: 0; } }
 @keyframes beams-out { from { transform: scale(0.02); } to { transform: scale(1); } }
 .rise { transition: opacity 600ms var(--m-ease), transform 600ms var(--m-ease); transition-delay: var(--d, 0ms); }
@@ -148,6 +153,7 @@ html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 @media (prefers-reduced-motion: reduce) {
   .m-part, .rise, .grow, .fade, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
   .wipe::after, .wipe__in, .sun__rays path, .sun__beams { animation: none; }
+  html.is-intro .hero__panel { translate: 0 0; opacity: 1; transition: none; }
   .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
   .recycle path { animation: none; stroke-dashoffset: 0; }
   .hero__panel { --tx: 12; --ty: -3; }
