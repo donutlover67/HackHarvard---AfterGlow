@@ -13,7 +13,7 @@
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
 .hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; transform-origin: 0 0; transform: translate(calc(var(--q, 0) * var(--px, 0px)), calc(var(--q, 0) * var(--py, 0px))) scale(calc(1 - var(--q, 0) * (1 - var(--ps, 1)))); }
 .hero__slot::after { content: ""; position: absolute; inset: -5% -4%; border: 2px solid rgba(255, 255, 255, 0.55); opacity: var(--q, 0); pointer-events: none; }
-.hero__slot::before { content: ""; position: absolute; inset: -5% -4%; background: var(--cell); opacity: calc(var(--q, 0) * 0.42); pointer-events: none; z-index: 5; }   /* the drawing dims as it recedes */
+.hero__slot::before { content: ""; position: absolute; inset: -5% -4%; background: var(--cell); opacity: var(--q, 0); pointer-events: none; z-index: 0; }   /* an opaque backing inside the frame: the marquee passes behind the box, never through it */
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
    the panel leans with the pointer through a perspective transform that motion.js drives (--tx, --ty), its shadow slides (--sx, --sy) */
 .hero__sun { position: absolute; left: 0; top: -14%; width: 100%; height: 114%; display: block; overflow: visible; pointer-events: none; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
@@ -197,14 +197,14 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .problem .fig:first-child .num-big { color: var(--sun); }
 .wiring.is-best .wiring__w { color: var(--sun); }
 
-/* contours: winding single-weight lines a few shades off the ground, drifting slowly (after the Lando Norris site's
-   track-map lines). Ink on paper, paper on navy; inside the portal one set fades as the other rises with --q. */
-.contours { position: absolute; inset: -6%; width: 112%; height: 112%; pointer-events: none; z-index: 0; fill: none; stroke: var(--cell); stroke-width: 1.3; opacity: 0.085; animation: contour-drift 90s ease-in-out infinite alternate; }
-.repair, .problem, .how, .fpass, .teaser { overflow: clip; }   /* the contour layers run past the edges */
-.contours--light { stroke: #fff; opacity: 0.08; }
-.hero__pin .contours--fades { opacity: calc((1 - var(--q, 0)) * 0.085); }
-.hero__pin .contours--rises { opacity: calc(var(--q, 0) * 0.08); animation-direction: alternate-reverse; }
-@keyframes contour-drift { from { transform: translate3d(-1.4%, -1%, 0) rotate(-0.5deg); } to { transform: translate3d(1.4%, 1%, 0) rotate(0.5deg); } }
+/* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
+   is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
+.recycle { position: absolute; left: 50%; top: 50%; width: min(96vw, 1500px); height: auto; transform: translate(-50%, -52%) rotate(-3deg); pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.42; }
+.recycle path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.problem.is-in .recycle path { animation: draw-stroke 700ms cubic-bezier(0.4, 0, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 320ms + 200ms); }
+html.reduced .recycle path { stroke-dashoffset: 0; }
+@keyframes draw-stroke { to { stroke-dashoffset: 0; } }
+.problem { overflow: clip; }
 /* doodles: a drawn full stop at the end of a block of text */
 .doodle { display: inline-block; vertical-align: -0.35em; width: 1.5em; height: 1.5em; margin-left: 0.35em; fill: none; stroke: var(--sun); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .doodle--sun circle { fill: var(--sun); stroke: none; }

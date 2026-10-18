@@ -175,7 +175,7 @@ window.SSMotion = (function () {
     const mq = matchMedia("(min-width: 760px) and (pointer: fine)");
     if (reduced()) { section.classList.add("is-row"); return none; }
     let overflow = 0, approach = 0;
-    const reset = () => { const t = track(); if (t) t.style.transform = ""; stage.style.transform = ""; stage.style.opacity = ""; cards().forEach((c) => c.style.removeProperty("--arrive")); };
+    const reset = () => { const t = track(); if (t) t.style.transform = ""; stage.style.transform = ""; stage.style.opacity = ""; cards().forEach((c) => { c.style.removeProperty("--arrive"); c.style.removeProperty("--arc"); c.style.removeProperty("--rot"); }); };
     function update() {
       const t = track(); if (!t || !overflow) return;
       place(progressOf(section.getBoundingClientRect(), pin.offsetHeight) * (approach + overflow));
@@ -190,7 +190,12 @@ window.SSMotion = (function () {
       t.style.transform = `translate3d(${(-x).toFixed(1)}px, 0, 0)`;
       // a card still off to the right sits a little lower and quieter until it has come in
       const vw = innerWidth;
-      cards().forEach((c) => { const r = c.getBoundingClientRect(); c.style.setProperty("--arrive", clamp01((vw - r.left) / (r.width * 0.9)).toFixed(3)); });
+      cards().forEach((c) => {
+        const r = c.getBoundingClientRect(), dx = (r.left + r.width / 2 - vw / 2) / (vw / 2);   // -1 at the left edge, 1 at the right
+        c.style.setProperty("--arrive", clamp01((vw - r.left) / (r.width * 0.9)).toFixed(3));
+        c.style.setProperty("--arc", (Math.min(1.6, dx * dx) * 110).toFixed(1));            // the row bends like a ring: both ends dip
+        c.style.setProperty("--rot", (Math.max(-1.3, Math.min(1.3, dx)) * 5).toFixed(2));
+      });
     }
     const row = () => { overflow = 0; section.style.height = ""; pin.style.paddingBlock = ""; section.classList.add("is-row"); };
     function size() {

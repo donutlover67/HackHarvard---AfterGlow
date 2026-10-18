@@ -86,7 +86,9 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect((html.match(/class="wipe__in"/g) || []).length).toBe(5);     // two headline lines and three titles, each wiped in by a block
   expect((html.match(/wipe--rtl/g) || []).length).toBe(2);            // every other line sweeps the other way
   expect(html).toContain('<span class="hollow">work.</span>');
-  expect((html.match(/class="contours /g) || []).length).toBe(7);     // hero (two sets), repair, problem, how, passports, teaser
+  expect(html).not.toContain("contours");
+  expect((html.match(/class="recycle"/g) || []).length).toBe(1);
+  expect((html.slice(html.indexOf('class="recycle"'), html.indexOf("</svg>", html.indexOf('class="recycle"'))).match(/pathLength="1"/g) || []).length).toBe(7);   // RECYCLE: seven strokes, drawn one after another
   expect((html.match(/class="doodle /g) || []).length).toBe(3);       // the sun, the cell, the string
   expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
   expect(html).toContain('class="hero__sun"');

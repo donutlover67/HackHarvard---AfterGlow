@@ -94,7 +94,7 @@ html.has-motion .step:not(.is-lit) .step__glyph, html.has-motion .step:not(.is-l
 /* the strip: the stage zooms in as the section docks (motion.js sets its transform), and a card still off to the right
    sits lower and quieter until it has arrived (--arrive 0..1) */
 .strip__stage { will-change: transform, opacity; }
-.wiring { transform: translateY(calc((1 - var(--arrive, 1)) * 28px)); opacity: calc(0.5 + 0.5 * var(--arrive, 1)); }
+.wiring { transform: translateY(calc((1 - var(--arrive, 1)) * 28px + var(--arc, 0) * 1px)) rotate(calc(var(--rot, 0) * 1deg)); transform-origin: 50% 0; opacity: calc(0.5 + 0.5 * var(--arrive, 1)); }
 
 /* the hero intro and the section titles: a solid amber block sweeps across each line and leaves the words behind
    (after the Lando Norris site's telemetry wipes). Lines alternate direction (.wipe--rtl). The hidden state exists only
@@ -134,7 +134,8 @@ html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 @media (prefers-reduced-motion: reduce) {
   .m-part, .rise, .grow, .fade, .hero__scroll, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
   .wipe::after, .wipe__in { animation: none; }
-  .ticker__track, .sun__disc, .sun__rays, .sun__beam, .contours { animation: none; }
+  .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
+  .recycle path { animation: none; stroke-dashoffset: 0; }
   .hero__panel { --tx: 12; --ty: -3; }
   [data-hero] { --k: 1; --w: 1; --g: 1; }
   [data-portal] { --q: 0; }
