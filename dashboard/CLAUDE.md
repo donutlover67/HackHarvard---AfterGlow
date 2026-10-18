@@ -5,14 +5,14 @@ Requirements are in docs/spec-v2.md §9 and §11.6; messages are in protocol/PRO
 
 ## Files
 - `index.html` — the page; `css/style.css` — design tokens and layout; `css/motion.css` — the motion layer, loaded after style.css (bars grow, curves fade, panels settle, values cross-blur only when they change; all off under prefers-reduced-motion).
-- `js/app.js` — state, rendering and controls. `js/charts.js` — SVG charts. `js/mock.js` — a simulated ESP32 that runs the same single-diode model as tools/sim. `js/serial.js` — Web Serial. `js/replay.js` — the stand-in port and the ?replay=1 self-test. `js/playback.js` — plays a recorded session from a file (Data, Play a recording…) through that port and SerialLink. `js/manual.js` — readings typed in by hand (Enter readings by hand): the firmware's grade, flag and prediction rules in JS, building `grade`/`search` messages that go through the same dispatch(); such runs have `link: "manual"`. `js/calibrate.js` — Simulate measured panels…: the mock bench runs the model on four measured panels (each panel's diode current fitted to its own Voc), still labelled as a simulation. `js/load.js` — what the array powers (pump, fan, load resistor or nothing): changes only the words on screen.
+- `js/app.js` — state, rendering and controls. `js/charts.js` — SVG charts. `js/mock.js` — a simulated board that runs the same single-diode model as tools/sim. `js/serial.js` — Web Serial. `js/replay.js` — the stand-in port and the ?replay=1 self-test. `js/playback.js` — plays a recorded session from a file (Data, Play a recording…) through that port and SerialLink. `js/manual.js` — readings typed in by hand (Enter readings by hand): the firmware's grade, flag and prediction rules in JS, building `grade`/`search` messages that go through the same dispatch(); such runs have `link: "manual"`. `js/calibrate.js` — Simulate measured panels…: the mock bench runs the model on four measured panels (each panel's diode current fitted to its own Voc), still labelled as a simulation. `js/load.js` — what the array powers (pump, fan, load resistor or nothing): changes only the words on screen.
 
 ## Where data comes from
 One link at a time; starting one stops the others. The run's `link` field records which it was, and the site labels runs by it.
 
 | Link | Started by | Notes |
 |---|---|---|
-| `serial` | Connect ESP32 | the ESP32 or the Uno build; same protocol |
+| `serial` | Connect Uno | the Uno or the ESP32 build; same protocol |
 | `mock` | Use mock bench (starts on load) | simulated; optionally calibrated to measured panels |
 | `manual` | Enter readings by hand | typed multimeter readings; no sweeps, no proof |
 | `recording` | Data → Play a recording… | never uploads by itself |

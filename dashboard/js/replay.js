@@ -1,5 +1,5 @@
 // Replay: a hardware-free check of the Web Serial path, shown only with ?replay=1.
-// Recorded protocol/samples/*.jsonl lines, plus the malformed input a real ESP32 produces, are cut into
+// Recorded protocol/samples/*.jsonl lines, plus the malformed input a real board produces, are cut into
 // random chunks and served by a stand-in port. SerialLink reads that port with its own read loop, so the
 // bytes go through the same decoder, line splitter, JSON parse and dispatch as a board on USB.
 // Nothing here builds message objects: every message is text from protocol/samples/.

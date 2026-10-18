@@ -1,6 +1,6 @@
 // Play a recorded bench session from a file, so a real run can be shown on the real dashboard without the board.
 // The file's lines go through the stand-in port from js/replay.js and SerialLink's own read loop, so they are
-// decoded, split, parsed and dispatched exactly like bytes from the ESP32 on USB. Nothing here renders anything.
+// decoded, split, parsed and dispatched exactly like bytes from the board on USB. Nothing here renders anything.
 //
 // Accepted files:
 //  - a capture from tools/capture.py: one serial line per line, boot noise and partial lines included;
@@ -10,7 +10,7 @@
 // The dashboard's download keeps every line since the page loaded, so it can start with the mock bench, which runs
 // until a board is connected. Lines from a `hello` with fw "mock" up to the next `hello` from real firmware are
 // simulated and are left out, so a replay never shows mock numbers as a recorded run.
-// Timing comes from the messages' `t` (ms since the ESP32 booted). Lines without `t` follow the previous line at once;
+// Timing comes from the messages' `t` (ms since the board booted). Lines without `t` follow the previous line at once;
 // when `t` goes backwards (a reset, or files joined together) the next line follows at once too.
 
 import { SerialLink } from "./serial.js";

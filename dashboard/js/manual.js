@@ -1,4 +1,4 @@
-// Readings entered by hand (multimeter, outdoors) when the relays or the ESP32 can't run a grade.
+// Readings entered by hand (multimeter, outdoors) when the relays or the board can't run a grade.
 // Builds the same `grade` and `search` messages the firmware sends (protocol/PROTOCOL.md), with the
 // firmware's own rules: grade thresholds and flags from firmware/src/main.cpp doGrade() and
 // firmware/include/config.h, the like-with-like prediction from firmware/lib/solarlogic predictPairing(),
@@ -47,7 +47,7 @@ export function predictPairing(isc) {
 const round = (x, places) => Math.round(x * 10 ** places) / 10 ** places;
 
 // panels: [{id, isc_ma, voc_v}] for ids 1..4. No lamp box is involved, so isc_raw_ma equals isc_ma.
-// `t` (ms since the ESP32 booted) is left out: there was no ESP32.
+// `t` (ms since the board booted) is left out: there was no board.
 export function gradeMessage(panels) {
   const isc = panels.map((p) => p.isc_ma);
   const voc = panels.map((p) => p.voc_v);

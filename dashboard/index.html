@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="plate__links">
-      <button type="button" class="btn" id="btn-connect">Connect ESP32</button>
+      <button type="button" class="btn" id="btn-connect">Connect Uno</button>
       <button type="button" class="btn btn--quiet" id="btn-mock">Use mock bench</button>
       <button type="button" class="btn btn--quiet" id="btn-replay" hidden>Replay recording</button>
       <button type="button" class="btn" id="btn-rec-stop" hidden>Stop playback</button>
@@ -211,7 +211,7 @@
   <dialog class="sheet sheet--wide" id="manual-sheet">
     <form method="dialog" id="manual-form" novalidate>
       <h2>Enter readings by hand</h2>
-      <p>For when the bench can't measure: type multimeter readings for each panel, taken under the same light, one right after another. The dashboard grades them with the firmware's own rules and makes passports marked as hand-entered. This ends the mock bench or the ESP32 link.</p>
+      <p>For when the bench can't measure: type multimeter readings for each panel, taken under the same light, one right after another. The dashboard grades them with the firmware's own rules and makes passports marked as hand-entered. This ends the mock bench or the Uno link.</p>
       <div class="manual-grid">
         <span></span><span>Short-circuit current, mA</span><span>Open-circuit voltage, V</span>
         <label for="m-isc-1">Panel 1</label><input id="m-isc-1" data-field="isc-1" aria-label="Panel 1 short-circuit current, mA" inputmode="decimal" autocomplete="off"><input id="m-voc-1" data-field="voc-1" inputmode="decimal" autocomplete="off" aria-label="Panel 1 open-circuit voltage, V">

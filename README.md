@@ -2,7 +2,7 @@
 
 Grades used solar panels, then rewires them for the most power. HackHarvard 2026.
 
-Four small panels sit in lamp boxes. An ESP32 measures every panel's short-circuit current at the same instant and its open-circuit voltage, scores them against each other, predicts which panels belong in series together, then verifies the prediction by sweeping the I-V curve of all three possible pairings with relays and a capacitor. It keeps the best pairing, runs a 12 V pump from it, and proves the gain by alternating the best and worst wirings and measuring each at its maximum power point. A laptop dashboard over USB serial shows the grades, the curves and the gain with a confidence interval.
+Four small panels sit in lamp boxes. An Arduino Uno measures every panel's short-circuit current at the same instant and its open-circuit voltage, scores them against each other, predicts which panels belong in series together, then verifies the prediction by sweeping the I-V curve of all three possible pairings with relays and a capacitor. It keeps the best pairing, runs a 12 V pump from it, and proves the gain by alternating the best and worst wirings and measuring each at its maximum power point. A laptop dashboard over USB serial shows the grades, the curves and the gain with a confidence interval.
 
 ## Why
 
@@ -28,7 +28,7 @@ With two of four panels at 50% output, the best pairing makes about 38–41% mor
 python3 tools/serve.py
 ```
 
-Then open http://localhost:8000/dashboard/ and http://localhost:8000/site/ in Chrome. The dashboard starts on the mock bench (simulated panels, same physics model as the firmware's design) and runs a search; press **Prove** for the confidence interval. **Connect ESP32** uses Web Serial (Chrome or Edge, 115200 baud). The mock bench row at the bottom lets you change the light level and which panels carry film. Data → **Upload run** sends the run's passports to the local server, and the site shows them within a few seconds; **Export passports** writes the same JSON to a file for a site hosted elsewhere.
+Then open http://localhost:8000/dashboard/ and http://localhost:8000/site/ in Chrome. The dashboard starts on the mock bench (simulated panels, same physics model as the firmware's design) and runs a search; press **Prove** for the confidence interval. **Connect Uno** uses Web Serial (it works for an ESP32 build too) (Chrome or Edge, 115200 baud). The mock bench row at the bottom lets you change the light level and which panels carry film. Data → **Upload run** sends the run's passports to the local server, and the site shows them within a few seconds; **Export passports** writes the same JSON to a file for a site hosted elsewhere.
 
 The site also runs as a plain static folder with no server behind it; the public copy on GitHub Pages is described next.
 

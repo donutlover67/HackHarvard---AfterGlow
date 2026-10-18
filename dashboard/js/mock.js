@@ -1,4 +1,4 @@
-// A simulated ESP32 bench. Same single-diode model as tools/sim/pv2s2p.py, same
+// A simulated bench (stands in for the Uno or ESP32 board). Same single-diode model as tools/sim/pv2s2p.py, same
 // serial protocol as protocol/PROTOCOL.md, same timing as the firmware procedures.
 
 const VT = 0.025693;
