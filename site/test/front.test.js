@@ -85,8 +85,8 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect(html).not.toContain("✦");   // the ticker's separators are drawn, not glyphs
   expect((html.match(/data-reveal/g) || []).length).toBe(4);          // headline, lede, buttons, slot; the titles fade in with their sections
   expect((html.match(/class="wipe__in"/g) || []).length).toBe(2);     // the headline's two lines, wiped in by blocks
-  expect((html.match(/class="curtain__bar"/g) || []).length).toBe(9);  // the intro's columns, each with its own timing
-  expect(html).toContain('class="curtain"');
+  expect(html).not.toContain("curtain");
+  expect(html.indexOf('class="hero__slot')).toBeLessThan(html.indexOf('class="hero__text"'));   // the cell above the text
   expect(html).toContain('<span class="hollow">work.</span>');
   expect(html).not.toContain("contours");
   expect((html.match(/class="recycle"/g) || []).length).toBe(1);

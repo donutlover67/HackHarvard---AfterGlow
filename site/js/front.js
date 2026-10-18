@@ -222,14 +222,10 @@ window.SSFront = (function () {
     string: `<svg class="doodle doodle--string" viewBox="0 0 64 34" aria-hidden="true" focusable="false"><path d="M3 24 C 12 4, 20 4, 24 18 S 34 34, 40 16 S 52 2, 61 20"/></svg>`,
   };
   const doodle = (k) => DOODLES[k] || "";
-  // The first screen: the drawn cell under its sun and the headline, on the pale ground, with nothing pinned.
+  // The first screen: the drawn cell under its sun, centred and large, and under it the headline and the two ways in.
+  // On load the cell is alone for a moment, then settles up as the text arrives beneath it (motion.js, intro).
   function hero() {
-    // nine columns rise from the bottom of the screen at their own speeds, cover it, then clear upward (the intro)
-    const EASES = ["cubic-bezier(0.7, 0, 0.2, 1)", "cubic-bezier(0.2, 0.8, 0.3, 1)", "cubic-bezier(0.9, 0.05, 0.6, 1)", "cubic-bezier(0.4, 0, 0.1, 1)", "cubic-bezier(0.6, -0.1, 0.3, 1.05)", "cubic-bezier(0.3, 0.6, 0.2, 1)", "cubic-bezier(0.8, 0, 0.4, 1)", "cubic-bezier(0.2, 0.9, 0.5, 1)", "cubic-bezier(0.5, 0.1, 0.1, 1)"];
-    const DURS = [820, 640, 980, 720, 900, 600, 860, 700, 760], DELAYS = [0, 140, 60, 220, 30, 180, 100, 250, 120];
-    const curtain = `<div class="curtain" aria-hidden="true">${EASES.map((e, i) => `<span class="curtain__bar" style="--i:${i};--ease:${e};--dur:${DURS[i]}ms;--delay:${DELAYS[i]}ms"></span>`).join("")}</div>`;
     return `<section class="hero" data-in>
-      ${curtain}
       <div class="hero__stage">
         <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
         <div class="hero__text">

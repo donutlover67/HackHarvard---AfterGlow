@@ -2,24 +2,16 @@
    screens the hero pins for one extra screen so the scroll can re-pair the four panels. No gradients, no
    shadows; the one strong colour is the gain numeral in the navy band. */
 
-/* hero: the first screen (the drawn cell, the headline, the two ways in), on the pale ground, pinned to nothing */
+/* hero: the first screen. The drawn cell under its sun, centred and large; the headline and the two ways in under it.
+   While the intro stages (.is-staging, motion.js) the cell sits a little lower; it eases up as the text arrives. */
 .hero { position: relative; }
-.hero__stage { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
+.hero__stage { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; grid-template-areas: "slot" "text"; justify-items: center; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 28px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
-/* the headline in a high-contrast serif (the Mac's Bodoni or Didot, else Georgia): each line sits in its own mask and
-   slides up out of nothing (motion.css) */
+/* the headline in a high-contrast serif (the Mac's Bodoni or Didot, else Georgia), one block per line, centred */
 .hero .display { font-family: "Bodoni 72", Didot, "Playfair Display", Georgia, "Times New Roman", serif; font-weight: 600; font-stretch: normal; letter-spacing: -0.02em; line-height: 0.98; }
-.hero .display .wipe { display: block; width: fit-content; }   /* one line per block, the block only as wide as its words */
-/* the intro's curtain: nine columns fixed to the screen, each rising from the bottom on its own timing (--delay, --dur,
-   --ease), covering the screen, then clearing upward; motion.js adds .is-up, then .is-off, then removes it */
-.curtain { position: fixed; inset: 0; z-index: 6; pointer-events: none; display: none; }
-html.is-intro .curtain { display: block; }
-.curtain__bar { position: absolute; top: 0; bottom: 0; left: calc(var(--i) * 100% / 9); width: calc(100% / 9 + 1px); background: var(--cell); transform: translateY(101%); }
-.curtain.is-up .curtain__bar { transition: transform var(--dur, 800ms) var(--ease, ease); transition-delay: var(--delay, 0ms); transform: translateY(0); }
-.curtain.is-off .curtain__bar { transition: transform calc(var(--dur, 800ms) * 0.9) var(--ease, ease); transition-delay: calc(var(--delay, 0ms) * 0.8); transform: translateY(-101%); }
-/* while the intro plays the text is out of sight; the rays draw outward and the beams reach the panel */
-html.is-intro .hero__text { visibility: hidden; }
-.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
+.hero .display .wipe { display: block; width: fit-content; margin-inline: auto; }
+.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(88vw, calc(44vh * 4 / 3)); transition: transform 1100ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.hero.is-staging .hero__slot { transform: translateY(10vh) scale(1.06); }
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
    the panel leans with the pointer through a perspective transform that motion.js drives (--tx, --ty), its shadow slides (--sx, --sy) */
 .hero__sun { position: absolute; left: 0; top: -14%; width: 100%; height: 114%; display: block; overflow: visible; pointer-events: none; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
@@ -27,9 +19,9 @@ html.is-intro .hero__text { visibility: hidden; }
 .hero__sun .sun__beam { stroke-width: 2; stroke-dasharray: 5 11; opacity: 0.85; }
 .hero__panel { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; transform: perspective(1200px) rotateX(calc(var(--tx, 14) * 1deg)) rotateY(calc(var(--ty, 0) * 1deg)); transform-origin: 50% 55%; }
 .pnl__shadow { transform: translate(calc(var(--sx, 10) * 1px), calc(var(--sy, 12) * 1px)); }
-.hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; }
+.hero__text { grid-area: text; display: grid; gap: 20px; justify-items: center; text-align: center; max-width: 60ch; }
 .hero__text .lede { margin: 0; }
-.hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero__actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 /* the comparison. On phones a navy section; on large screens its own pinned screen: a navy bubble at the bottom centre
    (its radius --r from motion.js) swells until it covers the screen, the four panels sit large in the middle and the band
    of facts runs along the bottom edge */
@@ -53,10 +45,9 @@ html.is-intro .hero__text { visibility: hidden; }
   .hero__caption { display: block; }
 }
 @media (min-width: 900px) and (min-height: 700px) {
-  .hero__stage { min-height: calc(100vh - 70px); max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
-  .hero .display { font-size: clamp(2.4rem, 5vw, 5.8rem); }
-  .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
-  .hero__text { padding-right: 24px; }
+  .hero__stage { min-height: calc(100vh - 70px); max-width: 1400px; gap: 24px; align-content: center; padding: 28px var(--gutter) 24px; }
+  .hero .display { font-size: clamp(2.4rem, 4.2vw, 4.6rem); }
+  .hero__slot { width: min(72vw, calc(46vh * 4 / 3)); }
   /* the pinned comparison: the section is pale like the hero, and only the bubble brings the navy */
   .repair { background: var(--page); min-height: 260vh; }
   .repair__pin { position: sticky; top: 0; height: 100vh; }
@@ -70,9 +61,8 @@ html.is-intro .hero__text { visibility: hidden; }
   .repair .rp { width: min(92vw, 1500px); max-height: 60vh; }
   .repair .ticker { position: relative; z-index: 1; opacity: var(--show, 1); }
 }
-@media (min-width: 1800px) {   /* 1920x1080: the two halves split evenly, the headline stays on two lines, the slab grows */
-  .hero__stage { max-width: 1720px; grid-template-columns: 1fr 1fr; }
-  .hero .display { font-size: 5rem; }
+@media (min-width: 1800px) {   /* 1920x1080: a little more room for the cell */
+  .hero__slot { width: min(72vw, calc(50vh * 4 / 3)); }
 }
 
 /* the problem: three figures, then the two sentences */
