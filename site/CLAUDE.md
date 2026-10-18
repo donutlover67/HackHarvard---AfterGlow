@@ -6,7 +6,7 @@ Plain HTML, CSS and a handful of scripts, hash-routed, no build step, no framewo
 
 ## Files
 - `index.html` — the shell: nav, `#view`, footer, scripts.
-- `js/app.js` — data loading, validation, the passport index, passport pages, the builder page, the impact page, the print sheet, the router. `js/routes.js` — the route table (which hash opens which page). `js/front.js` — the front page's markup. `js/front-data.js` — which run supplies each front-page figure: measured runs before simulated ones, the newest among those, the model's demo batch (labelled) when nothing qualifies. `js/motion.js` — every move: entrances, count-ups, the hero re-pairing, the headline's masked line reveal, the four steps lighting in turn as the reader scrolls through them, the sideways strip (zooming in before it slides), route slides, and the loader for `js/hero3d.js`, the three.js cell slab (an ES module imported after first paint, front page only). `js/builder.js` — the Array Builder's grouping (voltage-balanced, with a brute-force check for up to 8 panels). `js/model.js` — the single-diode panel model (same as `dashboard/js/mock.js`).
+- `js/app.js` — data loading, validation, the passport index, passport pages, the builder page, the impact page, the print sheet, the router. `js/routes.js` — the route table (which hash opens which page). `js/front.js` — the front page's markup. `js/front-data.js` — which run supplies each front-page figure: measured runs before simulated ones, the newest among those, the model's demo batch (labelled) when nothing qualifies. `js/motion.js` — every move: entrances, count-ups, the hero re-pairing, the headline's masked line reveal, the four steps lighting in turn as the reader scrolls through them, the sideways strip (zooming in before it slides), route slides, and the loader for `js/hero3d.js`, the three.js cell slab (an ES module imported after first paint, front page only). `js/builder.js` — the Array Builder's grouping (voltage-balanced, with a brute-force check for up to 8 panels). `js/sizing.js` — how many panels go in series for a use (run a device, charge a battery, feed an inverter or converter, or most watts), from installers' hot-day and cold-morning string formulas; pure, sources in its header (from the ui-refresh branch). `js/model.js` — the single-diode panel model (same as `dashboard/js/mock.js`).
 - `vendor/qrcode.js` (qrcode-generator, MIT), `vendor/three.module.min.js` (three.js 0.170.0, MIT, the last release whose minified module build is one file), `vendor/fonts/` (Archivo, OFL).
 - `css/site.css` — tokens, type, surfaces, every page, phone (760 px, 480 px) and print rules. `css/front.css` — the front page's sections and its chapter grounds (paper for the problem and the steps, navy for the wirings and the gain). `css/motion.css` — the motion layer, loaded last: transform, opacity and colour only, end states under `prefers-reduced-motion`.
 - `data/sample-run.json` — a sample run made by `tools/sim/make_site_sample.py` ("Show example panels"). `data/runs/` — published runs, listed in `data/runs/index.json`.
@@ -16,10 +16,10 @@ Plain HTML, CSS and a handful of scripts, hash-routed, no build step, no framewo
 | Hash | Page |
 |---|---|
 | `#/` | front page: the lit cell and the headline, four panels re-pairing as you scroll, the problem in three numerals, how the bench works, the three wirings side by side, the gain, the newest passports, the builder teaser |
-| `#/passports` | passport index, import, runs table, "Print cards" link |
+| `#/passports` | passport index: real panels, then the demo batch kept apart and labelled simulated, import tools, runs table |
 | `#/p/SS-0001` | one passport: intro for strangers, QR code of its own URL, measurements, the panel against its run, pairing line |
-| `#/build` | Array Builder: group a pool of passports into strings |
-| `#/impact` | measured gain across proof runs, plus sourced background figures |
+| `#/build` | Array Builder: say how the power is used and the device's voltage; sizing.js picks the string length and the builder groups the panels; Adjust for overrides |
+| `#/impact` | the same four panels wired two ways (simulated, editable), the measured gain across proof runs, sourced background figures |
 | `#/print` | four passport cards per printed page |
 
 Anything else opens the front page. `tools/serve.py` sends the dashboard to `#/passports` after an upload.

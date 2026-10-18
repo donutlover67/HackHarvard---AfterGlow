@@ -249,3 +249,72 @@ details.tools[open] summary { margin-bottom: 10px; }
   .facts div { padding-bottom: 8px; }
   .facts dd { font-size: 1.1rem; }
 }
+
+/* ---------- from the ui-refresh branch, under this system's tokens: demo labelling, passport navigation, the builder's
+   use-and-sizing form, the Impact comparison, grades as badges ---------- */
+.tag { display: inline-block; vertical-align: middle; font-size: 0.74rem; font-weight: 600; font-stretch: 95%; padding: 2px 8px; border-radius: var(--radius); background: #f4e7c3; color: #6b4e00; }
+.demo { border-left: 3px solid var(--pair-a); }
+.demo__note { max-width: 70ch; }
+.demo__actions { margin: 12px 0 16px; }
+.demo-banner { background: #fbf3dc; border-left: 3px solid var(--pair-a); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px; font-size: 0.95rem; color: var(--ink); }
+.pnav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 0.92rem; }
+.pnav__link { white-space: nowrap; text-decoration: none; font-weight: 600; padding: 6px 10px; border: 1px solid var(--busbar); border-radius: var(--radius); background: var(--surface); }
+.pnav__link.is-off { color: var(--ink-3); font-weight: 500; border-style: dashed; }
+.pnav__pos { color: var(--ink-2); text-align: center; }
+.passport__wiring { margin: -4px 0 18px; padding: 10px 12px; background: var(--page); border-radius: var(--radius); font-size: 0.98rem; }
+.passport__section { font-size: 0.95rem; color: var(--cell); margin-bottom: 10px; }
+/* grades as badges: the letter reads at a glance, A to C from solid to quiet */
+.grade { border-radius: var(--radius); padding: 1px 0; min-width: 1.75em; }
+.grade.g-A { background: var(--cell); color: #fff; }
+.grade.g-B { background: var(--busbar); color: var(--ink); }
+.grade.g-C { background: var(--busbar-2); color: var(--ink-2); }
+.passport__grade { padding: 6px 0 4px; min-width: 1.35em; font-size: 2.8rem; }
+.passport__grade-line { align-items: center; }
+/* the builder: one question, then only the fields that use needs */
+.need-card { padding-bottom: 20px; }
+.use-form { display: grid; gap: 16px; }
+.use-q { font-size: 0.95rem; color: var(--ink); font-weight: 600; gap: 8px; max-width: 460px; font-stretch: 100%; }
+.use-q select { font-size: 1rem; font-weight: 500; padding: 9px 11px; }
+.use-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px 18px; align-items: start; }
+.use-part[hidden], .use-form .field[hidden] { display: none; }
+.use-form .field { min-width: 0; }
+.use-form .field > select { width: 100%; min-width: 0; max-width: 100%; }
+.use-form input[type=text] { max-width: 100%; }
+.unit-row { display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.field-help { display: block; font-size: 0.78rem; color: var(--ink-2); line-height: 1.35; margin-top: 2px; font-stretch: 100%; }
+.use-site { border: 1px solid var(--busbar-2); border-radius: var(--radius); padding: 12px 14px 14px; margin: 0; min-width: 0; display: grid; gap: 10px; }
+.use-site legend { font-size: 0.9rem; font-weight: 600; color: var(--ink); padding: 0 4px; }
+.sizing { margin: 4px 0 4px; }
+.sizing summary { cursor: pointer; font-weight: 700; color: var(--cell); padding: 10px 0 6px; }
+.sizing ol { margin: 4px 0 0; padding-left: 22px; display: grid; gap: 6px; color: var(--ink-2); font-size: 0.92rem; }
+.sizing ol b { color: var(--ink); }
+.build-auto { margin: -2px 0 16px; color: var(--ink-2); }
+.build-auto b { color: var(--ink); }
+details.adjust summary, details.impact-edit summary { cursor: pointer; font-weight: 700; color: var(--cell); }
+details.adjust[open] summary { margin-bottom: 6px; }
+/* the Impact comparison: the same four panels wired two ways */
+.impact-main { border-left: 3px solid var(--pair-a); }
+.impact-hero { margin: 14px 0 18px; }
+.impact-bars { display: grid; gap: 14px; margin-bottom: 14px; }
+.impact-bar { display: grid; grid-template-columns: minmax(0, 15rem) 1fr 5.5rem; gap: 14px; align-items: center; }
+.impact-bar__label { font-size: 0.92rem; color: var(--ink-2); }
+.impact-bar__track { height: 22px; background: var(--page); border-radius: var(--radius); overflow: hidden; }
+.impact-bar__fill { display: block; height: 100%; background: var(--pair-b); border-radius: var(--radius); transition: width 300ms ease-out; }
+.impact-bar__fill.is-base { background: var(--busbar); }
+.impact-bar > b { text-align: right; font-size: 1.1rem; }
+.impact-edit { margin-top: 12px; }
+.impact-table input { width: 6.5em; text-align: right; font: inherit; border: 1px solid var(--busbar); border-radius: var(--radius); padding: 4px 6px; background: var(--surface); }
+@media (max-width: 760px) {
+  /* on a phone the reader has just scanned the card: the ID, grade and numbers first, the cell and QR after */
+  .passport > div:not(.passport__visual) { order: 1; }
+  .passport__visual { order: 2; padding-top: 16px; border-top: 1px solid var(--busbar-2); }
+  .impact-bar { grid-template-columns: 1fr auto; }
+  .impact-bar__track { grid-column: 1 / -1; }
+  .pnav__pos { font-size: 0.82rem; }
+}
+@media print {
+  .passport__visual { order: 0; padding-top: 0; border-top: 0; }
+  .passport > div:not(.passport__visual) { order: 0; }
+  .grade { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .pnav, .demo-banner { display: none; }
+}
