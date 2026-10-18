@@ -86,6 +86,9 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect((html.match(/data-reveal/g) || []).length).toBe(4);          // headline, lede, buttons, slot; the titles fade in with their sections
   expect((html.match(/class="wipe__in"/g) || []).length).toBe(2);     // the headline's two lines, wiped in by blocks
   expect(html).not.toContain("curtain");
+  expect((html.match(/<li id="fn-\d">/g) || []).length).toBe(5);             // the notes and sources at the foot of the page
+  expect((html.match(/class="fn"/g) || []).length).toBeGreaterThanOrEqual(3);   // markers after the three numerals at least
+  expect(html).toContain('href="#fn-4"');
   expect(html.indexOf('class="hero__slot')).toBeLessThan(html.indexOf('class="hero__text"'));   // the cell above the text
   expect(html).toContain('<span class="hollow">work.</span>');
   expect(html).not.toContain("contours");

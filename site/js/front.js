@@ -258,9 +258,9 @@ window.SSFront = (function () {
   const problem = () => `<section class="problem" data-in>
       <div class="wrap">
         <div class="problem__grid">
-          <div class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of rated output is what most panels still make after 25 years</p></div>
-          <div class="fig"><div class="num-big" data-count>1.2%</div><p class="fig__line">of retired US panels are reused; most are landfilled</p></div>
-          <div class="fig"><div class="num-big" data-count>$17–34</div><p class="fig__line">for a lab test of one used panel, against about $55 for a new one</p></div>
+          <div class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of rated output is what most panels still make after 25 years${fn(1)}</p></div>
+          <div class="fig"><div class="num-big" data-count>1.2%</div><p class="fig__line">of retired US panels are reused; most are landfilled${fn(3)}</p></div>
+          <div class="fig"><div class="num-big" data-count>$17–34</div><p class="fig__line">for a lab test of one used panel, against about $55 for a new one${fn(4)}</p></div>
         </div>
         <p class="problem__text">In a series string every panel carries the same current, so the weakest panel limits the string. Factories sort new panels into current classes; used ones arrive mixed and untested. ${doodle("sun")}</p>
       </div>
@@ -304,7 +304,7 @@ window.SSFront = (function () {
         <div class="wiring__w">${ctx.num(strip.watts[L], 2)} W</div>
         <p class="wiring__label label">maximum power, panels ${PAIR_WORDS[L]}</p>
       </article>`).join("");
-    return `<div class="strip__track">${cards}</div><p class="wrap strip__note label">${sourceLine(strip, ctx, "Figures")}</p>`;
+    return `<div class="strip__track">${cards}</div><p class="wrap strip__note label">${sourceLine(strip, ctx, "Figures")}${strip.model ? fn(5) : ""}</p>`;
   }
   const strip = (ctx, s) => `<section class="strip" data-strip data-in>
       <div class="strip__pin"><div class="strip__stage">
@@ -318,7 +318,7 @@ window.SSFront = (function () {
     return `<div class="wrap">
         <div class="band__num" data-count>${gainText(g)}</div>
         <p class="band__text">more power than the worst wiring of the same panels, ${g.model ? "" : "measured "}at each wiring's maximum power point. With normal aging the gain is about 5 to 7%.</p>
-        <p class="band__note">${g.model ? "A model figure for the demo batch, two of four panels behind 35% film. The first published bench run replaces it." : `${ctx.num(g.pct, 1)}%${detail}, ${fromRun(g, ctx)}.`} ${doodle("string")}</p>
+        <p class="band__note">${g.model ? `A model figure for the demo batch, two of four panels behind 35% film. The first published bench run replaces it.${fn(5)}` : `${ctx.num(g.pct, 1)}%${detail}, ${fromRun(g, ctx)}.`} ${doodle("string")}</p>
       </div>`;
   }
   const gainBand = (ctx, g) => `<section class="band front-band" id="front-gain" data-in>${gainInner(ctx, g)}</section>`;
@@ -341,10 +341,21 @@ window.SSFront = (function () {
   const passportsSection = (ctx) => `<section class="fpass" id="front-passports" data-in>${passportsInner(ctx)}</section>`;
   const teaser = () => `<section class="teaser" data-in>
       <div class="wrap"><div class="teaser__box"><p class="teaser__text">Have passports? The Array Builder groups them into strings so no strong panel is held back.</p><a class="btn" href="#/build">Try the Array Builder</a></div></div></section>`;
+  // a numbered footnote marker, linking to the notes at the foot of the page
+  const fn = (n) => `<sup class="fn"><a href="#fn-${n}" aria-label="Footnote ${n}">${n}</a></sup>`;
+  const FOOTNOTES = [
+    "Degradation: NREL's fleet performance study puts the median loss at 0.75% of output a year, the published literature's median at 0.5%; at those rates a panel still makes 80–88% of its rating after 25 years.",
+    "Panels retired early, for upgrades or damage, often still produce 70–95% of their rating (NREL).",
+    "NREL's baseline scenario for US modules, 2020–2050: about 83% landfilled, 9.5% recycled, 1.2% reused.",
+    "Lab testing (a flash test plus electroluminescence imaging) costs about €16–31 per used module against about €50 for a new one (IEA PVPS Task 13, 2026; German test labs' price lists), shown here in dollars at about 1.08 $/€.",
+    "The gain is a figure from our single-diode panel model for the demo batch, two of four panels behind 35% film; bench runs replace it as they are published, and measured numbers are labelled as such.",
+  ];
   const close = () => `<section class="close" data-in>${landscape()}<div class="wrap">
       <p class="close__name">Second String</p>
       <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>
-      <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
+      <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled.</p>
+      <h2 class="footnotes__title">Notes and sources</h2>
+      <ol class="footnotes">${FOOTNOTES.map((t, i) => `<li id="fn-${i + 1}">${t}</li>`).join("")}</ol>
     </div></section>`;
 
   // ---------- the page ----------
