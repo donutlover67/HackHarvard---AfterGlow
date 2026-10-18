@@ -178,7 +178,7 @@ window.SSFront = (function () {
       }
     });
     const pad = 40;
-    return `<svg class="recycle" viewBox="${(minX - pad).toFixed(0)} ${(minY - pad).toFixed(0)} ${(maxX - minX + 2 * pad).toFixed(0)} ${(maxY - minY + 2 * pad).toFixed(0)}" preserveAspectRatio="xMinYMid meet" aria-hidden="true" focusable="false">${pieces.join("")}</svg>`;   // from the left edge
+    return `<svg class="recycle" viewBox="${(minX - pad).toFixed(0)} ${(minY - pad).toFixed(0)} ${(maxX - minX + 2 * pad).toFixed(0)} ${(maxY - minY + 2 * pad).toFixed(0)}" preserveAspectRatio="xMinYMax meet" aria-hidden="true" focusable="false">${pieces.join("")}</svg>`;   // from the bottom left corner
   }
   // small drawn marks that end a block of text, the way a signature ends a note: a sun, a cell, a loop of string
   const DOODLES = {
@@ -220,7 +220,6 @@ window.SSFront = (function () {
   const TICKER = ["Panels lose about 0.5–0.75% of their output a year", "Panels retired early for upgrades often still make 70–95% of their rating", "About 83% of retired US panels are headed to landfill, 9.5% are recycled", "In a series string the weakest panel sets the current for all of them", "Matched wiring: up to 37% more power from the same four panels, simulated"];
   const ticker = () => `<div class="ticker" aria-hidden="true"><div class="ticker__track">${[...TICKER, ...TICKER].map((t) => `<span class="ticker__item">${t}</span>`).join("")}</div></div>`;
   const problem = () => `<section class="problem" data-in>
-      ${recycleSvg()}
       <div class="wrap">
         <div class="problem__grid">
           <div class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of rated output is what most panels still make after 25 years</p></div>
@@ -230,6 +229,9 @@ window.SSFront = (function () {
         <p class="problem__text">In a series string every panel carries the same current, so the weakest panel limits the string. Factories sort new panels into current classes; used ones arrive mixed and untested. ${doodle("sun")}</p>
       </div>
     </section>`;
+  // the white block: the problem and the steps on one sheet of paper, with "recycle" written across it from the
+  // sheet's bottom left corner, behind both
+  const paper = () => `<div class="paper">${recycleSvg()}${problem()}${how()}</div>`;
   // the bench's four steps hang in order on one wire, the way panels hang on a string; each carries a drawing of what happens
   const tiny = (x, y, w, h, strong) => `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--cell)"/>${strong ? "" : `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--film)"/>`}`;
   const GLYPHS = {
@@ -313,7 +315,7 @@ window.SSFront = (function () {
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    return hero() + repair(ctx, g) + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
+    return hero() + repair(ctx, g) + paper() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {

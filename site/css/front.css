@@ -166,7 +166,8 @@
 
 /* chapters change ground: paper for the problem and the steps, navy for the wirings and the gain */
 body[data-page="front"] #view > section { position: relative; z-index: 1; }
-.problem, .how { background: var(--surface); }
+.paper { position: relative; overflow: clip; background: var(--surface); }
+.paper > section { position: relative; z-index: 1; }   /* the sections and their text above the written word */
 .problem { padding-block: var(--section); }
 .how { margin-top: calc(-1 * var(--section) + 24px); padding-top: 24px; }
 .strip { background: var(--cell); }
@@ -194,15 +195,13 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 
 /* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
    is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
-/* fitted between the section's top and the point where the next section is pulled up over it (its negative margin), from
-   the left edge, mostly transparent and always under the text */
-.recycle { position: absolute; left: 1%; top: 12%; width: 98%; height: calc(88% - var(--section) + 24px);   /* an svg keeps its ratio when only top and bottom are set, so the height is explicit */ pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.3; shape-rendering: geometricPrecision; }
-.problem .wrap { position: relative; z-index: 1; }
+/* anchored to the sheet's bottom left corner (xMinYMax), mostly transparent, under the text of both sections */
+.recycle { position: absolute; left: 0.5%; bottom: 1%; width: 99%; height: 92%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.3; shape-rendering: geometricPrecision; }
 .recycle path { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; }   /* parked just past the start, so no round cap shows before the pen arrives */
-.problem.is-in .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
+.paper:has(.problem.is-in) .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
 html.reduced .recycle path { stroke-dashoffset: 0; }
 @keyframes draw-stroke { to { stroke-dashoffset: 0; } }
-.problem { overflow: clip; padding-block: calc(var(--section) * 1.5); }   /* room for the word to run at its angle */
+.problem { padding-block: var(--section); }
 /* doodles: a drawn full stop at the end of a block of text */
 .doodle { display: inline-block; vertical-align: -0.35em; width: 1.5em; height: 1.5em; margin-left: 0.35em; fill: none; stroke: var(--sun); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .doodle--sun circle { fill: var(--sun); stroke: none; }
