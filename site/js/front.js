@@ -362,10 +362,10 @@ window.SSFront = (function () {
   const close = () => `<section class="close" data-in><div class="wrap">
       <p class="close__name">Second String</p>
       <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>
-      <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled.</p>
-      <h2 class="footnotes__title">Notes and sources</h2>
-      <ol class="footnotes">${FOOTNOTES.map((f, i) => `<li id="fn-${i + 1}">${f.note} <span class="footnotes__cite">${f.cites.map(cite).join(" ")}</span></li>`).join("")}</ol>
-    </div></section>`;
+      <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
+    </div>
+    <ol class="footnotes wrap" aria-label="Notes and sources">${FOOTNOTES.map((f, i) => `<li id="fn-${i + 1}">${f.note} ${f.cites.map(cite).join(" · ")}</li>`).join("")}</ol>
+  </section>`;
 
   // ---------- the page ----------
   function page(ctx) {

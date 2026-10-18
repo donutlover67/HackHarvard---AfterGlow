@@ -139,7 +139,7 @@
 .teaser__text { font-size: 1.15rem; max-width: 46ch; }
 
 /* close */
-.close { background: var(--surface); padding: var(--section) 0 88px; }
+.close { background: var(--surface); padding: var(--section) 0 40px; }
 .close__name { font-size: var(--display); font-weight: 700; font-stretch: 118%; letter-spacing: -0.03em; line-height: 0.95; color: var(--cell); }
 .close__line { font-size: 1.2rem; margin-top: 22px; max-width: var(--measure); }
 .close__note { margin-top: 24px; max-width: var(--measure); }
@@ -242,10 +242,9 @@ html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-mot
 .fn a { color: var(--ink-2); text-decoration: none; font-weight: 600; }
 .fn a:hover { color: var(--cell); text-decoration: underline; }
 .band .fn a, .strip .fn a { color: rgba(255, 255, 255, 0.7); }
-.footnotes__title { margin-top: 40px; font-size: 0.95rem; font-weight: 700; font-stretch: 106%; color: var(--cell); }
-.footnotes { margin: 10px 0 0; padding-left: 1.4em; display: grid; gap: 8px; max-width: 78ch; font-size: 0.85rem; line-height: 1.5; color: var(--ink-2); }
-.footnotes li { padding-left: 4px; }
-.footnotes__cite { display: block; margin-top: 2px; color: var(--ink-3); }
-.footnotes__cite a { color: var(--cell); text-decoration-color: var(--busbar); }
-.footnotes__cite a + a::before { content: " · "; color: var(--ink-3); }
+.footnotes { margin: 56px auto 0; padding-top: 12px; border-top: 1px solid var(--busbar-2); padding-left: calc(var(--gutter) + 1.2em); display: grid; gap: 2px; font-size: 0.7rem; line-height: 1.4; color: var(--ink-3); max-width: var(--wrap); }
+.footnotes li { padding-left: 2px; }
+.footnotes a { color: var(--ink-2); text-decoration-color: var(--busbar-2); }
+.footnotes a:hover { color: var(--cell); }
+.footnotes li:target { color: var(--ink); }
 .footnotes li:target { color: var(--ink); }
