@@ -6,7 +6,7 @@
 .hero { position: relative; }
 .hero__pin { display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot" "diagram" "caption" "scroll"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
-.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(48vh * 4 / 3)); justify-self: center; }
+.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
 .hero__svg, .hero__slot canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity 400ms ease; }
 .hero__slot canvas { opacity: 0; }
 .hero__slot.has-3d canvas { opacity: 1; }
@@ -32,9 +32,9 @@
 }
 @media (min-width: 900px) and (min-height: 700px) {
   .hero { min-height: 280vh; }   /* almost two screens of scroll for the re-pairing to read */
-  .hero__pin { position: sticky; top: 0; min-height: 100vh; max-width: 1360px; grid-template-columns: 5fr 6fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
+  .hero__pin { position: sticky; top: 0; min-height: 100vh; max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
   .hero .display { font-size: clamp(2.4rem, 5vw, 5.8rem); }
-  .hero__slot { width: min(100%, calc(54vh * 4 / 3)); justify-self: start; align-self: center; }
+  .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
   .rp { width: min(100%, 1080px); max-height: 340px; }
   .hero__text { padding-right: 24px; }
   .hero__scroll { display: block; }
