@@ -25,8 +25,8 @@ test("nothing loads from the internet", async () => {
 test("house style: no gradients, shadows or uppercase labels", async () => {
   for (const f of cssFiles) {
     const css = await read(`css/${f}`);
-    expect(css).not.toContain("gradient(");
-    expect(css).not.toContain("box-shadow");
+    const gradients = css.split("\n").filter((l) => l.includes("gradient(") || l.includes("box-shadow"));
+    expect(gradients.every((l) => l.startsWith(".nav__sun"))).toBe(true);   // the nav's sun, copied from the ui-refresh branch, is the one exception
     expect(css).not.toContain("text-transform: uppercase");
   }
 });

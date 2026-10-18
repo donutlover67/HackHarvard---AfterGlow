@@ -51,14 +51,12 @@ window.SSMotion = (function () {
   }
   const rafThrottle = (fn) => { let waiting = false; return () => { if (waiting) return; waiting = true; requestAnimationFrame(() => { waiting = false; fn(); }); }; };
 
-  // the nav: its small sun fills as the page is scrolled; over the front page's hero it stays tucked away until the
-  // reader has scrolled a quarter of a screen (after the ui-refresh branch)
+  // the nav's small sun fills clockwise as the page is scrolled (after the ui-refresh branch)
   function navUpdate() {
-    const nav = document.querySelector(".nav");
-    if (!nav) return;
-    const sun = nav.querySelector(".nav__sun"), max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    if (sun) sun.style.setProperty("--p", clamp01(scrollY / max).toFixed(3));
-    nav.classList.toggle("is-tucked", !reduced() && document.body.dataset.page === "front" && scrollY < innerHeight * 0.25);
+    const sun = document.querySelector(".nav .nav__sun");
+    if (!sun) return;
+    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    sun.style.setProperty("--p", clamp01(scrollY / max).toFixed(3));
   }
   function init() {
     document.documentElement.classList.add(reduced() ? "reduced" : "has-motion");
@@ -335,7 +333,7 @@ window.SSMotion = (function () {
 
   function mount(view, page) {
     const cleanups = [];
-    navUpdate();   // the page changed: the tuck applies only over the front page's hero
+    navUpdate();   // the page changed: a new scroll height
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
     safe(() => countUps(view));

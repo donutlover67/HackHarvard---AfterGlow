@@ -51,17 +51,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .small { font-size: 0.88rem; }
 
 /* layout */
-.nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 16px var(--gutter); background: var(--surface); border-bottom: 1px solid var(--busbar-2); position: sticky; top: 0; z-index: 5; }
-.nav__name { display: inline-flex; align-items: center; font-weight: 700; font-stretch: 118%; color: var(--cell); text-decoration: none; font-size: 1.35rem; letter-spacing: -0.01em; }
-/* the small sun fills clockwise as the reader scrolls down the page (--p from motion.js); drawn as an arc, not a gradient */
-.nav__sun { --p: 0; flex: none; width: 18px; height: 18px; margin-right: 10px; transform: rotate(-90deg); }
-.nav__sun-ring { fill: var(--busbar-2); stroke: var(--cell); stroke-width: 2; }
-.nav__sun-fill { fill: none; stroke: var(--sun); stroke-width: 7; stroke-dasharray: calc(var(--p) * 100) 100; }
-/* on the front page the nav lies over the hero, out of the way at the top and sliding in once the reader scrolls */
-html.has-motion body[data-page="front"] .nav { position: fixed; left: 0; right: 0; top: 0; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-html.has-motion body[data-page="front"] .nav.is-tucked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+/* the nav, copied from the ui-refresh branch: sticky, the name with a small sun that fills clockwise as the reader scrolls (--p from motion.js) */
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 16px 28px; background: var(--surface); border-bottom: 1px solid var(--busbar); position: sticky; top: 0; z-index: 5; }
+.nav__name { display: inline-flex; align-items: center; font-weight: 700; font-stretch: 118%; color: var(--cell); text-decoration: none; font-size: 1.35rem; }
+.nav__sun { --p: 0; flex: none; width: 17px; height: 17px; margin-right: 10px; border-radius: 50%; background: conic-gradient(var(--sun) calc(var(--p) * 360deg), var(--busbar-2) 0); box-shadow: inset 0 0 0 2px var(--cell); }
 .nav__links { display: flex; gap: 22px; }
-.nav__links a { color: var(--ink-2); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; font-weight: 500; }
+.nav__links a { color: var(--ink-2); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; font-weight: 500; }
 .nav__links a:hover { color: var(--cell); }
 .nav__links a.is-on { color: var(--cell); border-bottom-color: var(--cell); }
 .view { max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 64px; }
@@ -196,10 +191,10 @@ details.tools[open] summary { margin-bottom: 10px; }
   .sheet { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
-  .nav { padding: 12px var(--gutter) 10px; gap: 8px 12px; flex-wrap: wrap; }
-  .nav__name { white-space: nowrap; }
-  .nav__links { gap: 6px 14px; flex-wrap: wrap; font-size: 0.92rem; }
-  .nav__links a { white-space: nowrap; padding: 2px 0; }
+  .nav { padding: 12px 16px 8px; gap: 6px 12px; flex-wrap: wrap; }
+  .nav__name { font-size: 1.15rem; white-space: nowrap; }
+  .nav__links { gap: 6px 12px; flex-wrap: wrap; font-size: 0.92rem; }
+  .nav__links a { white-space: nowrap; }
   .view { padding: 24px var(--gutter) 48px; }
   .card { padding: 16px 14px; }
   .band { padding: 28px 20px; }

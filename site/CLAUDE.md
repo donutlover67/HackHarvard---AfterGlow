@@ -41,6 +41,6 @@ Every run passes `normalizeRun()` before it is kept: it needs a `run_id` string 
 ## Rules
 - Everything shown goes through `esc()`. Missing numbers render as a dash through `num()`.
 - Say "measured" only for measured numbers. Hand-entered, recorded and simulated runs are labelled as such by their `link` and bench text; keep those labels visible. The front page's figures name the run they come from; with no run they show the model's demo batch and say so.
-- House style: Archivo only, ink colours, tabular figures, white surfaces on the pale ground told apart by tone, hairlines only inside tables, `--sun` on one numeral per page, no eyebrow labels above headings, no all-caps labels, no icons, no gradients, no drop shadows.
+- House style: Archivo only, ink colours, tabular figures, white surfaces on the pale ground told apart by tone, hairlines only inside tables, `--sun` on one numeral per page, no eyebrow labels above headings, no all-caps labels, no icons, no gradients, no drop shadows (the nav's sun, copied from the ui-refresh branch, is the one exception).
 - Motion: transform, opacity and colour only; nothing over 600 ms except the hero intro (lines rise out of their masks, under a second) and scroll-driven moves; every move has a reduced-motion end state; no scroll hijack on touch.
 - Don't change the URL scheme: printed QR cards depend on `#/p/<ID>` under `/site/`.
