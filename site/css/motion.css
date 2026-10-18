@@ -105,6 +105,8 @@ html.has-motion [data-reveal]:not(.is-revealed) .line__in { transform: translate
 html.has-motion [data-reveal].rise:not(.is-revealed) { opacity: 0; transform: translateY(14px); }
 .grow { transition: opacity 900ms var(--m-ease), transform 900ms var(--m-ease); }
 html.has-motion [data-reveal].grow:not(.is-revealed) { opacity: 0; transform: scale(0.97); }
+.fade { transition: opacity 900ms var(--m-ease); }   /* the hero's slot: its transform belongs to the portal, so it only fades in */
+html.has-motion [data-reveal].fade:not(.is-revealed) { opacity: 0; }
 
 /* route changes: the view slides along the nav axis, with the View Transitions API or with classes */
 #view { view-transition-name: view; }
@@ -126,6 +128,7 @@ html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
   .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
   .hero__panel { --tx: 12; --ty: -3; }
   [data-hero] { --k: 1; --w: 1; --g: 1; }
+  [data-portal] { --q: 0; }
   ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
 }
 html.reduced .m-part, html.reduced .line__in, html.reduced .rise, html.reduced .grow { transition: none; }

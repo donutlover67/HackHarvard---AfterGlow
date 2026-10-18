@@ -2,11 +2,18 @@
    screens the hero pins for one extra screen so the scroll can re-pair the four panels. No gradients, no
    shadows; the one strong colour is the gain numeral in the navy band. */
 
-/* hero: text first on small screens (the two ways in sit in the first screen), slab beside it on large ones */
+/* hero: a bright first screen (the drawn cell, the headline, the two ways in). On large screens it pins for most of a
+   screen while --q (motion.js) runs 0..1: the navy ground fades up, the headline fades out, the cell shrinks into a framed
+   box at the centre (its travel measured into --px, --py, --ps), two giant lines slide past behind it and the string
+   signs itself across the frame. Phones and reduced motion get the first screen only. */
 .hero { position: relative; }
-.hero__pin { display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot" "diagram" "caption" "scroll"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
+.hero__pin { position: relative; overflow: clip; }
+.hero__ground { position: absolute; inset: 0; background: var(--cell); opacity: var(--q, 0); pointer-events: none; z-index: 0; }
+.hero__stage { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
-.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
+.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; transform-origin: 0 0; transform: translate(calc(var(--q, 0) * var(--px, 0px)), calc(var(--q, 0) * var(--py, 0px))) scale(calc(1 - var(--q, 0) * (1 - var(--ps, 1)))); }
+.hero__slot::after { content: ""; position: absolute; inset: -5% -4%; border: 2px solid rgba(255, 255, 255, 0.55); opacity: var(--q, 0); pointer-events: none; }
+.hero__slot::before { content: ""; position: absolute; inset: -5% -4%; background: var(--cell); opacity: calc(var(--q, 0) * 0.42); pointer-events: none; z-index: 5; }   /* the drawing dims as it recedes */
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
    the panel leans with the pointer through a perspective transform that motion.js drives (--tx, --ty), its shadow slides (--sx, --sy) */
 .hero__sun { position: absolute; left: 0; top: -14%; width: 100%; height: 114%; display: block; overflow: visible; pointer-events: none; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
@@ -14,18 +21,29 @@
 .hero__sun .sun__beam { stroke-width: 2; stroke-dasharray: 5 11; opacity: 0.85; }
 .hero__panel { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; transform: perspective(1200px) rotateX(calc(var(--tx, 14) * 1deg)) rotateY(calc(var(--ty, 0) * 1deg)); transform-origin: 50% 55%; }
 .pnl__shadow { transform: translate(calc(var(--sx, 10) * 1px), calc(var(--sy, 12) * 1px)); }
-.hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; }
+.hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; opacity: clamp(0, calc(1 - var(--q, 0) * 2.4), 1); transform: translateY(calc(var(--q, 0) * -36px)); }
 .hero__text .lede { margin: 0; }
 .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.rp { grid-area: diagram; width: min(100%, 900px); height: auto; max-height: 270px; justify-self: center; }
+/* the two lines behind the frame: the first in amber, light and narrow; the second in paper, bold; they pass each other */
+.hero__marquee { position: absolute; inset: 0; z-index: 1; display: grid; align-content: center; gap: 0.1em; pointer-events: none; opacity: clamp(0, calc(var(--q, 0) * 1.8 - 0.3), 1); font-size: clamp(56px, 10.5vw, 190px); line-height: 0.95; letter-spacing: -0.03em; white-space: nowrap; }
+.hero__marquee-row { display: flex; gap: 0.6em; padding-left: 0.3em; font-weight: 700; color: rgba(255, 255, 255, 0.92); transform: translateX(calc(-8vw - var(--q, 0) * 16vw)); }
+.hero__marquee-row:first-child { color: var(--sun); font-weight: 500; font-stretch: 92%; transform: translateX(calc(-34vw + var(--q, 0) * 16vw)); }
+/* the signature: an amber string drawn across the frame as the box settles (motion.js runs its dash) */
+.hero__sign { position: absolute; z-index: 3; left: 50%; top: 50%; width: min(66vw, 1040px); height: auto; transform: translate(-50%, -52%); pointer-events: none; overflow: visible; display: none; }
+.hero__sign path { fill: none; stroke: var(--sun); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.hero__scroll { position: absolute; left: 0; right: 0; bottom: 18px; z-index: 2; text-align: center; display: none; color: rgba(255, 255, 255, 0.7); }
+/* the re-pairing, on the navy ground the portal leaves behind */
+.repair { background: var(--cell); color: #fff; padding-block: 24px 56px; }
+.repair .wrap { display: grid; justify-items: center; gap: 10px; }
+.rp { width: min(100%, 900px); height: auto; max-height: 270px; }
 .rp text { font-family: var(--font); }
 .rp-cell text { fill: #fff; font-weight: 600; font-size: 14px; }
-.rp-wire { fill: none; stroke: var(--cell); stroke-width: 2; }
-.rp-rail { fill: none; stroke: var(--busbar); stroke-width: 2; }
-.rp-num { font-size: 58px; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; fill: var(--cell); }
-.rp-label { font-size: 13px; fill: var(--ink-2); }
-.hero__caption { grid-area: caption; display: none; margin-top: -16px; }  /* the svg's own caption is too small on a phone */
-.hero__scroll { grid-area: scroll; text-align: center; display: none; }  /* the page no longer pins; kept for the markup */
+.rp-cell polygon:first-child { fill: #24356e; stroke: rgba(255, 255, 255, 0.28); stroke-width: 1.5; }
+.rp-wire { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 2; }
+.rp-rail { fill: none; stroke: rgba(255, 255, 255, 0.3); stroke-width: 2; }
+.rp-num { font-size: 58px; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; fill: var(--sun); }
+.rp-label { font-size: 13px; fill: rgba(255, 255, 255, 0.72); }
+.hero__caption { display: none; color: rgba(255, 255, 255, 0.72); }  /* the svg's own caption is too small on a phone */
 @media (max-width: 600px) {
   .rp-label { display: none; }
   .rp-num { font-size: 76px; }
@@ -33,14 +51,17 @@
   .hero__caption { display: block; }
 }
 @media (min-width: 900px) and (min-height: 700px) {
-  .hero__pin { max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
+  .hero { min-height: 185vh; }                                   /* most of a screen of scroll for the portal */
+  .hero__pin { position: sticky; top: 0; height: 100vh; }
+  .hero__stage { height: 100%; max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
   .hero .display { font-size: clamp(2.4rem, 5vw, 5.8rem); }
   .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
-  .rp { width: min(100%, 1080px); max-height: 340px; }
   .hero__text { padding-right: 24px; }
+  .hero__sign, .hero__scroll { display: block; }
+  .rp { width: min(100%, 1080px); max-height: 340px; }
 }
 @media (min-width: 1800px) {   /* 1920x1080: the two halves split evenly, the headline stays on two lines, the slab grows */
-  .hero__pin { max-width: 1720px; grid-template-columns: 1fr 1fr; }
+  .hero__stage { max-width: 1720px; grid-template-columns: 1fr 1fr; }
   .hero .display { font-size: 5rem; }
 }
 
@@ -142,7 +163,7 @@
 @media (max-width: 480px) {
   .ppass-row { grid-template-columns: 1fr 1fr; gap: 10px; }
   .ppass { padding: 12px; }
-  .hero__pin { gap: 22px; padding-top: 28px; }
+  .hero__stage { gap: 22px; padding-top: 28px; }
 }
 
 
@@ -158,11 +179,12 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .strip .wiring__label { color: var(--ink-2); }
 .front-band { padding-top: calc(var(--section) * 0.5); }
 .hero__pin { z-index: 1; }
+.repair { position: relative; z-index: 1; }
 
 @media (max-width: 760px) { .hero__sun { display: none; } }   /* phones: the panel alone */
 
 /* the ticker: a slow band of sourced facts under the hero, paused under the pointer */
-.ticker { overflow: hidden; background: var(--cell); color: #fff; }
+.ticker { overflow: hidden; background: var(--cell); color: #fff; border-top: 1px solid rgba(255, 255, 255, 0.1); }
 .ticker__track { display: flex; width: max-content; animation: marquee 56s linear infinite; }
 .ticker:hover .ticker__track { animation-play-state: paused; }
 .ticker__item { display: inline-flex; align-items: center; white-space: nowrap; padding: 16px 0; font-size: 1.02rem; font-weight: 600; font-stretch: 105%; }

@@ -101,18 +101,38 @@ window.SSFront = (function () {
     : `${what} ${fromRun(fig, ctx)}.`;
 
   // ---------- sections ----------
-  function hero(ctx, gain) {
-    return `<section class="hero" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
+  // The hero opens bright: the drawn cell and the headline on the pale ground. On large screens it pins for most of a
+  // screen while the reader scrolls (--q, from motion.js): the ground turns navy, the headline fades, the cell shrinks
+  // into a framed box at the centre, two giant lines slide past behind it and an amber string signs itself across the
+  // frame. Then the page lets go and the re-pairing follows on the navy ground.
+  const SIGNATURE = "M40 390 C 120 210, 230 150, 310 250 S 340 450, 250 430 C 150 405, 330 170, 530 130 C 720 90, 780 250, 650 330 S 420 390, 560 300 C 700 215, 870 165, 965 105";
+  function hero(ctx) {
+    return `<section class="hero" data-portal data-in>
       <div class="hero__pin">
-        <div class="hero__slot grow" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
-        <div class="hero__text">
-          <h1 class="display" data-reveal><span class="line"><span class="line__in">Used panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
-          <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
-          <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
+        <div class="hero__ground" aria-hidden="true"></div>
+        <div class="hero__marquee" aria-hidden="true">
+          <div class="hero__marquee-row"><span>Used panels still work</span><span>Used panels still work</span></div>
+          <div class="hero__marquee-row"><span>Second String</span><span>Second String</span></div>
         </div>
+        <div class="hero__stage">
+          <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
+          <div class="hero__text">
+            <h1 class="display" data-reveal><span class="line"><span class="line__in">Used panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
+            <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
+            <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
+          </div>
+        </div>
+        <svg class="hero__sign" viewBox="0 0 1000 560" aria-hidden="true" focusable="false"><path data-sign d="${SIGNATURE}"/></svg>
+        <p class="hero__scroll label">scroll</p>
+      </div>
+    </section>`;
+  }
+  // the four panels re-pairing as the reader scrolls on, on the navy ground the portal left behind
+  function repair(ctx, gain) {
+    return `<section class="repair" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
+      <div class="wrap">
         ${repairingSvg(gainText(gain))}
         <p class="hero__caption label">more power than wiring A, once the strong pair shares a string</p>
-        <p class="hero__scroll label">scroll</p>
       </div>
     </section>`;
   }
@@ -211,7 +231,7 @@ window.SSFront = (function () {
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    return hero(ctx, g) + ticker() + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
+    return hero(ctx) + repair(ctx, g) + ticker() + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {

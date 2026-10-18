@@ -296,6 +296,52 @@ window.SSMotion = (function () {
     }, 160));
   }
 
+  // ---------- the portal: the hero pins while the cell shrinks into a framed box and the ground turns navy ----------
+  // --q runs 0..1 over the hero's extra screen of scroll (eased). The slot's travel to the centred box is measured
+  // here (--px, --py, --ps on the slot); the signature's dash draws over the second two thirds of it.
+  function portal(view) {
+    const hero = view.querySelector("[data-portal]");
+    const none = { destroy() {}, redraw() {} };
+    if (!hero) return none;
+    const pin = hero.querySelector(".hero__pin"), slot = hero.querySelector(".hero__slot"), sign = hero.querySelector("[data-sign]"), scrollWord = hero.querySelector(".hero__scroll");
+    const setQ = (q) => hero.style.setProperty("--q", q.toFixed(4));
+    if (reduced() || !pin || !slot) { setQ(0); return none; }
+    const pinned = () => getComputedStyle(pin).position === "sticky";
+    let signLen = 0;
+    if (sign) { try { signLen = sign.getTotalLength(); } catch (_) { signLen = 0; } if (signLen) { sign.style.strokeDasharray = `${signLen}`; sign.style.strokeDashoffset = `${signLen}`; } }
+    let raw = -1;
+    function measure() {
+      // the slot's resting box (offsets summed up to the pin, past the stage) against the box it shrinks into:
+      // centred, a third of the pin's width at most 520px, 4:3
+      const pw = pin.clientWidth, ph = pin.clientHeight, w0 = slot.offsetWidth;
+      if (!pw || !w0) return;
+      let x0 = 0, y0 = 0;
+      for (let el = slot; el && el !== pin; el = el.offsetParent) { x0 += el.offsetLeft; y0 += el.offsetTop; }
+      const w1 = Math.min(pw * 0.34, 520), h1 = w1 * 0.75;
+      slot.style.setProperty("--ps", (w1 / w0).toFixed(4));
+      slot.style.setProperty("--px", `${((pw - w1) / 2 - x0).toFixed(1)}px`);
+      slot.style.setProperty("--py", `${((ph - h1) / 2 - y0).toFixed(1)}px`);
+    }
+    function apply(q) {
+      raw = q;
+      setQ(smooth(q));
+      if (sign && signLen) sign.style.strokeDashoffset = `${(signLen * (1 - clamp01((q - 0.3) / 0.65))).toFixed(1)}`;
+      if (scrollWord) scrollWord.classList.toggle("is-gone", q > 0.04);
+    }
+    function update() {
+      if (!pinned()) { if (raw !== 0) apply(0); return; }
+      const q = progressOf(hero.getBoundingClientRect(), innerHeight);
+      if (q !== raw) apply(q);
+    }
+    const onScroll = rafThrottle(update), onResize = rafThrottle(() => { measure(); update(); });
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onResize);
+    addEventListener("pageshow", onScroll);
+    measure(); update();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); update(); });
+    return { redraw() { measure(); update(); }, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); removeEventListener("pageshow", onScroll); } };
+  }
+
   // ---------- the drawn cell follows the pointer ----------
   // It leans toward the pointer (a CSS perspective transform on the svg), its shadow slides away from the sun, and the
   // sunlit corner of its face reaches further the more the face turns up and left, toward the sun. Left alone it sways
@@ -349,6 +395,7 @@ window.SSMotion = (function () {
     if (page === "front") {
       const rp = safe(() => repairing(view));
       rpCtl = rp;
+      safe(() => portal(view));
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
       safe(() => revealHero(view));
