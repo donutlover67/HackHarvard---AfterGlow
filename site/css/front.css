@@ -25,7 +25,7 @@
 .rp-num { font-size: 58px; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; fill: var(--cell); }
 .rp-label { font-size: 13px; fill: var(--ink-2); }
 .hero__caption { grid-area: caption; display: none; margin-top: -16px; }  /* the svg's own caption is too small on a phone */
-.hero__scroll { grid-area: scroll; text-align: center; display: none; }  /* only where the hero pins */
+.hero__scroll { grid-area: scroll; text-align: center; display: none; }  /* the page no longer pins; kept for the markup */
 @media (max-width: 600px) {
   .rp-label { display: none; }
   .rp-num { font-size: 76px; }
@@ -33,13 +33,11 @@
   .hero__caption { display: block; }
 }
 @media (min-width: 900px) and (min-height: 700px) {
-  .hero { min-height: 280vh; }   /* almost two screens of scroll for the re-pairing to read */
-  .hero__pin { position: sticky; top: 0; min-height: 100vh; max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
+  .hero__pin { max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
   .hero .display { font-size: clamp(2.4rem, 5vw, 5.8rem); }
   .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
   .rp { width: min(100%, 1080px); max-height: 340px; }
   .hero__text { padding-right: 24px; }
-  .hero__scroll { display: block; }
 }
 @media (min-width: 1800px) {   /* 1920x1080: the two halves split evenly, the headline stays on two lines, the slab grows */
   .hero__pin { max-width: 1720px; grid-template-columns: 1fr 1fr; }

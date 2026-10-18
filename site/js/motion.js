@@ -116,7 +116,6 @@ window.SSMotion = (function () {
     const setVars = (k, w, g) => { hero.style.setProperty("--k", k.toFixed(4)); hero.style.setProperty("--w", w.toFixed(4)); hero.style.setProperty("--g", g.toFixed(4)); };
     if (reduced()) { setVars(1, 1, 1); if (numEl) numEl.textContent = `+${Math.round(gain())}%`; return none; }
     let raw = -1, hook = null;
-    const pinned = () => getComputedStyle(hero.querySelector(".hero__pin") || hero).position === "sticky";
     const apply = (p) => {
       raw = p;
       // a beat on wiring A first, then the swap through the middle, then the wires redraw and the gain counts, then a hold
@@ -129,9 +128,13 @@ window.SSMotion = (function () {
       if (hook) hook(p);
     };
     function update() {
-      const vh = innerHeight;
-      // pinned: progress through the hero's extra screen; otherwise: how far the diagram has risen into view
-      const p = pinned() ? progressOf(hero.getBoundingClientRect(), vh) : clamp01(1 - (diagram.getBoundingClientRect().top - vh * 0.08) / (vh * 0.85));
+      // The page keeps scrolling; the swap plays as the diagram rises. It starts as soon as the reader scrolls when
+      // the diagram is already in the first screen (laptops), or as the diagram comes in from below (phones), and
+      // it is done by the time the diagram's upper part reaches the top of the viewport.
+      const vh = innerHeight, r = diagram.getBoundingClientRect(), docTop = r.top + scrollY;
+      const start = Math.max(0, docTop - vh * 0.9);
+      const end = Math.max(start + vh * 0.6, Math.min(start + vh, docTop + r.height * 0.35));   // about a screen of scroll; the cells land by 60% of it
+      const p = clamp01((scrollY - start) / (end - start));
       if (p !== raw) apply(p);
     }
     const onScroll = rafThrottle(update);
