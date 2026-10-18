@@ -146,8 +146,22 @@
 }
 
 
-/* space-inspired scrolling graphics (inspired by HackHarvard site) — additive only, never overrides existing drawings */
-.space-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+/* night-to-day sky driven by scroll progress (--day 0..1) */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    hsl(230, 45%, calc(8% + var(--day, 0) * 78%)) 0%,
+    hsl(210, 40%, calc(12% + var(--day, 0) * 72%)) 40%,
+    hsl(200, 30%, calc(18% + var(--day, 0) * 68%)) 100%);
+  transition: background 0.1s linear;
+}
+body[data-page="front"] { background: transparent; }
+.why { padding-block: var(--section); background: transparent; }
+.why .lede { font-size: 1.15rem; max-width: 62ch; }
+.space-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; opacity: calc(1 - var(--day, 0)); transition: opacity 0.2s linear; }
 .space-layer__stars, .space-layer__meteors { position: absolute; inset: 0; }
 .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: 0.4; animation: twinkle 3s ease-in-out infinite; }
 @keyframes twinkle { 50% { opacity: 0.9; } }

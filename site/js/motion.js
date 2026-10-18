@@ -59,8 +59,11 @@ window.SSMotion = (function () {
     const nav = $(".nav");
     if (!nav) return;
     const y = scrollY, max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    const sun = $(".nav__sun");
-    if (sun) sun.style.setProperty("--p", clamp01(y / max).toFixed(3));
+    const progress = clamp01(y / max).toFixed(3);
+    if (sun) sun.style.setProperty("--p", progress);
+    document.documentElement.style.setProperty("--day", progress);
+    const sky = $(".sky");
+    if (sky) sky.style.setProperty("--day", progress);
     nav.classList.toggle("is-scrolled", y > 8);
     // never tuck the header — keep it visible while scrolling
     nav.classList.remove("is-tucked");
