@@ -73,7 +73,6 @@ html.has-motion [data-in]:not(.is-in) .m-part { opacity: 0; transform: translate
 .rp-cell[data-cell="2"] { transform: translate(calc(var(--k, 0) * -140px), calc(var(--k, 0) * 90px)); }
 .rp-cell[data-cell="3"] { transform: translate(calc(var(--k, 0) * 140px), calc(var(--k, 0) * -90px)); }
 .rp-wire { stroke-dasharray: 320px; stroke-dashoffset: calc(320px * (1 - var(--w, 1))); }
-.rp-glow { opacity: calc(var(--g, 0) * 0.9); }
 .rp-num, .rp-label { opacity: calc(0.3 + 0.7 * var(--g, 1)); }
 .hero__scroll { transition: opacity var(--m-fast) ease; }
 .hero__scroll.is-gone { opacity: 0; }

@@ -20,7 +20,6 @@
 .rp-cell text { fill: #fff; font-weight: 600; font-size: 14px; }
 .rp-wire { fill: none; stroke: var(--cell); stroke-width: 2; }
 .rp-rail { fill: none; stroke: var(--busbar); stroke-width: 2; }
-.rp-glow { fill: var(--surface); opacity: 0; }
 .rp-num { font-size: 58px; font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; fill: var(--cell); }
 .rp-label { font-size: 13px; fill: var(--ink-2); }
 .hero__caption { grid-area: caption; display: none; margin-top: -16px; }  /* the svg's own caption is too small on a phone */
@@ -33,8 +32,10 @@
 }
 @media (min-width: 900px) and (min-height: 700px) {
   .hero { min-height: 280vh; }   /* almost two screens of scroll for the re-pairing to read */
-  .hero__pin { position: sticky; top: 0; min-height: 100vh; grid-template-columns: 5fr 6fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 20px 56px; align-content: center; padding: 48px var(--gutter) 24px; }
-  .hero__slot { width: min(100%, calc(44vh * 4 / 3)); justify-self: start; align-self: center; }
+  .hero__pin { position: sticky; top: 0; min-height: 100vh; max-width: 1360px; grid-template-columns: 5fr 6fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
+  .hero .display { font-size: clamp(2.4rem, 5vw, 5.8rem); }
+  .hero__slot { width: min(100%, calc(54vh * 4 / 3)); justify-self: start; align-self: center; }
+  .rp { width: min(100%, 1080px); max-height: 340px; }
   .hero__text { padding-right: 24px; }
   .hero__scroll { display: block; }
 }
@@ -88,6 +89,10 @@
   /* only while motion.js drives it; it adds .is-row (the swipe row) when it cannot */
   html.has-motion .strip:not(.is-row) .strip__pin { position: sticky; top: 0; }
   html.has-motion .strip:not(.is-row) .strip__track { overflow: visible; scroll-snap-type: none; padding-inline: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter))); will-change: transform; }
+  /* when the scroll drives it, each wiring is most of a screen wide, so the strip travels well over a screen sideways */
+  html.has-motion .strip:not(.is-row) .wiring { flex-basis: min(72vw, 920px); padding: 32px 36px 36px; }
+  html.has-motion .strip:not(.is-row) .wiring__w { font-size: clamp(2.1rem, 3.2vw, 3.4rem); }
+  html.has-motion .strip:not(.is-row) .wiring__svg { max-width: 560px; }
 }
 
 /* the gain: the page's one strong colour */

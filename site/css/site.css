@@ -31,7 +31,7 @@
 @media (max-width: 480px) { :root { --gutter: 16px; } }
 
 * { box-sizing: border-box; }
-html { font-size: var(--body); -webkit-text-size-adjust: 100%; }
+html { font-size: clamp(var(--body), 0.95vw, 19px); -webkit-text-size-adjust: 100%; }   /* a little larger on big screens */
 body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); font-size: 1rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
 h1, h2, h3, p, dl, dd, dt, ul, ol, figure { margin: 0; }
 a { color: var(--cell); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.14em; text-decoration-color: var(--busbar); }

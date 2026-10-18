@@ -41,7 +41,6 @@ window.SSFront = (function () {
     const cells = [1, 2, 3, 4].map((n) => `<g class="rp-cell${DEMO_STRONG.includes(n) ? " is-strong" : " is-weak"}" data-cell="${n}">${miniCell(slot[at[n][0]], rowY[at[n][1]], W, H, n, DEMO_STRONG.includes(n))}</g>`).join("");
     const wires = [1, 2].map((r) => `<path class="rp-wire" data-row="${r}" d="M30,${rowY[r] + H / 2} H350"/>`).join("");
     return `<svg class="rp" viewBox="0 0 640 200" role="img" aria-label="Four panels re-paired from wiring A into wiring B, the matched one">
-      <rect class="rp-glow" x="58" y="8" width="264" height="94" rx="4"/>
       <path class="rp-rail" d="M30,55 V145 M350,55 V145"/>
       ${wires}${cells}
       <text class="rp-num" x="392" y="104" data-rp-num>${gainText}</text>
