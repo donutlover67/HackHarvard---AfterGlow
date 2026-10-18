@@ -27,7 +27,7 @@ window.SSFront = (function () {
     const rays = Array.from({ length: 11 }, (_, i) => {
       const a = (i / 11) * Math.PI * 2 - 0.4, len = 7 + ((i * 7) % 5), r0 = r + 7 + ((i * 3) % 3);   // uneven, as if drawn by hand
       const p = (rr) => `${(cx + Math.cos(a) * rr).toFixed(1)} ${(cy + Math.sin(a) * rr).toFixed(1)}`;
-      return `<path d="M${p(r0)} L${p(r0 + len)}"/>`;
+      return `<path d="M${p(r0)} L${p(r0 + len)}" pathLength="1" style="--i:${i}"/>`;
     }).join("");
     // three beams fan out from the disc's edge and run down onto the face (sun frame = panel frame shifted down by 42)
     const beams = [[130, 172], [205, 156], [285, 146]].map(([ex, ey], i) => {
@@ -224,11 +224,16 @@ window.SSFront = (function () {
   const doodle = (k) => DOODLES[k] || "";
   // The first screen: the drawn cell under its sun and the headline, on the pale ground, with nothing pinned.
   function hero() {
+    // nine columns rise from the bottom of the screen at their own speeds, cover it, then clear upward (the intro)
+    const EASES = ["cubic-bezier(0.7, 0, 0.2, 1)", "cubic-bezier(0.2, 0.8, 0.3, 1)", "cubic-bezier(0.9, 0.05, 0.6, 1)", "cubic-bezier(0.4, 0, 0.1, 1)", "cubic-bezier(0.6, -0.1, 0.3, 1.05)", "cubic-bezier(0.3, 0.6, 0.2, 1)", "cubic-bezier(0.8, 0, 0.4, 1)", "cubic-bezier(0.2, 0.9, 0.5, 1)", "cubic-bezier(0.5, 0.1, 0.1, 1)"];
+    const DURS = [820, 640, 980, 720, 900, 600, 860, 700, 760], DELAYS = [0, 140, 60, 220, 30, 180, 100, 250, 120];
+    const curtain = `<div class="curtain" aria-hidden="true">${EASES.map((e, i) => `<span class="curtain__bar" style="--i:${i};--ease:${e};--dur:${DURS[i]}ms;--delay:${DELAYS[i]}ms"></span>`).join("")}</div>`;
     return `<section class="hero" data-in>
+      ${curtain}
       <div class="hero__stage">
         <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
         <div class="hero__text">
-          <h1 class="display" data-reveal><span class="hline"><span class="hline__in">Used panels</span></span> <span class="hline"><span class="hline__in" style="--d:120ms">still <span class="hollow">work.</span></span></span></h1>
+          <h1 class="display" data-reveal><span class="wipe"><span class="wipe__in">Used panels</span></span> <span class="wipe wipe--rtl" style="--d:140ms"><span class="wipe__in">still <span class="hollow">work.</span></span></span></h1>
           <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
           <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
         </div>

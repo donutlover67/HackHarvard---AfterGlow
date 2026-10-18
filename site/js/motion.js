@@ -243,16 +243,24 @@ window.SSMotion = (function () {
   // ---------- reveals: headline lines rise out of their masks; the lede, the buttons and the slab follow ----------
   // The hidden state lives in CSS under html.has-motion only, so a failed script never hides a word.
   const revealNow = (el) => { if (el) el.classList.add("is-revealed"); };
-  function revealHero(view) {
-    const els = [...view.querySelectorAll("[data-hero] [data-reveal]")];
-    if (!els.length) return () => {};
-    if (reduced()) { els.forEach(revealNow); return () => {}; }
-    // one frame in the hidden state so the transition has somewhere to start from; a timer in case no frame comes
-    let done = false;
-    const go = () => { if (done) return; done = true; els.forEach(revealNow); };
-    const raf = requestAnimationFrame(() => requestAnimationFrame(go));
-    const timer = setTimeout(go, 120);
-    return () => { cancelAnimationFrame(raf); clearTimeout(timer); go(); };
+  // The intro, once per page load: the first screen shows only the sun and the panel (the rays draw outward, the beams
+  // reach the panel), then nine navy columns rise from the bottom at their own speeds and cover the screen, then clear
+  // upward onto the hero with its text, whose lines wipe in. Later visits in the same tab, and reduced motion, skip it.
+  const INTRO = { cover: 1700, clear: 3000, done: 4300 };
+  function intro(view) {
+    const hero = view.querySelector(".hero"), curtain = view.querySelector(".curtain");
+    const texts = [...view.querySelectorAll(".hero__text [data-reveal]")], slot = view.querySelector(".hero__slot");
+    const show = () => { texts.forEach(revealNow); if (slot) revealNow(slot); };
+    let played = false;
+    try { played = sessionStorage.getItem("ss.intro") === "1"; } catch (_) {}
+    if (!hero || !curtain || reduced() || played) { if (curtain) curtain.remove(); if (slot && !reduced()) requestAnimationFrame(() => requestAnimationFrame(show)); else show(); return () => {}; }
+    try { sessionStorage.setItem("ss.intro", "1"); } catch (_) {}
+    document.documentElement.classList.add("is-intro");
+    if (slot) requestAnimationFrame(() => requestAnimationFrame(() => revealNow(slot)));
+    const t1 = setTimeout(() => curtain.classList.add("is-up"), INTRO.cover);
+    const t2 = setTimeout(() => { curtain.classList.add("is-off"); texts.forEach(revealNow); }, INTRO.clear);
+    const t3 = setTimeout(() => { curtain.remove(); document.documentElement.classList.remove("is-intro"); }, INTRO.done);
+    return () => { [t1, t2, t3].forEach(clearTimeout); curtain.remove(); document.documentElement.classList.remove("is-intro"); show(); };
   }
   const revealedKeys = new Set(); // once per page load, per section: a redrawn section shows its title at once
   function watchReveal(view) {
@@ -413,7 +421,7 @@ window.SSMotion = (function () {
       collageCtl = safe(() => collage(view));
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
-      safe(() => revealHero(view));
+      safe(() => intro(view));
       safe(() => watchReveal(view));
       safe(() => heroPanel(view.querySelector("[data-hero-slot]")));
     }

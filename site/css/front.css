@@ -9,8 +9,16 @@
 /* the headline in a high-contrast serif (the Mac's Bodoni or Didot, else Georgia): each line sits in its own mask and
    slides up out of nothing (motion.css) */
 .hero .display { font-family: "Bodoni 72", Didot, "Playfair Display", Georgia, "Times New Roman", serif; font-weight: 600; font-stretch: normal; letter-spacing: -0.02em; line-height: 0.98; }
-.hline { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }   /* room for descenders inside the mask */
-.hline__in { display: inline-block; }
+.hero .display .wipe { display: block; width: fit-content; }   /* one line per block, the block only as wide as its words */
+/* the intro's curtain: nine columns fixed to the screen, each rising from the bottom on its own timing (--delay, --dur,
+   --ease), covering the screen, then clearing upward; motion.js adds .is-up, then .is-off, then removes it */
+.curtain { position: fixed; inset: 0; z-index: 6; pointer-events: none; display: none; }
+html.is-intro .curtain { display: block; }
+.curtain__bar { position: absolute; top: 0; bottom: 0; left: calc(var(--i) * 100% / 9); width: calc(100% / 9 + 1px); background: var(--cell); transform: translateY(101%); }
+.curtain.is-up .curtain__bar { transition: transform var(--dur, 800ms) var(--ease, ease); transition-delay: var(--delay, 0ms); transform: translateY(0); }
+.curtain.is-off .curtain__bar { transition: transform calc(var(--dur, 800ms) * 0.9) var(--ease, ease); transition-delay: calc(var(--delay, 0ms) * 0.8); transform: translateY(-101%); }
+/* while the intro plays the text is out of sight; the rays draw outward and the beams reach the panel */
+html.is-intro .hero__text { visibility: hidden; }
 .hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
    the panel leans with the pointer through a perspective transform that motion.js drives (--tx, --ty), its shadow slides (--sx, --sy) */
