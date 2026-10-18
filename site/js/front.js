@@ -343,19 +343,28 @@ window.SSFront = (function () {
       <div class="wrap"><div class="teaser__box"><p class="teaser__text">Have passports? The Array Builder groups them into strings so no strong panel is held back.</p><a class="btn" href="#/build">Try the Array Builder</a></div></div></section>`;
   // a numbered footnote marker, linking to the notes at the foot of the page
   const fn = (n) => `<sup class="fn"><a href="#fn-${n}" aria-label="Footnote ${n}">${n}</a></sup>`;
+  // the notes: what each number rests on, with a formatted citation and a link where the source has a stable address
   const FOOTNOTES = [
-    "Degradation: NREL's fleet performance study puts the median loss at 0.75% of output a year, the published literature's median at 0.5%; at those rates a panel still makes 80–88% of its rating after 25 years.",
-    "Panels retired early, for upgrades or damage, often still produce 70–95% of their rating (NREL).",
-    "NREL's baseline scenario for US modules, 2020–2050: about 83% landfilled, 9.5% recycled, 1.2% reused.",
-    "Lab testing (a flash test plus electroluminescence imaging) costs about €16–31 per used module against about €50 for a new one (IEA PVPS Task 13, 2026; German test labs' price lists), shown here in dollars at about 1.08 $/€.",
-    "The gain is a figure from our single-diode panel model for the demo batch, two of four panels behind 35% film; bench runs replace it as they are published, and measured numbers are labelled as such.",
+    { note: "80–88% of rated output after 25 years, from a median loss of 0.5–0.75% a year.", cites: [
+      { text: "Jordan, D. C., & Kurtz, S. R. (2013). Photovoltaic degradation rates: an analytical review. <i>Progress in Photovoltaics</i>, 21(1), 12–29.", url: "https://doi.org/10.1002/pip.1182" },
+      { text: "Jordan, D. C., et al. (2022). Photovoltaic fleet degradation insights. <i>Progress in Photovoltaics</i>, 30(10), 1166–1175.", url: "https://doi.org/10.1002/pip.3566" } ] },
+    { note: "Panels retired early, for upgrades or damage, often still produce 70–95% of their rating.", cites: [
+      { text: "National Renewable Energy Laboratory (NREL), photovoltaic end-of-life and reuse research.", url: "https://www.nrel.gov/pv/" } ] },
+    { note: "About 83% of retired US modules landfilled, 9.5% recycled, 1.2% reused (baseline scenario, 2020–2050).", cites: [
+      { text: "Walzberg, J., Carpenter, A., & Heath, G. A. (2021). Role of the social factors in success of solar photovoltaic reuse and recycle programmes. <i>Nature Energy</i>, 6, 913–924.", url: "https://doi.org/10.1038/s41560-021-00888-5" } ] },
+    { note: "A lab test of a used module (flash test plus electroluminescence imaging) costs about €16–31, against about €50 for a new one; shown in dollars at about 1.08 $/€.", cites: [
+      { text: "IEA PVPS Task 13, Performance, Operation and Reliability of Photovoltaic Systems (2026).", url: "https://iea-pvps.org/research-tasks/performance-operation-and-reliability-of-photovoltaic-systems/" },
+      { text: "German test laboratories' published price lists.", url: "" } ] },
+    { note: "The gain is a figure from our single-diode panel model for the demo batch, two of four panels behind 35% film; bench runs replace it as they are published, and measured numbers are labelled as such.", cites: [
+      { text: "Second String, panel model and bench method.", url: "https://github.com/mscl741/HackHarvard" } ] },
   ];
-  const close = () => `<section class="close" data-in>${landscape()}<div class="wrap">
+  const cite = (c) => c.url ? `<a href="${c.url}" rel="noopener">${c.text}</a>` : c.text;
+  const close = () => `<section class="close" data-in><div class="wrap">
       <p class="close__name">Second String</p>
       <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>
       <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled.</p>
       <h2 class="footnotes__title">Notes and sources</h2>
-      <ol class="footnotes">${FOOTNOTES.map((t, i) => `<li id="fn-${i + 1}">${t}</li>`).join("")}</ol>
+      <ol class="footnotes">${FOOTNOTES.map((f, i) => `<li id="fn-${i + 1}">${f.note} <span class="footnotes__cite">${f.cites.map(cite).join(" ")}</span></li>`).join("")}</ol>
     </div></section>`;
 
   // ---------- the page ----------

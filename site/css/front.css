@@ -139,7 +139,7 @@
 .teaser__text { font-size: 1.15rem; max-width: 46ch; }
 
 /* close */
-.close { background: var(--surface); padding: var(--section) 0 230px; }   /* room under the notes for the hills */
+.close { background: var(--surface); padding: var(--section) 0 88px; }
 .close__name { font-size: var(--display); font-weight: 700; font-stretch: 118%; letter-spacing: -0.03em; line-height: 0.95; color: var(--cell); }
 .close__line { font-size: 1.2rem; margin-top: 22px; max-width: var(--measure); }
 .close__note { margin-top: 24px; max-width: var(--measure); }
@@ -234,8 +234,7 @@ html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-mot
 .land__grass { stroke-width: 1.5; }
 .land__trunk { stroke-width: 2.4; }
 .land__crown { stroke-width: 1.4; fill: #b9d4aa; fill-opacity: 0.6; }
-.close { position: relative; overflow: clip; }
-.close .landscape { height: 210px; }
+.close { position: relative; }
 .close .wrap { position: relative; z-index: 1; }
 
 /* footnotes: small numbered markers after the statistics, and the notes themselves at the foot of the page */
@@ -246,4 +245,7 @@ html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-mot
 .footnotes__title { margin-top: 40px; font-size: 0.95rem; font-weight: 700; font-stretch: 106%; color: var(--cell); }
 .footnotes { margin: 10px 0 0; padding-left: 1.4em; display: grid; gap: 8px; max-width: 78ch; font-size: 0.85rem; line-height: 1.5; color: var(--ink-2); }
 .footnotes li { padding-left: 4px; }
+.footnotes__cite { display: block; margin-top: 2px; color: var(--ink-3); }
+.footnotes__cite a { color: var(--cell); text-decoration-color: var(--busbar); }
+.footnotes__cite a + a::before { content: " · "; color: var(--ink-3); }
 .footnotes li:target { color: var(--ink); }

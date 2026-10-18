@@ -87,6 +87,7 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect((html.match(/class="wipe__in"/g) || []).length).toBe(2);     // the headline's two lines, wiped in by blocks
   expect(html).not.toContain("curtain");
   expect((html.match(/<li id="fn-\d">/g) || []).length).toBe(5);             // the notes and sources at the foot of the page
+  expect((html.match(/href="https:\/\/doi\.org\//g) || []).length).toBe(3);   // the journal sources link by DOI
   expect((html.match(/class="fn"/g) || []).length).toBeGreaterThanOrEqual(3);   // markers after the three numerals at least
   expect(html).toContain('href="#fn-4"');
   expect(html.indexOf('class="hero__slot')).toBeLessThan(html.indexOf('class="hero__text"'));   // the cell above the text
@@ -103,8 +104,8 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
   expect(html).toContain('class="hero__sun"');                          // the beams onto the panel
   expect(html).not.toContain("skysun");
-  expect((html.match(/class="land__hatch"/g) || []).length).toBe(6);   // three hills in each of two landscapes, hatched
-  expect((html.match(/class="landscape"/g) || []).length).toBe(2);     // hills under the paper block and the close
+  expect((html.match(/class="land__hatch"/g) || []).length).toBe(3);   // three hills, hatched
+  expect((html.match(/class="landscape"/g) || []).length).toBe(1);     // hills under the paper block only
   expect((html.match(/class="sun__beam"/g) || []).length).toBe(3);   // three beams of light onto the panel
   expect(html.indexOf('class="hero__sun"')).toBeLessThan(html.indexOf('class="hero__panel"'));   // drawn first, so the panel paints over the beams
   expect(html).toContain('data-lit-poly');                              // the sunlit corner motion.js resizes
