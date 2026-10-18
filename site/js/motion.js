@@ -245,16 +245,16 @@ window.SSMotion = (function () {
   const revealNow = (el) => { if (el) el.classList.add("is-revealed"); };
   // The intro, once per page load: the first screen shows only the sun and the panel (the rays draw outward, the beams
   // reach the panel), then nine navy columns rise from the bottom at their own speeds and cover the screen, then clear
-  // upward onto the hero with its text, whose lines wipe in. Later visits in the same tab, and reduced motion, skip it.
+  // upward onto the hero with its text, whose lines wipe in. It plays on every page load; coming back to the front
+  // page within the app, and reduced motion, skip it.
   const INTRO = { cover: 1700, clear: 3000, done: 4300 };
+  let introPlayed = false;
   function intro(view) {
     const hero = view.querySelector(".hero"), curtain = view.querySelector(".curtain");
     const texts = [...view.querySelectorAll(".hero__text [data-reveal]")], slot = view.querySelector(".hero__slot");
     const show = () => { texts.forEach(revealNow); if (slot) revealNow(slot); };
-    let played = false;
-    try { played = sessionStorage.getItem("ss.intro") === "1"; } catch (_) {}
-    if (!hero || !curtain || reduced() || played) { if (curtain) curtain.remove(); if (slot && !reduced()) requestAnimationFrame(() => requestAnimationFrame(show)); else show(); return () => {}; }
-    try { sessionStorage.setItem("ss.intro", "1"); } catch (_) {}
+    if (!hero || !curtain || reduced() || introPlayed) { if (curtain) curtain.remove(); if (slot && !reduced()) requestAnimationFrame(() => requestAnimationFrame(show)); else show(); return () => {}; }
+    introPlayed = true;
     document.documentElement.classList.add("is-intro");
     if (slot) requestAnimationFrame(() => requestAnimationFrame(() => revealNow(slot)));
     const t1 = setTimeout(() => curtain.classList.add("is-up"), INTRO.cover);
