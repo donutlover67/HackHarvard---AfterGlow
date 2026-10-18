@@ -143,7 +143,15 @@ def run_case(c, model, mode, tools=None, log=None):
             a = parse_answer(text)
             return {"case_id": c["case_id"], **(a or {"feasible": None, "note": "no parseable answer: " + text[:200]}), "tool_calls": calls, "trace": trace,
                     "gateway": gateway, "sandbox_id": getattr(tools, "id", None)}
-        items += out
+        # echo back only what the gateway's quota can size: the tool calls and plain message text, no reasoning
+        # items or provider item ids (with those, follow-up turns are refused with a 429 "conservative token estimate")
+        for o in out:
+            if o.get("type") == "function_call":
+                items.append({"type": "function_call", "call_id": o["call_id"], "name": o["name"], "arguments": o.get("arguments", "{}")})
+            elif o.get("type") == "message":
+                t = "".join(part.get("text", "") for part in (o.get("content") or []) if part.get("type") == "output_text")
+                if t:
+                    items.append({"role": "assistant", "content": t})
         for fc in fcs:
             calls += 1
             try:

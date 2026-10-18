@@ -10,6 +10,18 @@
   <link rel="stylesheet" href="css/site.css">
   <link rel="stylesheet" href="css/front.css">
   <link rel="stylesheet" href="css/motion.css">
+  <script>
+    // Hide the cell before the first paint, so the intro starts with the sun alone (motion.js plays the rest).
+    // Front page only, motion on only; if motion.js never runs, the cell comes back after 7 s.
+    (function () {
+      var h = location.hash, front = !h || h === "#" || h === "#/";
+      var still = (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) || /[?&]motion=off\b/.test(location.search);
+      if (!front || still) return;
+      var root = document.documentElement;
+      root.classList.add("is-intro");
+      setTimeout(function () { if (!root.classList.contains("has-motion")) root.classList.remove("is-intro"); }, 7000);
+    })();
+  </script>
 </head>
 <body>
   <header class="nav">

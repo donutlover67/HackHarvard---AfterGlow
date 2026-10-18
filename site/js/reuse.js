@@ -155,7 +155,7 @@ window.SSReuse = (function () {
         st.classList.add("is-bad");
         st.textContent = err.name === "AbortError" ? "No answer after 90 seconds. Try again."
           : err instanceof TypeError ? `The agent runs on the demo laptop (port 8767), so it isn't reachable from here.${ex ? " Here is a recorded answer from the eval run." : ""}`
-          : /429|budget|quota/.test(err.message) ? `The agent's Chalk quota is used up for now.${ex ? " Here is a recorded answer from the eval run." : ""}`
+          : /budget_limit|budget/.test(err.message) ? `The agent's Chalk quota is used up for now.${ex ? " Here is a recorded answer from the eval run." : ""}`
           : `The agent failed: ${err.message}`;
       } finally {
         clearTimeout(timer);
