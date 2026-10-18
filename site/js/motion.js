@@ -51,17 +51,6 @@ window.SSMotion = (function () {
     return () => loops.delete(tick);
   }
   const rafThrottle = (fn) => { let waiting = false; return () => { if (waiting) return; waiting = true; requestAnimationFrame(() => { waiting = false; fn(); }); }; };
-  // a value that follows its target with inertia (the feel of a scrubbed timeline): apply(value) runs on the shared loop
-  // until it has settled; set(target) retargets; jump(value) lands at once
-  function eased(apply, rate = 0.14, eps = 0.0006) {
-    let cur = null, target = 0, running = false;
-    const tick = () => { if (cur === null) cur = target; const d = target - cur; if (Math.abs(d) < eps) { cur = target; apply(cur); running = false; return false; } cur += d * rate; apply(cur); return true; };
-    return {
-      set(t) { target = t; if (cur === null) { cur = t; apply(cur); return; } if (!running) { running = true; loop(tick); } },
-      jump(t) { target = t; cur = t; apply(cur); },
-      value: () => (cur === null ? target : cur),
-    };
-  }
 
   function init() {
     document.documentElement.classList.add(reduced() ? "reduced" : "has-motion");
@@ -139,12 +128,11 @@ window.SSMotion = (function () {
       if (scrollWord) scrollWord.classList.toggle("is-gone", p > 0.1);
       if (hook) hook(p);
     };
-    const follow = eased(apply);
     function update() {
       const vh = innerHeight;
       // pinned: progress through the hero's extra screen; otherwise: how far the diagram has risen into view
       const p = pinned() ? progressOf(hero.getBoundingClientRect(), vh) : clamp01(1 - (diagram.getBoundingClientRect().top - vh * 0.15) / (vh * 0.6));
-      follow.set(p);
+      if (p !== raw) apply(p);
     }
     const onScroll = rafThrottle(update);
     addEventListener("scroll", onScroll, { passive: true });
@@ -167,10 +155,9 @@ window.SSMotion = (function () {
     if (reduced()) { section.classList.add("is-row"); return none; }
     let overflow = 0, approach = 0;
     const reset = () => { const t = track(); if (t) t.style.transform = ""; stage.style.transform = ""; stage.style.opacity = ""; cards().forEach((c) => c.style.removeProperty("--arrive")); };
-    const follow = eased((scrolled) => place(scrolled), 0.12, 0.2);
     function update() {
       const t = track(); if (!t || !overflow) return;
-      follow.set(progressOf(section.getBoundingClientRect(), pin.offsetHeight) * (approach + overflow));
+      place(progressOf(section.getBoundingClientRect(), pin.offsetHeight) * (approach + overflow));
     }
     function place(scrolled) {
       const t = track(); if (!t || !overflow) return;
@@ -197,7 +184,7 @@ window.SSMotion = (function () {
       approach = Math.round(Math.min(420, innerHeight * 0.45));
       if (!overflow || pin.offsetHeight > innerHeight) { row(); return; }
       section.style.height = `${pin.offsetHeight + approach + overflow}px`;
-      follow.jump(progressOf(section.getBoundingClientRect(), pin.offsetHeight) * (approach + overflow));
+      update();
     }
     const onScroll = rafThrottle(update), onResize = rafThrottle(size);
     addEventListener("scroll", onScroll, { passive: true });
@@ -233,18 +220,6 @@ window.SSMotion = (function () {
     const sweep = () => pending.forEach((el) => { if (!el.classList.contains("is-revealed") && el.getBoundingClientRect().top < innerHeight * 0.85) go(el); });
     addEventListener("scroll", sweep, { passive: true });
     return () => { stopIo(); removeEventListener("scroll", sweep); };
-  }
-
-  // ---------- the ground drifts at a fraction of the scroll, so the page reads as layers ----------
-  function groundDrift(view) {
-    const g = view.querySelector(".ground");
-    if (!g || reduced()) return () => {};
-    const follow = eased((y) => { g.style.transform = `translate3d(0, ${(-y * 0.08).toFixed(1)}px, 0)`; }, 0.1, 0.3);
-    const update = () => follow.set(scrollY);
-    const onScroll = rafThrottle(update);
-    addEventListener("scroll", onScroll, { passive: true });
-    update();
-    return () => { removeEventListener("scroll", onScroll); g.style.transform = ""; };
   }
 
   // ---------- the bench's four steps light one by one as the reader scrolls through their section ----------
@@ -341,7 +316,6 @@ window.SSMotion = (function () {
       const rp = safe(() => repairing(view));
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
-      safe(() => groundDrift(view));
       safe(() => revealHero(view));
       safe(() => watchReveal(view));
       if (rp) safe(() => hero3d(view.querySelector("[data-hero-slot]"), rp));

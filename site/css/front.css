@@ -137,8 +137,8 @@
 }
 
 
-/* the ground: the bench's schematic, fixed behind the page and drifting slower than the scroll (motion.js moves it) */
-.ground { position: fixed; inset: -12% 0; z-index: 0; pointer-events: none; overflow: hidden; }
+/* the ground: the bench's schematic, fixed behind the page */
+.ground { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .ground__svg { width: 100%; height: 100%; display: block; }
 .ground .gr-lines path, .ground .gr-lines rect, .ground .gr-lines circle { fill: none; stroke: var(--cell); stroke-width: 1.2; opacity: 0.16; }
 .ground .gr-datum { opacity: 0.22; }
