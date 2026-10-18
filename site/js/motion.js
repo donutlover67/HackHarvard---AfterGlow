@@ -370,8 +370,13 @@ window.SSMotion = (function () {
   // sunlit corner of its face reaches further the more the face turns up and left, toward the sun. Left alone it sways
   // slowly. Nothing runs off screen, in a hidden tab, or under reduced motion.
   function heroPanel(slot) {
-    const panel = slot && slot.querySelector(".hero__panel"), poly = slot && slot.querySelector("[data-lit-poly]");
+    const panel = slot && slot.querySelector(".hero__panel"), poly = slot && slot.querySelector("[data-lit-poly]"), blob = slot && slot.querySelector("[data-blob-at]");
     if (!panel) return () => {};
+    // a clipPath may hold only shapes, so the window's travel, turn and breath all sit on the blob path's one transform
+    const fine = matchMedia("(pointer: fine)").matches;
+    let blobOn = false, bx = -999, by = -999;
+    const placeBlob = (now) => { if (blob) blob.setAttribute("transform", blobOn ? `translate(${bx.toFixed(1)} ${by.toFixed(1)}) rotate(${((now / 45) % 360).toFixed(1)}) scale(${(1 + 0.07 * Math.sin(now / 900)).toFixed(3)})` : "translate(-999 -999)"); };
+    const blobOff = () => { blobOn = false; placeBlob(0); };
     const pose = (nx, ny) => {
       const lit = clamp01(0.5 - nx * 0.28 - ny * 0.24), reach = 0.3 + lit * 1.1;
       panel.style.setProperty("--tx", (14 - ny * 7).toFixed(2)); panel.style.setProperty("--ty", (nx * 9).toFixed(2));
@@ -387,23 +392,30 @@ window.SSMotion = (function () {
       const tx = idle ? 0.35 * Math.sin(now / 3800) - 0.15 : px, ty = idle ? 0.25 * Math.cos(now / 4700) - 0.1 : py;
       cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
       pose(cx, cy);
+      // the window's edge turns and breathes slowly, like liquid (the blob path is drawn around its own origin)
+      if (blobOn) placeBlob(now);
       raf = requestAnimationFrame(frame);
     };
     const wake = () => { if (!raf && !dead && onScreen && !hidden) raf = requestAnimationFrame(frame); };
     const onPointer = (e) => {
       const r = slot.getBoundingClientRect();
       if (!r.width) return;
-      px = Math.max(-1, Math.min(1, ((e.clientX - (r.left + r.width / 2)) / r.width) * 2));
-      py = Math.max(-1, Math.min(1, ((e.clientY - (r.top + r.height / 2)) / r.height) * 2));
+      const rx = ((e.clientX - (r.left + r.width / 2)) / r.width) * 2, ry = ((e.clientY - (r.top + r.height / 2)) / r.height) * 2;
+      px = Math.max(-1, Math.min(1, rx)); py = Math.max(-1, Math.min(1, ry));
+      // the window under the skin follows the pointer while it is over the drawing (the svg's own 400x300 frame)
+      if (blob && fine) { if (Math.abs(rx) <= 1 && Math.abs(ry) <= 1) { bx = 200 + rx * 200; by = 150 + ry * 150; blobOn = true; placeBlob(performance.now()); } else blobOff(); }
       lastMove = performance.now(); wake();
     };
+    const onLeave = () => blobOff();
+    document.addEventListener("pointerleave", onLeave);
+    document.addEventListener("pointercancel", onLeave);
     document.addEventListener("pointermove", onPointer, { passive: true });
     const io = typeof IntersectionObserver === "function" ? new IntersectionObserver((es) => es.forEach((e) => { onScreen = e.isIntersecting; wake(); }), { threshold: 0 }) : null;
     if (io) io.observe(slot);
     const onVis = (visible) => { if (visible) wake(); };
     visibilityHooks.add(onVis);
     wake();
-    return () => { dead = true; if (raf) cancelAnimationFrame(raf); if (io) io.disconnect(); visibilityHooks.delete(onVis); document.removeEventListener("pointermove", onPointer); };
+    return () => { dead = true; if (raf) cancelAnimationFrame(raf); if (io) io.disconnect(); visibilityHooks.delete(onVis); document.removeEventListener("pointermove", onPointer); document.removeEventListener("pointerleave", onLeave); document.removeEventListener("pointercancel", onLeave); };
   }
 
   function mount(view, page) {

@@ -21,6 +21,7 @@
 .hero__sun .sun__beam { stroke-width: 2; stroke-dasharray: 5 11; opacity: 0.85; }
 .hero__panel { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; transform: perspective(1200px) rotateX(calc(var(--tx, 14) * 1deg)) rotateY(calc(var(--ty, 0) * 1deg)); transform-origin: 50% 55%; }
 .pnl__shadow { transform: translate(calc(var(--sx, 10) * 1px), calc(var(--sy, 12) * 1px)); }
+.pnl__xray text { font-family: var(--font); }
 .hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; opacity: clamp(0, calc(1 - var(--q, 0) * 2.4), 1); transform: translateY(calc(var(--q, 0) * -36px)); }
 .hero__text .lede { margin: 0; }
 .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }

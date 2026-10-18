@@ -43,11 +43,16 @@ window.SSFront = (function () {
     </svg>`;
   }
   // the cell as a drawing: its shadow, its thickness, its face with fingers and busbars, and the sunlight on the face
-  // as an amber wash and hatching from the top left corner, whose reach motion.js sets from the way the panel turns
+  // as an amber wash and hatching from the top left corner, whose reach motion.js sets from the way the panel turns.
+  // Under a fine pointer a liquid window follows the cursor and shows what the bench sees under the skin: the cell's
+  // electroluminescence image, fingers glowing, a crack, a dead patch (after the Lando Norris site's helmet reveal).
   function panelSvg() {
     const { x, y, w, h, c } = FACE, face = octagon(x, y, w, h, c);
-    let fingers = "";
-    for (let fy = y + 12; fy < y + h - 6; fy += 10) fingers += `<path d="M${x + 8} ${fy} Q ${x + w / 2} ${fy + ((fy / 10) % 2 ? 0.8 : -0.8)} ${x + w - 8} ${fy}" stroke="rgba(255,255,255,0.1)" stroke-width="1.4"/>`;
+    let fingers = "", glow = "";
+    for (let fy = y + 12; fy < y + h - 6; fy += 10) {
+      fingers += `<path d="M${x + 8} ${fy} Q ${x + w / 2} ${fy + ((fy / 10) % 2 ? 0.8 : -0.8)} ${x + w - 8} ${fy}" stroke="rgba(255,255,255,0.1)" stroke-width="1.4"/>`;
+      glow += `<path d="M${x + 8} ${fy} Q ${x + w / 2} ${fy + ((fy / 10) % 2 ? 0.8 : -0.8)} ${x + w - 8} ${fy}" stroke-width="1.1" opacity="${(0.55 + ((fy * 7) % 5) * 0.08).toFixed(2)}"/>`;
+    }
     const bus = [0.25, 0.5, 0.75].map((f) => `<line x1="${x + w * f}" y1="${y + 4}" x2="${x + w * f}" y2="${y + h - 4}" stroke="rgba(255,255,255,0.46)" stroke-width="5"/>`).join("");
     let hatch = "";
     for (let hx = x - h; hx < x + w; hx += 13) hatch += `<line x1="${hx}" y1="${y + h}" x2="${hx + h}" y2="${y}"/>`;   // 45° strokes, lit from the top left
@@ -61,6 +66,17 @@ window.SSFront = (function () {
       <polygon points="${face}" fill="var(--cell)" stroke="#0e1838" stroke-width="2.5" stroke-linejoin="round"/>
       <g clip-path="url(#pnl-face)" fill="none">${fingers}${bus}</g>
       <g class="pnl__lit" clip-path="url(#pnl-face)"><g clip-path="url(#pnl-lit)"><polygon points="${face}" fill="var(--sun)" opacity="0.2"/><g stroke="var(--sun)" stroke-width="1.8" opacity="0.55" stroke-linecap="round">${hatch}</g></g></g>
+      <clipPath id="pnl-blob"><path class="pnl__blob" data-blob-at transform="translate(-999 -999)" d="M0 -62 C 40 -70, 78 -40, 72 -4 C 66 34, 36 66, -4 62 C -46 58, -74 30, -70 -10 C -66 -46, -38 -58, 0 -62 Z"/></clipPath>
+      <g class="pnl__xray" clip-path="url(#pnl-blob)">
+        <polygon points="${face}" fill="#070c22"/>
+        <g clip-path="url(#pnl-face)" fill="none" stroke="var(--sun)" stroke-linecap="round">
+          ${glow}
+          ${[0.25, 0.5, 0.75].map((f) => `<line x1="${x + w * f}" y1="${y + 4}" x2="${x + w * f}" y2="${y + h - 4}" stroke-width="5" opacity="0.95"/>`).join("")}
+          <rect x="${x + 196}" y="${y + 28}" width="74" height="58" fill="#000" stroke="none" opacity="0.6"/>
+          <path d="M${x + 58} ${y + 18} l 26 40 l -12 26 l 34 48 l -6 36" stroke-width="1.8" opacity="0.95"/>
+          <text x="${x + w - 12}" y="${y + h - 12}" text-anchor="end" stroke="none" fill="var(--sun)" font-size="11" font-weight="600">what the bench sees</text>
+        </g>
+      </g>
     </svg>`;
   }
   // four cells in two rows for one wiring; strong: the panel numbers drawn without film

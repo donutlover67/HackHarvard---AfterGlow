@@ -93,6 +93,8 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect((html.match(/class="sun__beam"/g) || []).length).toBe(3);   // three beams of light onto the panel
   expect(html.indexOf('class="hero__sun"')).toBeLessThan(html.indexOf('class="hero__panel"'));   // drawn first, so the panel paints over the beams
   expect(html).toContain('data-lit-poly');                              // the sunlit corner motion.js resizes
+  expect(html).toContain('class="pnl__xray"');                          // the view under the skin, behind the pointer's window
+  expect(html).toContain('data-blob-at transform="translate(-999 -999)"');   // parked off the drawing until the pointer arrives
   expect(html).not.toContain("hero__svg");
   expect(html).toMatch(/data-count[^>]*>80–88%/);
 });
