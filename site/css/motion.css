@@ -100,11 +100,25 @@ html.has-motion .step:not(.is-lit) .step__glyph, html.has-motion .step:not(.is-l
 .wipe::after { content: ""; position: absolute; inset: -0.06em -0.12em; background: var(--sun); transform: scaleX(0); transform-origin: left center; pointer-events: none; }
 .wipe--rtl::after { transform-origin: right center; }
 html.has-motion [data-reveal]:not(.is-revealed) .wipe__in { opacity: 0; }
-html.has-motion [data-reveal].is-revealed .wipe::after { animation: wipe-ltr 900ms cubic-bezier(0.77, 0, 0.18, 1) both; animation-delay: var(--d, 0ms); }
+/* the block sets off slowly, races through the middle, overshoots the end of the line and springs back, then clears
+   the same way; each keyframe carries its own timing */
+html.has-motion [data-reveal].is-revealed .wipe::after { animation: wipe-ltr 1050ms linear both; animation-delay: var(--d, 0ms); }
 html.has-motion [data-reveal].is-revealed .wipe--rtl::after { animation-name: wipe-rtl; }
-html.has-motion [data-reveal].is-revealed .wipe__in { animation: wipe-text 1ms linear both; animation-delay: calc(var(--d, 0ms) + 430ms); }
-@keyframes wipe-ltr { 0% { transform: scaleX(0); transform-origin: left center; } 46% { transform: scaleX(1); transform-origin: left center; } 54% { transform: scaleX(1); transform-origin: right center; } 100% { transform: scaleX(0); transform-origin: right center; } }
-@keyframes wipe-rtl { 0% { transform: scaleX(0); transform-origin: right center; } 46% { transform: scaleX(1); transform-origin: right center; } 54% { transform: scaleX(1); transform-origin: left center; } 100% { transform: scaleX(0); transform-origin: left center; } }
+html.has-motion [data-reveal].is-revealed .wipe__in { animation: wipe-text 1ms linear both; animation-delay: calc(var(--d, 0ms) + 440ms); }
+@keyframes wipe-ltr {
+  0% { transform: scaleX(0); transform-origin: left center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
+  40% { transform: scaleX(1.06); transform-origin: left center; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
+  48% { transform: scaleX(1); transform-origin: left center; }
+  52% { transform: scaleX(1); transform-origin: right center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
+  100% { transform: scaleX(0); transform-origin: right center; }
+}
+@keyframes wipe-rtl {
+  0% { transform: scaleX(0); transform-origin: right center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
+  40% { transform: scaleX(1.06); transform-origin: right center; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
+  48% { transform: scaleX(1); transform-origin: right center; }
+  52% { transform: scaleX(1); transform-origin: left center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
+  100% { transform: scaleX(0); transform-origin: left center; }
+}
 @keyframes wipe-text { from { opacity: 0; } to { opacity: 1; } }
 .rise { transition: opacity 600ms var(--m-ease), transform 600ms var(--m-ease); transition-delay: var(--d, 0ms); }
 html.has-motion [data-reveal].rise:not(.is-revealed) { opacity: 0; transform: translateY(14px); }
