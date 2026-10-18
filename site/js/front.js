@@ -225,7 +225,6 @@ window.SSFront = (function () {
   // The first screen: the drawn cell under its sun and the headline, on the pale ground, with nothing pinned.
   function hero() {
     return `<section class="hero" data-in>
-      ${landscape()}
       <div class="hero__stage">
         <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
         <div class="hero__text">

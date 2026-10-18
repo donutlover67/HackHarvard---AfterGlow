@@ -3,7 +3,7 @@
    shadows; the one strong colour is the gain numeral in the navy band. */
 
 /* hero: the first screen (the drawn cell, the headline, the two ways in), on the pale ground, pinned to nothing */
-.hero { position: relative; overflow: clip; }   /* the hills along its bottom */
+.hero { position: relative; }
 .hero__stage { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
 /* the headline in a high-contrast serif (the Mac's Bodoni or Didot, else Georgia): each line sits in its own mask and
