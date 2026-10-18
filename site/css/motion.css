@@ -80,12 +80,9 @@ html.has-motion [data-in]:not(.is-in) .m-part { opacity: 0; transform: translate
 html.reduced [data-hero] { --k: 1; --w: 1; --g: 1; }
 html.reduced .hero__scroll { display: none; }
 
-/* the string: drawn by the scroll (motion.js sets the offsets); without script or under reduced motion it is simply there */
-.spine path { stroke-dasharray: 1; stroke-dashoffset: 0; }
-html.has-motion .spine path { stroke-dashoffset: 1; }
-.spine__node { transition: fill 320ms ease; }
+/* how the bench works: the rail draws across as the reader scrolls through the section (motion.js sets the offset), and
+   each step lights and settles in turn; without script or under reduced motion all of it is simply there */
 .string__wire path { stroke-dasharray: 1; stroke-dashoffset: 0; }
-/* how the bench works: each step lights and settles as the string's tip reaches it */
 .step__glyph, .step h3 { transition: opacity 460ms var(--m-ease), transform 460ms var(--m-ease); }
 html.has-motion .step:not(.is-lit) .step__glyph, html.has-motion .step:not(.is-lit) h3 { opacity: 0.22; transform: translateY(10px); }
 
@@ -121,7 +118,7 @@ html[data-dir="back"] .view.is-leaving { animation-name: vt-out-back; }
 html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
-  .m-part, .line__in, .rise, .grow, .hero__scroll, .spine__node, .step__glyph, .step h3 { transition: none; }
+  .m-part, .line__in, .rise, .grow, .hero__scroll, .step__glyph, .step h3 { transition: none; }
   [data-hero] { --k: 1; --w: 1; --g: 1; }
   ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
 }

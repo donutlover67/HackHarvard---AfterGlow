@@ -136,11 +136,3 @@
   .hero__pin { gap: 22px; padding-top: 28px; }
 }
 
-/* the string down the page (motion.js draws it): behind every surface, visible in the margins and gaps */
-.spine { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 0; overflow: visible; }
-.spine path { fill: none; stroke: var(--cell); stroke-width: 2; stroke-linecap: round; }
-.spine__node { fill: var(--busbar); }
-.spine__node.is-lit { fill: var(--cell); }
-.spine__bead { fill: var(--cell); }
-.wrap, .wiring, .band, .teaser__box, .ppass, .hero__pin { position: relative; }
-.string__wire--v { display: none !important; }  /* on a phone the string itself runs through the drawings */
