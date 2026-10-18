@@ -142,7 +142,7 @@ window.SSFront = (function () {
     ["M770 262 C 796 258, 800 292, 772 300 C 744 308, 734 340, 756 356 C 774 368, 800 352, 816 336", 18, 31, 15],
     ["M816 336 C 848 306, 898 290, 954 300", 15, 12, 4],                                        // the flourish out, to a hairline
   ];
-  const PEN_SPEED = 300;   // drawing units per second: slow, about ten seconds for the word
+  const PEN_SPEED = 450;   // drawing units per second: about seven seconds for the word
   // the cubic beziers of one stroke, sampled every ~10 units, then slanted (skew 16°) and set at 14 degrees
   function samplePen(d) {
     const n = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number), pts = [];
