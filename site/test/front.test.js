@@ -21,9 +21,10 @@ const ctxHostile = { ...ctxSample, passports: [{ ...ctxSample.passports[0], pass
 test("the hero holds the headline and both ways in", () => {
   const html = page(ctxEmpty);
   const hero = html.slice(0, html.indexOf("</section>"));
-  expect(hero).toContain('data-sign');                 // the string that signs the shrinking frame
-  expect(hero).not.toContain("marquee");
-  expect(html).toContain('class="repair" data-hero');  // the re-pairing follows the hero on the navy ground
+  expect(hero).not.toContain("data-sign");             // no frame, no signature: the first screen is plain
+  expect(html).toContain('class="repair" data-hero');  // the comparison follows the hero as its own screen
+  expect(html.indexOf('class="repair__fill"')).toBeLessThan(html.indexOf('class="ticker"'));   // the bubble, the panels, then the facts along the bottom
+  expect(html.indexOf('class="ticker"')).toBeLessThan(html.indexOf('class="problem"'));
   expect(html).toContain('class="hero__caption');      // the diagram's caption as text, for phones where the svg's is too small
   expect(hero).toContain('href="#/passports"');
   expect(hero).toContain('href="#/build"');

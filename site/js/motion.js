@@ -128,10 +128,12 @@ window.SSMotion = (function () {
     const hero = view.querySelector("[data-hero]");
     const none = { setHook() {}, destroy() {}, progress: () => 1 };
     if (!hero) return none;
-    const diagram = hero.querySelector(".rp"), numEl = hero.querySelector("[data-rp-num]"), scrollWord = hero.querySelector(".hero__scroll");
+    const diagram = hero.querySelector(".rp"), numEl = hero.querySelector("[data-rp-num]"), pin = hero.querySelector(".repair__pin");
     const gain = () => Number(hero.dataset.gain) || 0;
     const setVars = (k, w, g) => { hero.style.setProperty("--k", k.toFixed(4)); hero.style.setProperty("--w", w.toFixed(4)); hero.style.setProperty("--g", g.toFixed(4)); };
-    if (reduced()) { setVars(1, 1, 1); if (numEl) numEl.textContent = `+${Math.round(gain())}%`; return none; }
+    const setFill = (f) => hero.style.setProperty("--fill", f.toFixed(4));
+    if (reduced()) { setVars(1, 1, 1); setFill(1); if (numEl) numEl.textContent = `+${Math.round(gain())}%`; return none; }
+    const pinned = () => !!pin && getComputedStyle(pin).position === "sticky";
     let raw = -1, hook = null;
     const apply = (p) => {
       raw = p;
@@ -141,16 +143,23 @@ window.SSMotion = (function () {
       const g = cells;                                                                     // the plate and the numeral rise with the swap itself
       setVars(cells, wires, g);
       if (numEl) numEl.textContent = `+${Math.round(gain() * g)}%`;   // in step with the cells, not ahead of them
-      if (scrollWord) scrollWord.classList.toggle("is-gone", p > 0.06);
       if (hook) hook(p);
     };
     function update() {
-      // The page keeps scrolling; the swap plays as the diagram rises. It starts as soon as the reader scrolls when
-      // the diagram is already in the first screen (laptops), or as the diagram comes in from below (phones), and
-      // it is done by the time the diagram's upper part reaches the top of the viewport.
-      const vh = innerHeight, r = diagram.getBoundingClientRect(), docTop = r.top + scrollY;
+      const vh = innerHeight;
+      if (pinned()) {
+        // the screen holds: over the section's extra height the bubble fills the screen first (--fill), then the swap
+        const q = progressOf(hero.getBoundingClientRect(), vh);
+        setFill(smooth(q / 0.34));
+        const p = clamp01((q - 0.3) / 0.7);
+        if (p !== raw) apply(p);
+        return;
+      }
+      // unpinned (phones): the ground is simply navy and the swap plays as the diagram rises into view
+      setFill(1);
+      const r = diagram.getBoundingClientRect(), docTop = r.top + scrollY;
       const start = Math.max(0, docTop - vh * 0.9);
-      const end = Math.max(start + vh * 0.6, Math.min(start + vh, docTop + r.height * 0.35));   // about a screen of scroll; the cells land by 60% of it
+      const end = Math.max(start + vh * 0.6, Math.min(start + vh, docTop + r.height * 0.35));
       const p = clamp01((scrollY - start) / (end - start));
       if (p !== raw) apply(p);
     }
@@ -301,52 +310,6 @@ window.SSMotion = (function () {
     }, 160));
   }
 
-  // ---------- the portal: the hero pins while the cell shrinks into a framed box and the ground turns navy ----------
-  // --q runs 0..1 over the hero's extra screen of scroll (eased). The slot's travel to the centred box is measured
-  // here (--px, --py, --ps on the slot); the signature's dash draws over the second two thirds of it.
-  function portal(view) {
-    const hero = view.querySelector("[data-portal]");
-    const none = { destroy() {}, redraw() {} };
-    if (!hero) return none;
-    const pin = hero.querySelector(".hero__pin"), slot = hero.querySelector(".hero__slot"), sign = hero.querySelector("[data-sign]"), scrollWord = hero.querySelector(".hero__scroll");
-    const setQ = (q) => hero.style.setProperty("--q", q.toFixed(4));
-    if (reduced() || !pin || !slot) { setQ(0); return none; }
-    const pinned = () => getComputedStyle(pin).position === "sticky";
-    let signLen = 0;
-    if (sign) { try { signLen = sign.getTotalLength(); } catch (_) { signLen = 0; } if (signLen) { sign.style.strokeDasharray = `${signLen}`; sign.style.strokeDashoffset = `${signLen}`; } }
-    let raw = -1;
-    function measure() {
-      // the slot's resting box (offsets summed up to the pin, past the stage) against the box it shrinks into:
-      // centred, a third of the pin's width at most 520px, 4:3
-      const pw = pin.clientWidth, ph = pin.clientHeight, w0 = slot.offsetWidth;
-      if (!pw || !w0) return;
-      let x0 = 0, y0 = 0;
-      for (let el = slot; el && el !== pin; el = el.offsetParent) { x0 += el.offsetLeft; y0 += el.offsetTop; }
-      const w1 = Math.min(pw * 0.34, 520), h1 = w1 * 0.75;
-      slot.style.setProperty("--ps", (w1 / w0).toFixed(4));
-      slot.style.setProperty("--px", `${((pw - w1) / 2 - x0).toFixed(1)}px`);
-      slot.style.setProperty("--py", `${((ph - h1) / 2 - y0).toFixed(1)}px`);
-    }
-    function apply(q) {
-      raw = q;
-      setQ(smooth(q));
-      if (sign && signLen) sign.style.strokeDashoffset = `${(signLen * (1 - clamp01((q - 0.3) / 0.65))).toFixed(1)}`;
-      if (scrollWord) scrollWord.classList.toggle("is-gone", q > 0.04);
-    }
-    function update() {
-      if (!pinned()) { if (raw !== 0) apply(0); return; }
-      const q = progressOf(hero.getBoundingClientRect(), innerHeight);
-      if (q !== raw) apply(q);
-    }
-    const onScroll = rafThrottle(update), onResize = rafThrottle(() => { measure(); update(); });
-    addEventListener("scroll", onScroll, { passive: true });
-    addEventListener("resize", onResize);
-    addEventListener("pageshow", onScroll);
-    measure(); update();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); update(); });
-    return { redraw() { measure(); update(); }, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); removeEventListener("pageshow", onScroll); } };
-  }
-
   // ---------- the passports collage: pans diagonally with the scroll; a card near the middle of the screen wakes ----------
   function collage(view) {
     const section = view.querySelector(".fpass");
@@ -435,7 +398,6 @@ window.SSMotion = (function () {
     if (page === "front") {
       const rp = safe(() => repairing(view));
       rpCtl = rp;
-      safe(() => portal(view));
       collageCtl = safe(() => collage(view));
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));

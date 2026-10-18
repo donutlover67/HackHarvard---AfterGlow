@@ -2,18 +2,11 @@
    screens the hero pins for one extra screen so the scroll can re-pair the four panels. No gradients, no
    shadows; the one strong colour is the gain numeral in the navy band. */
 
-/* hero: a bright first screen (the drawn cell, the headline, the two ways in). On large screens it pins for most of a
-   screen while --q (motion.js) runs 0..1: the navy ground fades up, the headline fades out, the cell shrinks into a framed
-   box at the centre (its travel measured into --px, --py, --ps) and the string signs itself across the frame. Phones and
-   reduced motion get the first screen only. */
+/* hero: the first screen (the drawn cell, the headline, the two ways in), on the pale ground, pinned to nothing */
 .hero { position: relative; }
-.hero__pin { position: relative; overflow: clip; }
-.hero__ground { position: absolute; inset: 0; background: var(--cell); opacity: var(--q, 0); pointer-events: none; z-index: 0; }
-.hero__stage { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
+.hero__stage { position: relative; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
-.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; transform-origin: 0 0; transform: translate(calc(var(--q, 0) * var(--px, 0px)), calc(var(--q, 0) * var(--py, 0px))) scale(calc(1 - var(--q, 0) * (1 - var(--ps, 1)))); }
-.hero__slot::after { content: ""; position: absolute; inset: -5% -4%; border: 2px solid rgba(255, 255, 255, 0.55); opacity: var(--q, 0); pointer-events: none; }
-.hero__slot::before { content: ""; position: absolute; inset: -5% -4%; background: var(--cell); opacity: var(--q, 0); pointer-events: none; z-index: 0; }   /* an opaque backing inside the frame */
+.hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
    the panel leans with the pointer through a perspective transform that motion.js drives (--tx, --ty), its shadow slides (--sx, --sy) */
 .hero__sun { position: absolute; left: 0; top: -14%; width: 100%; height: 114%; display: block; overflow: visible; pointer-events: none; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
@@ -22,16 +15,16 @@
 .hero__panel { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; transform: perspective(1200px) rotateX(calc(var(--tx, 14) * 1deg)) rotateY(calc(var(--ty, 0) * 1deg)); transform-origin: 50% 55%; }
 .pnl__shadow { transform: translate(calc(var(--sx, 10) * 1px), calc(var(--sy, 12) * 1px)); }
 .pnl__xray text { font-family: var(--font); }
-.hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; opacity: clamp(0, calc(1 - var(--q, 0) * 2.4), 1); transform: translateY(calc(var(--q, 0) * -36px)); }
+.hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; }
 .hero__text .lede { margin: 0; }
 .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
-/* the signature: an amber string drawn across the frame as the box settles (motion.js runs its dash) */
-.hero__sign { position: absolute; z-index: 3; left: 50%; top: 50%; width: min(66vw, 1040px); height: auto; transform: translate(-50%, -52%); pointer-events: none; overflow: visible; display: none; }
-.hero__sign path { fill: none; stroke: var(--sun); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
-.hero__scroll { position: absolute; left: 0; right: 0; bottom: 18px; z-index: 2; text-align: center; display: none; color: rgba(255, 255, 255, 0.7); }
-/* the re-pairing, on the navy ground the portal leaves behind */
-.repair { background: var(--cell); color: #fff; padding-block: 24px 56px; }
-.repair .wrap { display: grid; justify-items: center; gap: 10px; }
+/* the comparison. On phones a navy section; on large screens its own pinned screen: a navy bubble at the bottom centre
+   (--fill 0..1 from motion.js) swells until it covers the screen, the four panels sit large in the middle and the band
+   of facts runs along the bottom edge */
+.repair { position: relative; color: #fff; background: var(--cell); }
+.repair__pin { position: relative; overflow: clip; display: grid; grid-template-rows: 1fr auto; }
+.repair__fill { display: none; }
+.repair__stage { display: grid; justify-items: center; align-content: center; gap: 10px; padding: 24px var(--gutter) 32px; position: relative; z-index: 1; }
 .rp { width: min(100%, 900px); height: auto; max-height: 270px; }
 .rp text { font-family: var(--font); }
 .rp-cell text { fill: #fff; font-weight: 600; font-size: 14px; }
@@ -48,14 +41,17 @@
   .hero__caption { display: block; }
 }
 @media (min-width: 900px) and (min-height: 700px) {
-  .hero { min-height: 185vh; }                                   /* most of a screen of scroll for the portal */
-  .hero__pin { position: sticky; top: 0; height: 100vh; }
-  .hero__stage { height: 100%; max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
+  .hero__stage { min-height: calc(100vh - 70px); max-width: 1400px; grid-template-columns: 11fr 10fr; grid-template-areas: "slot text"; gap: 28px 72px; align-content: center; padding: 48px var(--gutter) 24px; }
   .hero .display { font-size: clamp(2.4rem, 5vw, 5.8rem); }
   .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
   .hero__text { padding-right: 24px; }
-  .hero__sign, .hero__scroll { display: block; }
-  .rp { width: min(100%, 1080px); max-height: 340px; }
+  /* the pinned comparison: the section is pale like the hero, and only the bubble brings the navy */
+  .repair { background: var(--page); min-height: 260vh; }
+  .repair__pin { position: sticky; top: 0; height: 100vh; }
+  .repair__fill { display: block; position: absolute; inset: 0; background: var(--cell); clip-path: circle(calc(16vmax + var(--fill, 0) * 150vmax) at 50% 100%); z-index: 0; }
+  .repair__stage { opacity: clamp(0, calc(var(--fill, 0) * 2.2 - 0.9), 1); transform: translateY(calc((1 - var(--fill, 0)) * 40px)); }
+  .repair .rp { width: min(92vw, 1500px); max-height: 60vh; }
+  .repair .ticker { position: relative; z-index: 1; opacity: clamp(0, calc(var(--fill, 0) * 2 - 1), 1); }
 }
 @media (min-width: 1800px) {   /* 1920x1080: the two halves split evenly, the headline stays on two lines, the slab grows */
   .hero__stage { max-width: 1720px; grid-template-columns: 1fr 1fr; }
@@ -175,13 +171,12 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .strip__pin { padding-block: var(--section) calc(var(--section) * 0.6); }
 .strip .wiring__label { color: var(--ink-2); }
 .front-band { padding-top: calc(var(--section) * 0.5); }
-.hero__pin { z-index: 1; }
-.repair { position: relative; z-index: 1; }
+.repair { z-index: 1; }
 
 @media (max-width: 760px) { .hero__sun { display: none; } }   /* phones: the panel alone */
 
 /* the ticker: a slow band of sourced facts under the hero, paused under the pointer */
-.ticker { overflow: hidden; background: var(--cell); color: #fff; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.ticker { overflow: hidden; background: var(--cell); color: #fff; border-top: 1px solid rgba(255, 255, 255, 0.1); }   /* lives at the bottom of the comparison */
 .ticker__track { display: flex; width: max-content; animation: marquee 56s linear infinite; }
 .ticker:hover .ticker__track { animation-play-state: paused; }
 .ticker__item { display: inline-flex; align-items: center; white-space: nowrap; padding: 16px 0; font-size: 1.02rem; font-weight: 600; font-stretch: 105%; }

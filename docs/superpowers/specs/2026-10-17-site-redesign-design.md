@@ -149,3 +149,6 @@ The owner asked for the artistic devices of landonorris.com (a 30 s screen recor
 5. **Inversion and collage.** The navy strip and gain band meet the paper on a shallow 40 px curve; the passport cards sit at different heights in a row wider than the page that pans diagonally with the scroll, grey until hovered or near the middle of the screen.
 6. **The window under the skin.** Over a fine pointer a liquid clip window follows the cursor across the cell and shows its electroluminescence view.
 Their morphing menu button was not taken: the navbar is the teammate's code, line for line, by the owner's instruction. Phones and reduced motion keep the plain first screen, visible words, still contours and no window.
+
+### Amendment: the bubble (Oct 18, early)
+The portal is gone at the owner's request: the first screen stays pale and nothing shrinks into a frame. The comparison is now its own pinned screen on large screens (`.repair`, 260 vh): as it pins, a navy bubble at the bottom centre of the screen (`--fill`, a clip-path circle) swells until it has covered the screen, the four panels appear large in the middle and re-pair while the screen holds, and the band of facts runs along the bottom edge. Phones keep a plain navy section with the swap on the scroll.

@@ -75,10 +75,7 @@ html.has-motion [data-in]:not(.is-in) .m-part { opacity: 0; transform: translate
 .rp-cell[data-cell="3"] { transform: translate(calc(var(--k, 0) * 140px), calc(var(--k, 0) * -90px)); }
 .rp-wire { stroke-dasharray: 320px; stroke-dashoffset: calc(320px * (1 - var(--w, 1))); }
 .rp-num, .rp-label { opacity: calc(0.3 + 0.7 * var(--g, 1)); }
-.hero__scroll { transition: opacity var(--m-fast) ease; }
-.hero__scroll.is-gone { opacity: 0; }
-html.reduced [data-hero] { --k: 1; --w: 1; --g: 1; }
-html.reduced .hero__scroll { display: none; }
+html.reduced [data-hero] { --k: 1; --w: 1; --g: 1; --fill: 1; }
 
 /* cards wipe in from the top edge once their section is on screen, one after another */
 .wiring, .ppass, .teaser__box { transition: clip-path 760ms var(--m-ease); transition-delay: calc(var(--j, 0) * 90ms); }
@@ -113,7 +110,7 @@ html.has-motion [data-reveal].is-revealed .wipe__in { animation: wipe-text 1ms l
 html.has-motion [data-reveal].rise:not(.is-revealed) { opacity: 0; transform: translateY(14px); }
 .grow { transition: opacity 900ms var(--m-ease), transform 900ms var(--m-ease); }
 html.has-motion [data-reveal].grow:not(.is-revealed) { opacity: 0; transform: scale(0.97); }
-.fade { transition: opacity 900ms var(--m-ease); }   /* the hero's slot: its transform belongs to the portal, so it only fades in */
+.fade { transition: opacity 900ms var(--m-ease); }   /* the hero's slot: its transform belongs to the pointer, so it only fades in */
 html.has-motion [data-reveal].fade:not(.is-revealed) { opacity: 0; }
 
 /* route changes: the view slides along the nav axis, with the View Transitions API or with classes */
@@ -132,13 +129,12 @@ html[data-dir="back"] .view.is-leaving { animation-name: vt-out-back; }
 html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
-  .m-part, .rise, .grow, .fade, .hero__scroll, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
+  .m-part, .rise, .grow, .fade, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
   .wipe::after, .wipe__in { animation: none; }
   .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
   .recycle path { animation: none; stroke-dashoffset: 0; }
   .hero__panel { --tx: 12; --ty: -3; }
-  [data-hero] { --k: 1; --w: 1; --g: 1; }
-  [data-portal] { --q: 0; }
+  [data-hero] { --k: 1; --w: 1; --g: 1; --fill: 1; }
   ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
 }
 html.reduced .m-part, html.reduced .rise, html.reduced .grow, html.reduced .fade { transition: none; }
