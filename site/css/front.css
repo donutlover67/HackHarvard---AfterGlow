@@ -199,9 +199,9 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 
 /* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
    is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
-.recycle { position: absolute; left: 50%; top: 50%; width: min(96vw, 1500px); height: auto; transform: translate(-50%, -52%) rotate(-3deg); pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.42; }
-.recycle path { stroke-dasharray: 1; stroke-dashoffset: 1; }
-.problem.is-in .recycle path { animation: draw-stroke 700ms cubic-bezier(0.4, 0, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 320ms + 200ms); }
+.recycle { position: absolute; left: 50%; top: 58%; width: min(104vw, 1700px); height: auto; transform: translate(-50%, -50%) rotate(-14deg); pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
+.recycle path { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; }   /* parked just past the start, so no round cap shows before the pen arrives */
+.problem.is-in .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
 html.reduced .recycle path { stroke-dashoffset: 0; }
 @keyframes draw-stroke { to { stroke-dashoffset: 0; } }
 .problem { overflow: clip; }

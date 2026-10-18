@@ -88,7 +88,10 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect(html).toContain('<span class="hollow">work.</span>');
   expect(html).not.toContain("contours");
   expect((html.match(/class="recycle"/g) || []).length).toBe(1);
-  expect((html.slice(html.indexOf('class="recycle"'), html.indexOf("</svg>", html.indexOf('class="recycle"'))).match(/pathLength="1"/g) || []).length).toBe(7);   // RECYCLE: seven strokes, drawn one after another
+  const recycle = html.slice(html.indexOf('class="recycle"'), html.indexOf("</svg>", html.indexOf('class="recycle"')));
+  expect((recycle.match(/pathLength="1"/g) || []).length).toBe(19);   // "recycle" in cursive: nineteen pen strokes
+  expect(recycle).toContain('--d:0.00s');                             // the first starts at once; the rest follow at pen speed
+  expect(/stroke-width="1[0-9]"/.test(recycle) && /stroke-width="[34][0-9]"/.test(recycle)).toBe(true);   // thin upstrokes, thick downstrokes
   expect((html.match(/class="doodle /g) || []).length).toBe(3);       // the sun, the cell, the string
   expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
   expect(html).toContain('class="hero__sun"');

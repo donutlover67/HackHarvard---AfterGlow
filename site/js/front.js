@@ -121,18 +121,37 @@ window.SSFront = (function () {
   // screen while the reader scrolls (--q, from motion.js): the ground turns navy, the headline fades, the cell shrinks
   // into a framed box at the centre, two giant lines slide past behind it and an amber string signs itself across the
   // frame. Then the page lets go and the re-pairing follows on the navy ground.
-  // "RECYCLE", drawn by hand behind the problem's numerals: seven loose amber strokes, thick and uneven, each path
-  // measured as 1 (pathLength) so the CSS can draw them one after another when the section comes into view
+  // "recycle", written by hand behind the problem's numerals: one connected cursive line, rising from the bottom left
+  // to the top right, in brush-pen weights (thin upstrokes, thick downstrokes, a flourish out). Each segment is one
+  // stroke of the pen; front.css draws them in order at a steady pen speed (--d, --t from the segment's length).
   const RECYCLE = [
-    ["M62 338 C 66 250, 70 160, 74 84 C 160 56, 206 118, 148 184 C 126 206, 98 200, 78 196 M126 190 C 168 232, 186 288, 212 336", 22, -3],
-    ["M338 92 C 300 96, 272 92, 250 98 C 246 176, 244 254, 242 334 C 276 330, 306 332, 340 326 M252 214 C 272 212, 292 210, 316 206", 20, 2],
-    ["M508 114 C 430 66, 370 150, 384 238 C 398 322, 468 356, 526 302", 24, -2],
-    ["M556 84 C 592 150, 616 184, 644 206 M736 78 C 696 160, 656 250, 634 338", 20, 3],
-    ["M906 112 C 828 66, 768 150, 782 238 C 796 322, 866 356, 924 302", 23, -1],
-    ["M986 86 C 982 170, 978 250, 974 332 C 1010 330, 1044 330, 1082 324", 21, 2],
-    ["M1258 92 C 1220 96, 1192 92, 1170 98 C 1166 176, 1164 254, 1162 334 C 1196 330, 1226 332, 1260 326 M1172 214 C 1192 212, 1212 210, 1236 206", 20, -2],
+    ["M60 372 C 76 326, 94 278, 112 232", 12],                                                  // r: up
+    ["M112 232 C 122 216, 142 214, 146 230", 20],                                              //    a short shoulder
+    ["M140 238 C 144 278, 148 320, 152 360", 30],                                               //    down
+    ["M152 360 C 172 318, 198 270, 228 262", 12],                                               // e: up
+    ["M228 262 C 254 258, 258 292, 230 300 C 202 308, 192 340, 214 356 C 232 368, 258 352, 272 336", 27],
+    ["M272 336 C 294 302, 320 272, 350 262", 12],                                               // c: up
+    ["M354 264 C 324 252, 302 286, 306 318 C 310 346, 340 356, 368 332", 27],
+    ["M368 332 C 390 302, 412 270, 434 252", 12],                                               // y: up
+    ["M434 252 C 428 282, 422 312, 430 336 C 438 352, 462 338, 476 314", 23],
+    ["M492 248 C 484 300, 472 370, 456 440", 31],                                               //    the descender, thick
+    ["M456 440 C 448 474, 416 472, 420 446 C 422 428, 442 420, 462 418", 13],                 //    and its thin return
+    ["M462 418 C 502 380, 542 310, 586 262", 11],                                               // c: long up
+    ["M590 264 C 560 252, 538 286, 542 318 C 546 346, 576 356, 604 332", 27],
+    ["M604 332 C 634 292, 664 220, 678 120", 12],                                               // l: tall up
+    ["M678 120 C 684 86, 718 90, 708 132 C 696 186, 668 282, 652 360", 29],                   //    loop and down
+    ["M652 360 C 662 372, 682 366, 694 352", 19],
+    ["M694 352 C 714 314, 740 270, 770 262", 12],                                               // e: up
+    ["M770 262 C 796 258, 800 292, 772 300 C 744 308, 734 340, 756 356 C 774 368, 800 352, 816 336", 27],
+    ["M816 336 C 848 306, 898 290, 954 300", 13],                                               // the flourish out
   ];
-  const recycleSvg = () => `<svg class="recycle" viewBox="0 0 1320 420" aria-hidden="true" focusable="false">${RECYCLE.map(([d, w, rot], i) => `<path d="${d}" pathLength="1" stroke-width="${w}" style="--i:${i}" transform="rotate(${rot} ${(i + 0.5) * 185} 210)"/>`).join("")}</svg>`;
+  const PEN_SPEED = 360;   // viewBox units per second
+  const strokeLength = (d) => { const n = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number); let L = 0; for (let i = 2; i + 1 < n.length; i += 2) L += Math.hypot(n[i] - n[i - 2], n[i + 1] - n[i - 1]); return Math.max(40, L * 0.8); };
+  function recycleSvg() {
+    let at = 0;
+    const paths = RECYCLE.map(([d, w]) => { const t = strokeLength(d) / PEN_SPEED; const html = `<path d="${d}" pathLength="1" stroke-width="${w}" style="--d:${at.toFixed(2)}s;--t:${t.toFixed(2)}s"/>`; at += t; return html; });
+    return `<svg class="recycle" viewBox="-80 50 1080 470" aria-hidden="true" focusable="false"><g transform="skewX(-16)">${paths.join("")}</g></svg>`;   // the skew gives the hand its slant
+  }
   // small drawn marks that end a block of text, the way a signature ends a note: a sun, a cell, a loop of string
   const DOODLES = {
     sun: `<svg class="doodle doodle--sun" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="6.5"/>${Array.from({ length: 8 }, (_, i) => { const a = (i / 8) * Math.PI * 2 + 0.3, r0 = 10.5, r1 = 14 + (i % 3); return `<path d="M${(20 + Math.cos(a) * r0).toFixed(1)} ${(20 + Math.sin(a) * r0).toFixed(1)} L${(20 + Math.cos(a) * r1).toFixed(1)} ${(20 + Math.sin(a) * r1).toFixed(1)}"/>`; }).join("")}</svg>`,
