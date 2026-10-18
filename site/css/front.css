@@ -137,17 +137,7 @@
 }
 
 
-/* the ground: the bench's schematic, fixed behind the page */
-.ground { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.ground__svg { width: 100%; height: 100%; display: block; }
-.ground .gr-lines path, .ground .gr-lines rect, .ground .gr-lines circle { fill: none; stroke: var(--cell); stroke-width: 1.2; opacity: 0.16; }
-.ground .gr-datum { opacity: 0.22; }
-.ground .gr-text text { font-family: var(--font); font-size: 12px; font-stretch: 92%; fill: var(--cell); opacity: 0.4; text-anchor: middle; }
-.ground .gr-text text[x="60"] { text-anchor: start; letter-spacing: 0.08em; font-size: 11px; }
-.ground g > polygon { opacity: 0.18; }
-.ground g > line { opacity: 0.5; }
-.ground g > text { fill: var(--surface); opacity: 0.5; font-family: var(--font); font-size: 16px; font-weight: 600; text-anchor: middle; }
-/* every section sits above the ground; chapters change ground: paper for the problem and the steps, navy for the wirings */
+/* chapters change ground: paper for the problem and the steps, navy for the wirings and the gain */
 body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .problem, .how { background: var(--surface); }
 .problem { padding-block: var(--section); }
@@ -159,10 +149,4 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .strip .wiring__label { color: var(--ink-2); }
 .front-band { padding-top: calc(var(--section) * 0.5); }
 .hero__pin { z-index: 1; }
-@media (max-width: 760px) {
-  /* at phone scale the schematic sits right behind the words: lines only, softer */
-  .ground .gr-text { display: none; }
-  .ground .gr-lines path, .ground .gr-lines rect, .ground .gr-lines circle { opacity: 0.1; }
-  .ground g > polygon { opacity: 0.1; }
-  .ground g > text { display: none; }
 }

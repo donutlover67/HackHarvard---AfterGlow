@@ -123,9 +123,9 @@ window.SSMotion = (function () {
       // a beat on wiring A first, then the swap through the middle, then the wires redraw and the gain counts, then a hold
       const cells = smooth((p - 0.16) / 0.44);                                             // the swap, 16% to 60%
       const wires = p < 0.12 ? 1 : p < 0.34 ? 1 - (p - 0.12) / 0.22 : clamp01((p - 0.62) / 0.2);   // erased as the cells start, redrawn once they land
-      const g = clamp01((p - 0.72) / 0.23);                                                // the plate and the numeral, 72% to 95%
+      const g = cells;                                                                     // the plate and the numeral rise with the swap itself
       setVars(cells, wires, g);
-      if (numEl) numEl.textContent = `+${Math.round(gain() * easeOut(g))}%`;
+      if (numEl) numEl.textContent = `+${Math.round(gain() * g)}%`;   // in step with the cells, not ahead of them
       if (scrollWord) scrollWord.classList.toggle("is-gone", p > 0.06);
       if (hook) hook(p);
     };
