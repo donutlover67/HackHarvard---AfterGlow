@@ -61,8 +61,34 @@ window.SSMotion = (function () {
     const y = scrollY, max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
     const sun = $(".nav__sun");
     if (sun) sun.style.setProperty("--p", clamp01(y / max).toFixed(3));
-    const hero = route === "index" && $(".hero--full");
-    nav.classList.toggle("is-tucked", !!hero && y < innerHeight * 0.25);
+    nav.classList.toggle("is-scrolled", y > 8);
+    // never tuck the header — keep it visible while scrolling
+    nav.classList.remove("is-tucked");
+  }
+  function initSpaceLayer() {
+    const layer = document.querySelector(".space-layer");
+    if (!layer || document.body.dataset.page !== "front") return;
+    const stars = layer.querySelector(".space-layer__stars");
+    const meteors = layer.querySelector(".space-layer__meteors");
+    if (stars && !stars.children.length) {
+      for (let i = 0; i < 40; i++) {
+        const s = document.createElement("span");
+        s.className = "star";
+        s.style.left = Math.random() * 100 + "%";
+        s.style.top = Math.random() * 100 + "%";
+        s.style.animationDelay = Math.random() * 3 + "s";
+        stars.appendChild(s);
+      }
+    }
+    if (meteors && !meteors.children.length) {
+      for (let i = 0; i < 3; i++) {
+        const m = document.createElement("span");
+        m.className = "meteor";
+        m.style.animationDelay = i * 2.7 + "s";
+        m.style.top = Math.random() * 40 + "%";
+        meteors.appendChild(m);
+      }
+    }
   }
   function init() {
     document.documentElement.classList.add(reduced() ? "reduced" : "has-motion");
@@ -70,6 +96,7 @@ window.SSMotion = (function () {
     addEventListener("scroll", onNav, { passive: true });
     addEventListener("resize", onNav, { passive: true });
     updateNav();
+    initSpaceLayer();
     hidden = document.hidden;
     document.addEventListener("visibilitychange", () => {
       hidden = document.hidden;

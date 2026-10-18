@@ -146,7 +146,18 @@
 }
 
 
-/* chapters change ground: paper for the problem and the steps, navy for the wirings and the gain */
+/* space-inspired scrolling graphics (inspired by HackHarvard site) — additive only, never overrides existing drawings */
+.space-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.space-layer__stars, .space-layer__meteors { position: absolute; inset: 0; }
+.star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: 0.4; animation: twinkle 3s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: 0.9; } }
+.meteor { position: absolute; width: 120px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6)); transform: rotate(-25deg); opacity: 0; animation: meteor 8s linear infinite; }
+@keyframes meteor { 0% { transform: translate(100vw, -20vh) rotate(-25deg); opacity: 0; } 10% { opacity: 0.7; } 100% { transform: translate(-20vw, 100vh) rotate(-25deg); opacity: 0; } }
+body[data-page="front"] .space-layer { display: block; }
+.space-layer { display: none; }
+
+/* floating planets that drift on scroll (parallax via JS) */
+.float-planet { position: absolute; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f2b705, #15224a); opacity: 0.15; pointer-events: none; filter: blur(1px); }
 body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .problem, .how { background: var(--surface); }
 .problem { padding-block: var(--section); }

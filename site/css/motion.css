@@ -47,7 +47,10 @@ a, .btn, .nav__links a, .pool label, .chipcell, .field input, .field select, .fi
 .batch__row:nth-child(3) .batch__bar { animation-delay: calc(var(--m-stagger) * 4); }
 .batch__row:nth-child(n + 4) .batch__bar { animation-delay: calc(var(--m-stagger) * 5); }
 
-/* an import that fails says so with a small shake */
+@media (prefers-reduced-motion: reduce) {
+  .space-layer, .nav__sun { animation: none !important; }
+  .star, .meteor { animation: none !important; opacity: 0.3; }
+}
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-5px); }
