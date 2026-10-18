@@ -139,3 +139,13 @@ The owner found the 280 vh pinned hero read as the page refusing to scroll. The 
 ### Amendment: the navbar and dollars (Oct 17, night)
 - **Navbar**: the ui-refresh branch's own code, pasted line for line (its site.css lines 25-29, 206-210, 352-358, 141, 260-263 and 268, its header markup, its `updateNav` in motion.js); `test/house.test.js` fails if any of those lines drift. Its hero tuck keys off `.hero--full`, which this site does not have, so the nav shows on load. Its rem sizes sit on this page's root, which grows on big screens, so the nav runs a little larger here than on their branch.
 - **Dollars.** The lab-test figures show in US dollars: €16–31 → $17–34, €50 → about $55 (about 1.08 $/€); the impact page keeps the euro source figures in brackets. Docs outside `site/` (spec-v2, runbook) still quote the euro sources; they belong to D.
+
+### Amendment: the Lando Norris pass (Oct 17, late night)
+The owner asked for the artistic devices of landonorris.com (a 30 s screen recording, kept out of the repo) applied to the front page. Mapped onto our palette and content, in six commits:
+1. **Portal hero.** On large screens the hero pins for most of a screen while `--q` runs: the headline fades, the drawn cell shrinks into a centred framed box and dims, the ground turns navy, two giant lines (amber light, paper bold) pass behind, an amber string signs itself across the frame (`portal` in motion.js). The re-pairing moved to its own navy `.repair` section, unpinned.
+2. **Block wipes.** Amber blocks sweep across the headline lines and section titles, alternating direction; one hollow outlined word ("work."). Replaces the masked line rise.
+3. **Contours.** Winding single-weight lines a few shades off the ground behind every chapter, drifting over 90 s; ink on paper, paper on navy, one set crossing into the other inside the portal.
+4. **Doodles.** A drawn sun, cell and loop of string end the problem text, the last step and the gain note.
+5. **Inversion and collage.** The navy strip and gain band meet the paper on a shallow 40 px curve; the passport cards sit at different heights in a row wider than the page that pans diagonally with the scroll, grey until hovered or near the middle of the screen.
+6. **The window under the skin.** Over a fine pointer a liquid clip window follows the cursor across the cell and shows its electroluminescence view.
+Their morphing menu button was not taken: the navbar is the teammate's code, line for line, by the owner's instruction. Phones and reduced motion keep the plain first screen, visible words, still contours and no window.
