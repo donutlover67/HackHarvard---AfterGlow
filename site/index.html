@@ -23,7 +23,31 @@
   </header>
   <main id="view" class="view"></main>
   <footer class="foot">
-    <p>Measurements come from the Afterglow bench: every panel's short-circuit current at the same instant, its open-circuit voltage, then a sweep of each wiring. Grades compare panels measured together under the same light. Demo panels are simulated and always labelled as such.</p>
+    <div class="foot__in">
+      <div class="foot__grid">
+        <div class="foot__main">
+          <a class="foot__brand" href="#/">
+            <svg class="foot__mark" viewBox="0 0 32 32" fill="none" stroke-linecap="round" aria-hidden="true"><path d="M5.5 17.5a10.5 10.5 0 0 1 21 0" stroke="#f2b705" stroke-width="2" opacity="0.5"/><path d="M9.5 17.5a6.5 6.5 0 0 1 13 0z" fill="#f2b705"/><path d="M3 17.5h26" stroke="#fff" stroke-width="2.4"/><path d="M9.5 22h13M13 26h6" stroke="#fff" stroke-width="2"/></svg>
+            <span>Afterglow</span>
+          </a>
+          <p class="foot__line">Grades used solar panels against each other, then wires them for the most power.</p>
+          <p class="foot__note">Measurements come from the Afterglow bench: every panel's short-circuit current at the same instant, its open-circuit voltage, then a sweep of each wiring. Grades compare panels measured together under the same light. Demo panels are simulated and always labelled as such.</p>
+        </div>
+        <nav class="foot__links" aria-label="Pages">
+          <a href="#/passports">Passports</a>
+          <a href="#/build">Array Builder</a>
+          <a href="#/impact">Impact</a>
+          <a href="#/reuse">Second Use</a>
+          <a href="https://github.com/mscl741/HackHarvard" rel="noopener">Source</a>
+        </nav>
+      </div>
+      <p class="foot__base"><span>Built at HackHarvard 2026</span><span>Sources: NREL; IEA PVPS Task 13</span></p>
+    </div>
+    <svg class="foot__sun" viewBox="0 0 800 200" aria-hidden="true" focusable="false">
+      <circle cx="400" cy="200" r="196" fill="none" stroke="#f2b705" stroke-width="2" opacity="0.14"/>
+      <circle cx="400" cy="200" r="156" fill="none" stroke="#f2b705" stroke-width="2" opacity="0.26"/>
+      <circle cx="400" cy="200" r="114" fill="#f2b705"/>
+    </svg>
   </footer>
   <script src="vendor/qrcode.js"></script>
   <script src="js/model.js"></script>

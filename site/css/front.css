@@ -139,10 +139,7 @@ html.is-intro .hero.is-placed .hero__panel { translate: 0 0; opacity: 1; }
 .teaser__text { font-size: 1.15rem; max-width: 46ch; }
 
 /* close */
-.close { background: var(--surface); padding: var(--section) 0 40px; }
-.close__name { font-size: var(--display); font-weight: 700; font-stretch: 118%; letter-spacing: -0.03em; line-height: 0.95; color: var(--cell); }
-.close__line { font-size: 1.2rem; margin-top: 22px; max-width: var(--measure); }
-.close__note { margin-top: 24px; max-width: var(--measure); }
+.close { background: var(--surface); padding: 40px 0 48px; }
 
 @media (max-width: 900px) {
   .ppass-row { grid-template-columns: repeat(2, 1fr); }
@@ -241,7 +238,7 @@ html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-mot
 .fn a { color: var(--ink-2); text-decoration: none; font-weight: 600; }
 .fn a:hover { color: var(--cell); text-decoration: underline; }
 .band .fn a, .strip .fn a { color: rgba(255, 255, 255, 0.7); }
-.footnotes { margin: 56px auto 0; padding-top: 12px; border-top: 1px solid var(--busbar-2); padding-left: calc(var(--gutter) + 1.2em); display: grid; gap: 2px; font-size: 0.7rem; line-height: 1.4; color: var(--ink-3); max-width: var(--wrap); }
+.footnotes { margin: 0 auto; padding-top: 12px; border-top: 1px solid var(--busbar-2); padding-left: calc(var(--gutter) + 1.2em); display: grid; gap: 2px; font-size: 0.7rem; line-height: 1.4; color: var(--ink-3); max-width: var(--wrap); }
 .footnotes li { padding-left: 2px; }
 .footnotes a { color: var(--ink-2); text-decoration-color: var(--busbar-2); }
 .footnotes a:hover { color: var(--cell); }

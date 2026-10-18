@@ -577,6 +577,17 @@
           </ul>
         </div>
       </section>
+      <section class="imp-part" data-day="0.79" data-in>
+        <div class="wrap imp-part__in">
+          <h2 class="title">For governments</h2>
+          <p class="imp-part__text">Cities, schools and public agencies own roofs, shelters and street furniture that could make power, and they answer for the panels their region throws away. Graded used panels let a public budget buy more solar per dollar, each with a passport to check it against, and the weakest ones can still run sensors, chargers and emergency kits through <a href="#/reuse">Second Use</a>. Where take-back rules already cover panels (the EU counts them as electronic waste under its WEEE directive), a cheap test lets reuse come before recycling.</p>
+          <ul class="imp-points">
+            <li>More solar per public dollar on public roofs</li>
+            <li>A measured record for every panel bought</li>
+            <li>Reuse before recycling, with counts to report</li>
+          </ul>
+        </div>
+      </section>
       <section class="imp-sum" data-day="0.86" data-in>
         <div class="wrap">
           <h2 class="title">In short</h2>

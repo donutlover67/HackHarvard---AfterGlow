@@ -357,11 +357,8 @@ window.SSFront = (function () {
       { text: "Afterglow, panel model and bench method.", url: "https://github.com/mscl741/HackHarvard" } ] },
   ];
   const cite = (c) => c.url ? `<a href="${c.url}" rel="noopener">${c.text}</a>` : c.text;
-  const close = () => `<section class="close" data-in><div class="wrap">
-      <p class="close__name">Afterglow</p>
-      <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>
-      <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
-    </div>
+  // the page's name, line and note are in the site footer (index.html), which follows straight after
+  const close = () => `<section class="close" data-in>
     <ol class="footnotes wrap" aria-label="Notes and sources">${FOOTNOTES.map((f, i) => `<li id="fn-${i + 1}">${f.note} ${f.cites.map(cite).join(" · ")}</li>`).join("")}</ol>
   </section>`;
 

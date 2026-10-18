@@ -71,10 +71,8 @@ body.has-hero .nav { position: fixed; left: 0; right: 0; top: 0; }
 body.has-hero .nav.is-tucked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 body.has-hero .view { padding-top: 0; }
 .view { max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 64px; }
-.foot { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter) 48px; color: var(--ink-3); font-size: 0.85rem; }
 /* the front page lays out its own full-width sections and ends with its own close */
 body[data-page="front"] .view { max-width: none; padding: 0; }
-body[data-page="front"] .foot { display: none; }
 .wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: var(--gutter); }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .stack { display: grid; gap: 12px; }
@@ -341,7 +339,6 @@ details.adjust[open] summary { margin-bottom: 6px; }
 /* ---------- the Impact page (from the bryanchanges branch): why more solar, for businesses and households. Its sections
    are full width like the front page's; the sky layer that branch drew behind them is not taken. ---------- */
 body[data-page="impact"] .view { max-width: none; padding: 0; }
-body[data-page="impact"] .foot { display: none; }
 .imp-open { min-height: calc(100svh - 64px); display: grid; align-content: center; position: relative; padding-block: clamp(56px, 8vh, 96px) clamp(88px, 12vh, 128px); }
 .imp-open__in { display: grid; gap: 28px; }
 .imp-head { font-size: clamp(2.6rem, 7vw, 6.4rem); max-width: 12ch; }
@@ -408,4 +405,28 @@ body[data-page="impact"] .foot { display: none; }
   .nav__links { flex: 0 0 calc(100% + 24px); max-width: none; flex-wrap: nowrap; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-inline: -12px; padding: 2px 12px; font-size: 0.88rem; }
   .nav__links::-webkit-scrollbar { display: none; }
   .nav__links a { flex: none; padding: 7px 13px; font-size: 0.88rem; }
+}
+
+/* ---------- the footer, on every page: navy, the Afterglow mark and name, the pages, the bench note, and a sun
+   setting into the bottom edge of the page ---------- */
+.foot { position: relative; overflow: hidden; background: var(--cell); color: rgba(255, 255, 255, 0.72); padding: clamp(56px, 7vw, 96px) 0 0; margin-top: clamp(32px, 5vw, 64px); border-radius: 28px 28px 0 0; }
+body[data-page="front"] .foot { margin-top: 0; border-radius: 0; }
+.foot__in { position: relative; z-index: 1; max-width: var(--wrap); margin: 0 auto; padding-inline: var(--gutter); }
+.foot__grid { display: grid; grid-template-columns: 1fr auto; gap: 32px 64px; align-items: start; }
+.foot__brand { display: inline-flex; align-items: center; gap: clamp(10px, 1.4vw, 18px); color: #fff; text-decoration: none; font-size: clamp(2.4rem, 5.5vw, 4.6rem); font-weight: 700; font-stretch: 118%; letter-spacing: -0.03em; line-height: 1; }
+.foot__mark { width: 1.1em; height: 1.1em; flex: none; }
+.foot__links { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding-top: 8px; }
+.foot__links a { color: #fff; text-decoration: none; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 999px; font-size: 0.92rem; font-weight: 500; }
+.foot__links a:hover, .foot__links a:focus-visible { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
+.foot__line { margin-top: 28px; font-size: clamp(1.1rem, 1.5vw, 1.3rem); color: #fff; max-width: 40ch; line-height: 1.4; }
+.foot__note { margin-top: 16px; font-size: 0.85rem; max-width: var(--measure); line-height: 1.55; }
+.foot__base { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; margin-top: 40px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.16); font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
+.foot__sun { display: block; width: min(100%, 720px); height: auto; margin: 32px auto 0; }
+@media (max-width: 760px) {
+  .foot__grid { grid-template-columns: 1fr; }
+  .foot__links { flex-direction: row; flex-wrap: wrap; align-items: center; padding-top: 0; }
+}
+@media (max-width: 480px) {
+  .foot { border-radius: 20px 20px 0 0; }
+  .foot__links a { padding: 7px 13px; font-size: 0.86rem; }
 }
