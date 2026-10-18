@@ -32,7 +32,7 @@
   .hero__caption { display: block; }
 }
 @media (min-width: 900px) and (min-height: 700px) {
-  .hero { min-height: 200vh; }
+  .hero { min-height: 280vh; }   /* almost two screens of scroll for the re-pairing to read */
   .hero__pin { position: sticky; top: 0; min-height: 100vh; grid-template-columns: 5fr 6fr; grid-template-areas: "slot text" "diagram diagram" "caption caption" "scroll scroll"; gap: 20px 56px; align-content: center; padding: 48px var(--gutter) 24px; }
   .hero__slot { width: min(100%, calc(44vh * 4 / 3)); justify-self: start; align-self: center; }
   .hero__text { padding-right: 24px; }

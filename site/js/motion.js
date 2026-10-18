@@ -120,18 +120,19 @@ window.SSMotion = (function () {
     const pinned = () => getComputedStyle(hero.querySelector(".hero__pin") || hero).position === "sticky";
     const apply = (p) => {
       raw = p;
-      const cells = smooth((p - 0.1) / 0.6);                                   // the swap
-      const wires = p < 0.3 ? 1 - p / 0.3 : clamp01((p - 0.55) / 0.35);        // erased while the cells move, redrawn as they land
-      const g = clamp01((p - 0.55) / 0.35);                                     // the plate and the numeral
+      // a beat on wiring A first, then the swap through the middle, then the wires redraw and the gain counts, then a hold
+      const cells = smooth((p - 0.16) / 0.44);                                             // the swap, 16% to 60%
+      const wires = p < 0.12 ? 1 : p < 0.34 ? 1 - (p - 0.12) / 0.22 : clamp01((p - 0.62) / 0.2);   // erased as the cells start, redrawn once they land
+      const g = clamp01((p - 0.72) / 0.23);                                                // the plate and the numeral, 72% to 95%
       setVars(cells, wires, g);
       if (numEl) numEl.textContent = `+${Math.round(gain() * easeOut(g))}%`;
-      if (scrollWord) scrollWord.classList.toggle("is-gone", p > 0.1);
+      if (scrollWord) scrollWord.classList.toggle("is-gone", p > 0.06);
       if (hook) hook(p);
     };
     function update() {
       const vh = innerHeight;
       // pinned: progress through the hero's extra screen; otherwise: how far the diagram has risen into view
-      const p = pinned() ? progressOf(hero.getBoundingClientRect(), vh) : clamp01(1 - (diagram.getBoundingClientRect().top - vh * 0.15) / (vh * 0.6));
+      const p = pinned() ? progressOf(hero.getBoundingClientRect(), vh) : clamp01(1 - (diagram.getBoundingClientRect().top - vh * 0.08) / (vh * 0.85));
       if (p !== raw) apply(p);
     }
     const onScroll = rafThrottle(update);
