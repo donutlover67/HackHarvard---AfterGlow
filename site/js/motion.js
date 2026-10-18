@@ -1,5 +1,5 @@
 // The motion layer: entrances, count-ups, the hero re-pairing, the headline reveal, the steps, the horizontal strip, route
-// slides, and (hero3d) the loader for the three.js slab. Transform, opacity, colour and filter only.
+// slides, and (heroPanel) the drawn cell that follows the pointer. Transform, opacity, colour and filter only.
 // Readers who prefer reduced motion, or open ?motion=off, get the end states at once; loops pause while
 // the tab is hidden. Nothing here touches the document at load, so bun can test the pure parts.
 window.SSMotion = (function () {
@@ -20,7 +20,6 @@ window.SSMotion = (function () {
     return parts;
   }
   const formatCount = (parts, t) => parts.map((p) => (typeof p === "string" ? p : (p.n * t).toFixed(p.d))).join("");
-  const decide3D = (env) => !!env.webgl && !env.reduced && !env.saveData && !env.forceSvg && !(typeof env.deviceMemory === "number" && env.deviceMemory < 2);
   // how far a pinned region has been scrolled through: 0 at its top, 1 when only one viewport of it is left
   function progressOf(rect, viewportH) {
     const room = rect.height - viewportH;
@@ -138,8 +137,9 @@ window.SSMotion = (function () {
     const onScroll = rafThrottle(update);
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onScroll);
+    addEventListener("pageshow", onScroll);   // a reload restores the scroll position after the first measure
     update();
-    return { setHook(fn) { hook = fn; if (raw >= 0) fn(raw); }, progress: () => Math.max(0, raw), redraw() { if (raw >= 0) apply(raw); else update(); }, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); } };
+    return { setHook(fn) { hook = fn; if (raw >= 0) fn(raw); }, progress: () => Math.max(0, raw), redraw() { if (raw >= 0) apply(raw); else update(); }, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); removeEventListener("pageshow", onScroll); } };
   }
 
   // ---------- the strip: on fine pointers the section pins; the first stretch of scroll zooms the wirings in and
@@ -276,37 +276,47 @@ window.SSMotion = (function () {
     }, 160));
   }
 
-  // ---------- the three.js slab: hero3d.js, imported after first paint, only on the front page ----------
-  const hero3dSlots = new WeakMap();
-  function hero3d(slot, rp) {
-    if (!slot) return () => {};
-    const probe = document.createElement("canvas");
-    const env = { webgl: !!(probe.getContext("webgl2") || probe.getContext("webgl")), reduced: reduced(), saveData: !!(navigator.connection && navigator.connection.saveData), deviceMemory: navigator.deviceMemory, forceSvg: forceSvg() };
-    if (!decide3D(env)) return () => {};
-    let ctl = hero3dSlots.get(slot) || null, dead = false, io = null;
-    const connect = () => {
-      if (!ctl) return;
-      rp.setHook((k) => ctl.setProgress(k));
-      if (typeof IntersectionObserver === "function") { io = new IntersectionObserver((es) => es.forEach((e) => ctl.setVisible(e.isIntersecting && !document.hidden)), { threshold: 0 }); io.observe(slot); }
-      visibilityHooks.add(onVis);
+  // ---------- the drawn cell follows the pointer ----------
+  // It leans toward the pointer (a CSS perspective transform on the svg), its shadow slides away from the sun, and the
+  // sunlit corner of its face reaches further the more the face turns up and left, toward the sun. Left alone it sways
+  // slowly. Nothing runs off screen, in a hidden tab, or under reduced motion.
+  function heroPanel(slot) {
+    const panel = slot && slot.querySelector(".hero__panel"), poly = slot && slot.querySelector("[data-lit-poly]");
+    if (!panel) return () => {};
+    const pose = (nx, ny) => {
+      const lit = clamp01(0.5 - nx * 0.28 - ny * 0.24), reach = 0.3 + lit * 1.1;
+      panel.style.setProperty("--tx", (14 - ny * 7).toFixed(2)); panel.style.setProperty("--ty", (nx * 9).toFixed(2));
+      panel.style.setProperty("--sx", (10 + nx * 7).toFixed(1)); panel.style.setProperty("--sy", (12 + ny * 6).toFixed(1));
+      if (poly) poly.setAttribute("points", `0,0 ${Math.round(540 * reach)},0 0,${Math.round(405 * reach)}`);
     };
-    const onVis = (visible) => { if (ctl) ctl.setVisible(visible); };
-    const start = () => {
-      if (dead || ctl) { connect(); return; }
-      // a dynamic import in a classic script resolves against this script's URL (site/js/), not the page's
-      import("./hero3d.js").then((mod) => {
-        if (dead) return;
-        ctl = mod.mount(slot, { touch: matchMedia("(pointer: coarse)").matches });
-        hero3dSlots.set(slot, ctl);
-        slot.classList.add("has-3d");
-        connect();
-      }).catch((err) => { console.warn("hero3d stays off:", err && err.message); });
+    if (reduced()) { pose(-0.3, -0.3); return () => {}; }
+    let px = 0, py = 0, cx = 0, cy = 0, raf = 0, lastMove = 0, onScreen = true, dead = false;
+    const frame = (now) => {
+      raf = 0;
+      if (dead || !onScreen || hidden) return;
+      const idle = now - lastMove > 1800;
+      const tx = idle ? 0.35 * Math.sin(now / 3800) - 0.15 : px, ty = idle ? 0.25 * Math.cos(now / 4700) - 0.1 : py;
+      cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
+      pose(cx, cy);
+      raf = requestAnimationFrame(frame);
     };
-    if (typeof requestIdleCallback === "function") requestIdleCallback(start, { timeout: 600 }); else setTimeout(start, 300);
-    return () => { dead = true; if (io) io.disconnect(); visibilityHooks.delete(onVis); if (ctl) { ctl.dispose(); hero3dSlots.delete(slot); slot.classList.remove("has-3d"); ctl = null; } };
+    const wake = () => { if (!raf && !dead && onScreen && !hidden) raf = requestAnimationFrame(frame); };
+    const onPointer = (e) => {
+      const r = slot.getBoundingClientRect();
+      if (!r.width) return;
+      px = Math.max(-1, Math.min(1, ((e.clientX - (r.left + r.width / 2)) / r.width) * 2));
+      py = Math.max(-1, Math.min(1, ((e.clientY - (r.top + r.height / 2)) / r.height) * 2));
+      lastMove = performance.now(); wake();
+    };
+    document.addEventListener("pointermove", onPointer, { passive: true });
+    const io = typeof IntersectionObserver === "function" ? new IntersectionObserver((es) => es.forEach((e) => { onScreen = e.isIntersecting; wake(); }), { threshold: 0 }) : null;
+    if (io) io.observe(slot);
+    const onVis = (visible) => { if (visible) wake(); };
+    visibilityHooks.add(onVis);
+    wake();
+    return () => { dead = true; if (raf) cancelAnimationFrame(raf); if (io) io.disconnect(); visibilityHooks.delete(onVis); document.removeEventListener("pointermove", onPointer); };
   }
 
-  // ---------- per page ----------
   function mount(view, page) {
     const cleanups = [];
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
@@ -320,7 +330,7 @@ window.SSMotion = (function () {
       stepsCtl = safe(() => stepsDriver(view));
       safe(() => revealHero(view));
       safe(() => watchReveal(view));
-      if (rp) safe(() => hero3d(view.querySelector("[data-hero-slot]"), rp));
+      safe(() => heroPanel(view.querySelector("[data-hero-slot]")));
     }
     // if anything above failed, nothing may stay hidden
     if (!reduced()) setTimeout(() => {
@@ -335,5 +345,5 @@ window.SSMotion = (function () {
     };
   }
 
-  return { init, mount, transition, reduced, parseCount, formatCount, easeOut, decide3D, supports, progressOf };
+  return { init, mount, transition, reduced, parseCount, formatCount, easeOut, supports, progressOf };
 })();

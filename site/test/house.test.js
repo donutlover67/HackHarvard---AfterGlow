@@ -1,5 +1,5 @@
 // House rules for the passport site, checked as files: nothing remote, no gradients or shadows,
-// the print rules intact, the vendored three.js a single minified module. Run: bun test site/test
+// the print rules intact. Run: bun test site/test
 import { test, expect } from "bun:test";
 import { readdirSync } from "node:fs";
 
@@ -14,14 +14,6 @@ test("every stylesheet has balanced braces (a stray brace silently drops the nex
   }
 });
 
-test("three.js is vendored as one minified module with its licence", async () => {
-  const f = Bun.file(root + "vendor/three.module.min.js");
-  expect(f.size).toBe(691648);
-  const src = await f.text();
-  expect(src).toContain("Copyright 2010-2024 Three.js Authors");
-  expect(/from"\.\//.test(src)).toBe(false);
-  expect(await read("vendor/three-LICENSE.txt")).toContain("MIT License");
-});
 
 test("nothing loads from the internet", async () => {
   const html = await read("index.html");

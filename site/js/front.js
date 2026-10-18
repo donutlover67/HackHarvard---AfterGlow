@@ -17,34 +17,51 @@ window.SSFront = (function () {
     const bus = [0.3, 0.7].map((f) => `<line x1="${x + w * f}" y1="${y + 2}" x2="${x + w * f}" y2="${y + h - 2}" stroke="rgba(255,255,255,0.42)" stroke-width="1.5"/>`).join("");
     return `<polygon points="${pts}" fill="var(--cell)"/>${fingers}${bus}${strong ? "" : `<polygon points="${pts}" fill="var(--film)"/>`}<text x="${x + w / 2}" y="${y + h / 2 + 5}" text-anchor="middle">${n}</text>`;
   }
-  // the hero slab as an svg (the fallback when three.js stays off): the cell at 4:3 and a light band the scroll moves across it
-  // a hand-drawn sun in the slab's top left corner (the slot's own 400x300 frame), with three beams of light
-  // that run down onto the panel's top face; the panel is painted over them, so the light ends where it lands
+  // The hero's drawing. Both svgs share the slot's box; the sun's frame reaches 14% above it (400x342 against the
+  // panel's 400x300, so nothing is stretched), which puts the sun in the hero's top left corner without meeting text.
+  // The panel is drawn after the sun, so the beams end where they land on its face.
+  const SUN = { cx: 30, cy: 58, r: 18 };   // above and left of the face's corner; clear of the nav and the viewport's edge at 1920x1080 and 1440x900
+  const FACE = { x: 48, y: 64, w: 304, h: 172, c: 30 };
   function sunSvg() {
-    const cx = 34, cy = 30;
+    const { cx, cy, r } = SUN;
     const rays = Array.from({ length: 11 }, (_, i) => {
-      const a = (i / 11) * Math.PI * 2 - 0.4, len = 7 + ((i * 7) % 5);   // uneven lengths, as if drawn by hand
-      const r0 = 25 + ((i * 3) % 3);
-      const p = (r) => `${(cx + Math.cos(a) * r).toFixed(1)} ${(cy + Math.sin(a) * r).toFixed(1)}`;
+      const a = (i / 11) * Math.PI * 2 - 0.4, len = 7 + ((i * 7) % 5), r0 = r + 7 + ((i * 3) % 3);   // uneven, as if drawn by hand
+      const p = (rr) => `${(cx + Math.cos(a) * rr).toFixed(1)} ${(cy + Math.sin(a) * rr).toFixed(1)}`;
       return `<path d="M${p(r0)} L${p(r0 + len)}"/>`;
     }).join("");
-    return `<svg class="hero__sun" viewBox="0 0 400 300" aria-hidden="true" focusable="false">
+    // three beams fan out from the disc's edge and run down onto the face (sun frame = panel frame shifted down by 42)
+    const beams = [[130, 172], [205, 156], [285, 146]].map(([ex, ey], i) => {
+      const a = Math.atan2(ey - cy, ex - cx), sx = cx + Math.cos(a) * (r + 9), sy = cy + Math.sin(a) * (r + 9);
+      const mx = (sx + ex) / 2, my = (sy + ey) / 2 - 12;   // a slight sag, like a drawn line
+      return `<path class="sun__beam" style="--b:${i}" d="M${sx.toFixed(1)} ${sy.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex} ${ey}"/>`;
+    }).join("");
+    const d = `M${cx} ${cy - r} C${cx + 12} ${cy - r - 1} ${cx + r + 1} ${cy - 11} ${cx + r} ${cy + 1} C${cx + r - 1} ${cy + 13} ${cx + 10} ${cy + r + 1} ${cx - 1} ${cy + r} C${cx - 13} ${cy + r - 1} ${cx - r - 1} ${cy + 10} ${cx - r} ${cy - 1} C${cx - r + 1} ${cy - 12} ${cx - 11} ${cy - r + 1} ${cx} ${cy - r} Z`;
+    return `<svg class="hero__sun" viewBox="0 0 400 342" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <g class="sun__rays">${rays}</g>
-      <path class="sun__disc" d="M34 10 C46 9 55 19 54 31 C53 43 44 51 33 50 C21 49 13 40 14 29 C15 18 23 11 34 10 Z"/>
-      <g class="sun__beams">
-        <path class="sun__beam" style="--b:0" d="M52 46 Q 90 58 126 80"/>
-        <path class="sun__beam" style="--b:1" d="M58 38 Q 130 50 200 76"/>
-        <path class="sun__beam" style="--b:2" d="M60 28 Q 160 40 268 72"/>
-      </g>
+      <path class="sun__disc" d="${d}"/>
+      <g class="sun__beams">${beams}</g>
     </svg>`;
   }
-
-  function slabSvg() {
-    const w = 400, h = 300, pts = octagon(0, 0, w, h, 36);
+  // the cell as a drawing: its shadow, its thickness, its face with fingers and busbars, and the sunlight on the face
+  // as an amber wash and hatching from the top left corner, whose reach motion.js sets from the way the panel turns
+  function panelSvg() {
+    const { x, y, w, h, c } = FACE, face = octagon(x, y, w, h, c);
     let fingers = "";
-    for (let y = 14; y < h - 6; y += 11) fingers += `<line x1="8" y1="${y}" x2="${w - 8}" y2="${y}" stroke="rgba(255,255,255,0.09)" stroke-width="1.5"/>`;
-    const bus = [0.25, 0.5, 0.75].map((f) => `<line x1="${w * f}" y1="4" x2="${w * f}" y2="${h - 4}" stroke="rgba(255,255,255,0.42)" stroke-width="5"/>`).join("");
-    return `<svg class="hero__svg" viewBox="0 0 ${w} ${h}" aria-hidden="true" focusable="false"><defs><clipPath id="hero-clip"><polygon points="${pts}"/></clipPath></defs><polygon points="${pts}" fill="var(--cell)"/>${fingers}${bus}<polygon class="hero__sweep" points="-150,0 -60,0 -200,300 -290,300" fill="rgba(255,255,255,0.16)" clip-path="url(#hero-clip)"/></svg>`;
+    for (let fy = y + 12; fy < y + h - 6; fy += 10) fingers += `<path d="M${x + 8} ${fy} Q ${x + w / 2} ${fy + ((fy / 10) % 2 ? 0.8 : -0.8)} ${x + w - 8} ${fy}" stroke="rgba(255,255,255,0.1)" stroke-width="1.4"/>`;
+    const bus = [0.25, 0.5, 0.75].map((f) => `<line x1="${x + w * f}" y1="${y + 4}" x2="${x + w * f}" y2="${y + h - 4}" stroke="rgba(255,255,255,0.46)" stroke-width="5"/>`).join("");
+    let hatch = "";
+    for (let hx = x - h; hx < x + w; hx += 13) hatch += `<line x1="${hx}" y1="${y + h}" x2="${hx + h}" y2="${y}"/>`;   // 45° strokes, lit from the top left
+    return `<svg class="hero__panel" viewBox="0 0 400 300" aria-hidden="true" focusable="false">
+      <defs>
+        <clipPath id="pnl-face"><polygon points="${face}"/></clipPath>
+        <clipPath id="pnl-lit"><polygon data-lit-poly points="0,0 400,0 0,300"/></clipPath>
+      </defs>
+      <polygon class="pnl__shadow" points="${face}" fill="var(--ink)" opacity="0.12"/>
+      <polygon points="${octagon(x, y + 9, w, h, c)}" fill="#0e1838"/>
+      <polygon points="${face}" fill="var(--cell)" stroke="#0e1838" stroke-width="2.5" stroke-linejoin="round"/>
+      <g clip-path="url(#pnl-face)" fill="none">${fingers}${bus}</g>
+      <g class="pnl__lit" clip-path="url(#pnl-face)"><g clip-path="url(#pnl-lit)"><polygon points="${face}" fill="var(--sun)" opacity="0.2"/><g stroke="var(--sun)" stroke-width="1.8" opacity="0.55" stroke-linecap="round">${hatch}</g></g></g>
+    </svg>`;
   }
   // four cells in two rows for one wiring; strong: the panel numbers drawn without film
   function wiringSvg(letter, strong) {
@@ -87,7 +104,7 @@ window.SSFront = (function () {
   function hero(ctx, gain) {
     return `<section class="hero" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
       <div class="hero__pin">
-        <div class="hero__slot grow" data-reveal data-hero-slot>${sunSvg()}${slabSvg()}</div>
+        <div class="hero__slot grow" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
         <div class="hero__text">
           <h1 class="display" data-reveal><span class="line"><span class="line__in">Used panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
           <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>

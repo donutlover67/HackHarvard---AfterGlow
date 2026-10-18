@@ -5,7 +5,7 @@ import { test, expect } from "bun:test";
 const root = new URL("..", import.meta.url).pathname;
 const win = { matchMedia: () => ({ matches: false, addEventListener() {} }), location: { search: "" } };
 new Function("window", await Bun.file(root + "js/motion.js").text())(win);
-const { parseCount, formatCount, easeOut, decide3D, progressOf, supports } = win.SSMotion;
+const { parseCount, formatCount, easeOut, progressOf, supports } = win.SSMotion;
 
 test("count-ups keep every non-numeric character and scale each number", () => {
   expect(formatCount(parseCount("80–88%"), 0.5)).toBe("40–44%");
@@ -23,12 +23,6 @@ test("easeOut is a cubic ease-out", () => {
   expect(easeOut(0.5)).toBeCloseTo(0.875);
 });
 
-test("decide3D says no whenever anything argues against the scene", () => {
-  const ok = { webgl: true, reduced: false, saveData: false, deviceMemory: 4, forceSvg: false };
-  expect(decide3D(ok)).toBe(true);
-  for (const [k, v] of [["webgl", false], ["reduced", true], ["saveData", true], ["deviceMemory", 1], ["forceSvg", true]]) expect(decide3D({ ...ok, [k]: v })).toBe(false);
-  expect(decide3D({ ...ok, deviceMemory: undefined })).toBe(true);
-});
 
 test("progressOf maps a pinned region's scroll into 0..1", () => {
   expect(progressOf({ top: 0, height: 1800 }, 900)).toBe(0);
