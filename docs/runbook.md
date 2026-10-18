@@ -7,7 +7,7 @@ What to do, in order, for the demo. Every command runs from the repo root on the
 Indoor lamps can't light the panels enough for the pump, so record a real run outdoors while there is sun. Grading, the three sweeps and the proof work in weak light; only the pump needs strong sun.
 
 1. Start the server: `python3 tools/serve.py`, then open http://localhost:8000/dashboard/ in Chrome.
-2. **With the bench:** flash the board once (a person does it, since it switches relays): `cd firmware && pio run -e uno -t upload` for the Uno, `-e esp32dev` for an ESP32 DevKit. Then Connect ESP32 in the dashboard (it works for the Uno too) and Run the demo. The run uploads itself when the proof ends. Keep a serial capture as a backup recording: `python3 tools/capture.py --seconds 120 --send SEARCH --out logs/outdoor-run.log` (stop it before flashing; never open a serial monitor).
+2. **With the bench:** flash the board once (a person does it, since it switches relays): `cd firmware && pio run -e uno -t upload` for the Uno, `-e esp32dev` for an ESP32 DevKit. Then Connect Uno in the dashboard (it works for an ESP32 DevKit too) and Run the demo. The run uploads itself when the proof ends. Keep a serial capture as a backup recording: `python3 tools/capture.py --seconds 120 --send SEARCH --out logs/outdoor-run.log` (stop it before flashing; never open a serial monitor).
 3. **Without the bench:** measure each panel with a multimeter (short-circuit current on the 10 A range, open-circuit voltage), and if possible the power of each wiring. Type them into the dashboard with **Enter readings by hand** (deck, next to Data): they become real passports marked as hand-entered. The same readings can calibrate the simulation, below.
 4. In the dashboard's Data sheet, write the bench notes (where, when, light, any film) and choose what the array powers (pump, fan, resistor or nothing). Both go into the run.
 
@@ -45,6 +45,6 @@ Say "measured" only for measured numbers. Simulated results are labelled as simu
 | Lamps too weak or panels overheating | Outdoor recording and passports; drop the pump; halogen lamps heat panels before lighting them |
 | Sweep times out in weak light | Smaller sweep capacitor, or raise `SWEEP_TIMEOUT_MS` in `firmware/include/config.h` |
 | Relays fail | Wire the pairings by hand, or enter the multimeter readings by hand |
-| ESP32 won't connect | Chrome or Edge only; unplug and replug; the dashboard shows "Link lost" and Connect reopens the port |
+| The Uno won't connect | Chrome or Edge only; unplug and replug; the dashboard shows "Link lost" and Connect reopens the port |
 | Public site shows old data | Wait a minute after the push; refresh; GitHub Pages caches files for about ten minutes |
 | A browser shows "This page could not be drawn" | Press "Remove imported runs and reload" |

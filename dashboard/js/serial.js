@@ -1,4 +1,4 @@
-// Web Serial link to the ESP32: 115200 baud, newline-delimited JSON in, commands out.
+// Web Serial link to the board (Arduino Uno, or the ESP32 build): 115200 baud, newline-delimited JSON in, commands out.
 
 export class SerialLink {
   constructor(onLine, onStatus) {

@@ -478,7 +478,7 @@ function setConn(kind, text) {
   });
   if (demo.active) endDemo("stopped"); else renderDemo();
   $("btn-mock").textContent = kind === "mock" ? "Stop mock bench" : "Use mock bench";
-  $("btn-connect").textContent = kind === "serial" ? "Disconnect" : "Connect ESP32";
+  $("btn-connect").textContent = kind === "serial" ? "Disconnect" : "Connect Uno";
 }
 
 function resetData() {
@@ -507,13 +507,13 @@ function stopMock() {
   if (mock) { mock.disconnect(); mock = null; }
 }
 
-// `port` is the replay's stand-in port; without it the browser asks the user to pick the ESP32.
+// `port` is the replay's stand-in port; without it the browser asks the user to pick the board's port.
 async function startSerial(port) {
   if (!port && !SerialLink.supported()) { els.connText.textContent = "Web Serial needs Chrome or Edge"; return; }
   stopRecording();
   stopMock();
   serial = new SerialLink(onLine, (status, detail) => {
-    if (status === "connected") setConn("serial", `ESP32 on ${detail}`);
+    if (status === "connected") setConn("serial", `Arduino Uno on ${detail}`);
     else if (status === "lost") { setConn("none", `Link lost: ${detail}`); state.link = null; }
     else setConn("none", "Not connected");
   });

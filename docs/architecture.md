@@ -66,7 +66,7 @@ The hardware may not work on the day, so the same pipeline accepts four sources.
 
 | Source | How | `link` |
 |---|---|---|
-| The bench | Connect ESP32 (works for the Uno too), then Run the demo | `serial` |
+| The bench | Connect Uno (works for an ESP32 build too), then Run the demo | `serial` |
 | Multimeter readings | Dashboard → Enter readings by hand | `manual` |
 | A recording | Dashboard → Data → Play a recording… (a `tools/capture.py` log, a messages download or an exported run) | `recording` |
 | Simulation | Use mock bench; optionally Simulate measured panels… to run the model on real readings | `mock` |
