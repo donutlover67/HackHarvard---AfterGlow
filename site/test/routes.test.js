@@ -33,6 +33,14 @@ test("build, impact and print keep their addresses and nav", () => {
   expect(parse("#/print")).toEqual({ page: "print", id: null, nav: "passports" });
 });
 
+test("second use is #/reuse, with or without a passport ID", () => {
+  expect(parse("#/reuse")).toEqual({ page: "reuse", id: null, nav: "reuse" });
+  expect(parse("#/reuse/")).toEqual({ page: "reuse", id: null, nav: "reuse" });
+  expect(parse("#/reuse/SS-0003")).toEqual({ page: "reuse", id: "SS-0003", nav: "reuse" });
+  expect(parse("#/reused").page).toBe("front");
+  expect(direction("passport", "reuse")).toBe("fwd");
+});
+
 test("direction follows the nav order front, passports, build, impact", () => {
   expect(direction("front", "build")).toBe("fwd");
   expect(direction("impact", "passport")).toBe("back");

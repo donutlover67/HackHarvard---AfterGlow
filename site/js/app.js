@@ -1,4 +1,4 @@
-// Second String site: the front page, the passport index, passport pages with QR codes, the Array Builder, the impact page.
+// Afterglow site: the front page, the passport index, passport pages with QR codes, the Array Builder, the impact page, Second Use (reuse.js).
 // Plain script, hash-routed, no build step; works from a static host or a local http.server.
 (function () {
   const $ = (sel, root) => (root || document).querySelector(sel);
@@ -155,8 +155,8 @@
   // What someone who just scanned a card needs before the numbers: what tested this panel, and where the rest is.
   const PROJECT_URL = "https://mscl741.github.io/HackHarvard/";
   const passportIntro = (sim) => sim
-    ? `<div class="demo-banner" role="note"><b>Demo panel.</b> This passport comes from a simulated batch made by our panel model, not from a real measurement. <a href="#/">What Second String is</a></div>`
-    : `<p class="lede passport-intro">This panel was tested by <a href="${PROJECT_URL}">Second String</a>, a bench that grades used solar panels against each other and finds the wiring that wastes the least power. The numbers below were measured, not copied from the label. <a href="#/passports">See every panel tested so far</a>.</p>`;
+    ? `<div class="demo-banner" role="note"><b>Demo panel.</b> This passport comes from a simulated batch made by our panel model, not from a real measurement. <a href="#/">What Afterglow is</a></div>`
+    : `<p class="lede passport-intro">This panel was tested by <a href="${PROJECT_URL}">Afterglow</a>, a bench that grades used solar panels against each other and finds the wiring that wastes the least power. The numbers below were measured, not copied from the label. <a href="#/passports">See every panel tested so far</a>.</p>`;
   // previous / next panel in the same run, so a reader can walk the batch without going back to the list
   function batchNav(p) {
     const batch = p.run && Array.isArray(p.run.passports) ? p.run.passports : [];
@@ -195,7 +195,7 @@
     const flags = (p.flags || []).map((f) => `<li>${esc(flagWord[f] || f)}</li>`).join("");
     const sim = isSim(p.run);
     return `
-      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/passports">← ${sim ? "Back to the demo" : "All passports"}</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print this passport</button></div>
+      <div class="row no-print" style="justify-content:space-between;margin-bottom:14px"><a href="#/passports">← ${sim ? "Back to the demo" : "All passports"}</a><span class="row"><a class="btn btn--quiet" href="#/reuse/${encodeURIComponent(p.passport_id)}">Find it a second use</a><button type="button" class="btn btn--quiet" onclick="window.print()">Print this passport</button></span></div>
       ${passportIntro(sim)}
       ${batchNav(p)}
       <div class="card passport${sim ? " is-sim" : ""}">
@@ -247,7 +247,7 @@
             <div><dt>Measured</dt><dd class="small">${fmtDay(p.measured_at)}</dd></div>
           </dl>
         </div>
-        <p class="pcard__foot small muted">Second String passport, scan for the full record.<br><span class="pcard__url">${esc(url)}</span></p>
+        <p class="pcard__foot small muted">Afterglow passport, scan for the full record.<br><span class="pcard__url">${esc(url)}</span></p>
       </article>`;
     };
     const sheets = [];
@@ -620,6 +620,7 @@
       if (r.page === "passport") view.innerHTML = pagePassport(r.id);
       else if (r.page === "build") { view.innerHTML = pageBuild(); wireBuild(); }
       else if (r.page === "impact") { if (reason === "data" && view.querySelector(".imp-open")) inPlace = true; else view.innerHTML = pageImpact(); }   // it does not depend on runs: never rebuilt under the reader
+      else if (r.page === "reuse") { const ctx = { passports: passports(), loading, esc, num }; if (loading) loadingShown = true; if (reason === "data" && view.querySelector("#reuse-form")) { window.SSReuse.refresh(view, ctx, r.id); inPlace = true; } else { view.innerHTML = window.SSReuse.page(ctx, r.id); window.SSReuse.wire(view, ctx); } }
       else if (r.page === "print") view.innerHTML = pagePrint();
       else if (r.page === "passports") { view.innerHTML = pageIndex(); wireIndex(); }
       else if (reason === "data" && view.querySelector("[data-hero]")) { window.SSFront.refresh(view, frontCtx()); inPlace = true; }

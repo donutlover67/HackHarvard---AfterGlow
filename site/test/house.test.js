@@ -87,5 +87,5 @@ test("the nav's CSS is the ui-refresh branch's, line for line", async () => {
   const css = await read("css/site.css");
   for (const line of UI_REFRESH_NAV) expect(css).toContain(line);
   const html = await read("index.html");
-  expect(html).toContain('<a class="nav__name" href="#/"><span class="nav__sun" aria-hidden="true"></span>Second String</a>');
+  expect(html).toContain('<a class="nav__name" href="#/"><span class="nav__sun" aria-hidden="true"></span>Afterglow</a>');
 });

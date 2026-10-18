@@ -1,4 +1,4 @@
-// The front page: what Second String is, in one screen, with the gain shown happening.
+// The front page: what Afterglow is, in one screen, with the gain shown happening.
 // Markup only. app.js supplies the data and helpers (ctx), motion.js drives the moves, hero3d.js lights the slab.
 // ctx: { runs, passports, loading, esc, num, cellSvg, fmtDay }
 window.SSFront = (function () {
@@ -229,7 +229,7 @@ window.SSFront = (function () {
       </div>
       <div class="hero__text">
           <h1 class="display" data-reveal><span class="wipe"><span class="wipe__in">Used panels</span></span> <span class="wipe wipe--rtl" style="--d:140ms"><span class="wipe__in">still <span class="hollow">work.</span></span></span></h1>
-          <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
+          <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Afterglow grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
           <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
       </div>
     </section>`;
@@ -354,11 +354,11 @@ window.SSFront = (function () {
       { text: "IEA PVPS Task 13, Performance, Operation and Reliability of Photovoltaic Systems (2026).", url: "https://iea-pvps.org/research-tasks/performance-operation-and-reliability-of-photovoltaic-systems/" },
       { text: "German test laboratories' published price lists.", url: "" } ] },
     { note: "The gain is a figure from our single-diode panel model for the demo batch, two of four panels behind 35% film; bench runs replace it as they are published, and measured numbers are labelled as such.", cites: [
-      { text: "Second String, panel model and bench method.", url: "https://github.com/mscl741/HackHarvard" } ] },
+      { text: "Afterglow, panel model and bench method.", url: "https://github.com/mscl741/HackHarvard" } ] },
   ];
   const cite = (c) => c.url ? `<a href="${c.url}" rel="noopener">${c.text}</a>` : c.text;
   const close = () => `<section class="close" data-in><div class="wrap">
-      <p class="close__name">Second String</p>
+      <p class="close__name">Afterglow</p>
       <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>
       <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
     </div>

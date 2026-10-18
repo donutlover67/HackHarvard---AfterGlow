@@ -3,7 +3,7 @@
 window.SSRoutes = (function () {
   const safeDecode = (s) => { try { return decodeURIComponent(s); } catch (_) { return s; } };
   // pages in nav order; passport pages and the print sheet belong to the passports section
-  const ORDER = { front: 0, passports: 1, passport: 1, print: 1, build: 2, impact: 3 };
+  const ORDER = { front: 0, passports: 1, passport: 1, print: 1, build: 2, impact: 3, reuse: 4 };
 
   function parse(hash) {
     const h = typeof hash === "string" ? hash : "";
@@ -11,6 +11,7 @@ window.SSRoutes = (function () {
     if (h.startsWith("#/passports")) return { page: "passports", id: null, nav: "passports" };
     if (h.startsWith("#/build")) return { page: "build", id: null, nav: "build" };
     if (h.startsWith("#/impact")) return { page: "impact", id: null, nav: "impact" };
+    if (h === "#/reuse" || h.startsWith("#/reuse/")) return { page: "reuse", id: h.length > 8 ? safeDecode(h.slice(8)) : null, nav: "reuse" };
     if (h.startsWith("#/print")) return { page: "print", id: null, nav: "passports" };
     return { page: "front", id: null, nav: null };
   }

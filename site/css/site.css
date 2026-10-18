@@ -1,4 +1,4 @@
-/* Second String site: one light system around the silicon-navy cell. Archivo only, tabular figures,
+/* Afterglow site: one light system around the silicon-navy cell. Archivo only, tabular figures,
    white surfaces on a pale ground separated by tone, hairlines only inside tables, no gradients or shadows.
    The print rules at the end are unchanged: printed passports and QR cards depend on them. */
 
@@ -207,7 +207,7 @@ details.tools[open] summary { margin-bottom: 10px; }
   .nav__name { font-size: 1.15rem; white-space: nowrap; }
   .nav__links { gap: 12px; font-size: 0.92rem; }
   .nav__links a { white-space: nowrap; }
-  .nav__links { flex-wrap: wrap; row-gap: 4px; }   /* five links now: let them wrap rather than run past the edge */
+  .nav__links { flex-wrap: wrap; row-gap: 4px; }   /* let the links wrap rather than run past the edge */
   .view { padding: 24px var(--gutter) 48px; }
   .card { padding: 16px 14px; }
   .band { padding: 28px 20px; }
@@ -366,4 +366,46 @@ body[data-page="impact"] .foot { display: none; }
 .imp-next__actions { margin-top: 36px; gap: 12px; }
 @media (max-width: 760px) {
   .imp-points, .imp-sum__grid { grid-template-columns: 1fr; }
+}
+
+/* Second Use (#/reuse): a panel's passport numbers against what a customer needs powered */
+.reuse__how { padding-left: 1.3em; margin: 0 0 28px; display: grid; gap: 8px; max-width: var(--measure); color: var(--ink-2); }
+.reuse__how b { color: var(--ink); font-weight: 600; }
+.reuse__form { display: grid; gap: 16px; }
+.reuse__form .card + .card { margin-top: 0; }
+.reuse__facts { margin: 16px 0 10px; grid-template-columns: repeat(3, 1fr); }
+.reuse__facts dd .small { display: block; font-weight: 400; margin-top: 2px; }
+.reuse__go { gap: 16px; }
+.reuse__result { display: grid; gap: 16px; margin-top: 28px; }
+.reuse__result[hidden] { display: none; }
+.reuse__result .card + .card { margin-top: 0; }
+.reuse__decision { font-size: var(--title); font-weight: 700; font-stretch: 106%; letter-spacing: -0.01em; color: var(--cell); line-height: 1.15; margin-bottom: 6px; }
+.reuse__scroll { overflow-x: auto; }
+.reuse__result tr.is-fit td { color: var(--cell); font-weight: 600; }
+.reuse__ideas { white-space: pre-wrap; line-height: 1.6; max-width: var(--measure); overflow-wrap: anywhere; }
+.reuse__list { padding-left: 1.2em; display: grid; gap: 4px; }
+.reuse__note { margin-top: 28px; }
+@media (max-width: 760px) {
+  .reuse__facts { grid-template-columns: 1fr; }
+}
+
+/* ---------- the nav, restyled: a transparent bar, the Afterglow mark, rounded pills. These rules come after the
+   ui-refresh lines above (which stay verbatim) and override them. Only the pills take clicks; the gaps between
+   them pass clicks to the page. On hover, motion.js's drawn lines pop out of the pill (.pop, in motion.css). */
+.nav { background: transparent; border-bottom: 0; padding: 14px 28px; pointer-events: none; }
+.nav > * { pointer-events: auto; }
+.nav__name { gap: 10px; padding: 6px 18px 6px 10px; border: 1px solid var(--busbar-2); border-radius: 999px; background: var(--surface); font-size: 1.15rem; letter-spacing: -0.01em; }
+.nav__sun { width: 28px; height: 28px; margin-right: 0; border-radius: 0; background: url("../img/afterglow.svg") center / contain no-repeat; box-shadow: none; }
+.nav__links { gap: 20px; align-items: center; }
+.nav__links a { position: relative; padding: 9px 18px; border: 1px solid var(--busbar); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 0.95rem; line-height: 1.2; }
+.nav__links a:hover, .nav__links a:focus-visible { color: var(--cell); border-color: var(--cell); }
+.nav__links a.is-on, .nav__links a.is-on:hover, .nav__links a.is-on:focus-visible { background: var(--cell); border-color: var(--cell); color: #fff; }
+@media (max-width: 480px) {
+  .nav { padding: 10px 12px; row-gap: 8px; }
+  .nav__name { font-size: 1.05rem; padding: 4px 14px 4px 8px; }
+  .nav__sun { width: 24px; height: 24px; }
+  /* one row of pills that scrolls sideways, edge to edge, rather than three rows (no hover lines on touch) */
+  .nav__links { flex: 0 0 calc(100% + 24px); max-width: none; flex-wrap: nowrap; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-inline: -12px; padding: 2px 12px; font-size: 0.88rem; }
+  .nav__links::-webkit-scrollbar { display: none; }
+  .nav__links a { flex: none; padding: 7px 13px; font-size: 0.88rem; }
 }

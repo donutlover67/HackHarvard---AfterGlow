@@ -64,7 +64,46 @@ window.SSMotion = (function () {
     const hero = route === "index" && $(".hero--full");
     nav.classList.toggle("is-tucked", !!hero && y < innerHeight * 0.25);
   }
+  // the nav pills' hover particles (motion.css .pop): each page's pill has its own set, drawn as strokes that pop out
+  // of the pill. [where, relative to the pill; viewBox; colour; paths]. Passports: a check, ticks and a stamp.
+  // Array Builder: wiring, a plus and a minus. Impact: sun rays above and below. Second Use: arrows going round.
+  const SIDE_L = "right:calc(100% + 3px);top:50%;margin-top:-8px;width:12px;height:16px";
+  const SIDE_R = "left:calc(100% + 3px);top:50%;margin-top:-8px;width:12px;height:16px";
+  const POPS = {
+    passports: [
+      ["right:-7px;bottom:calc(100% - 5px);width:16px;height:14px", "0 0 16 14", "sun", ["M2 7l4 4 8-9"]],
+      [SIDE_L, "0 0 12 16", "cell", ["M10 3 3 1", "M9 8H1", "M10 13l-7 2"]],
+      ["left:14px;top:calc(100% + 4px);width:9px;height:9px", "0 0 9 9", "cell", ["M1.5 1.5h6v6h-6z"]],
+    ],
+    build: [
+      ["left:calc(100% + 3px);top:50%;margin-top:-6px;width:18px;height:12px", "0 0 18 12", "cell", ["M1 6l3-4 4 8 4-8 3 4h2"]],
+      ["left:12px;bottom:calc(100% + 3px);width:10px;height:10px", "0 0 10 10", "sun", ["M5 1v8", "M1 5h8"]],
+      ["right:16px;top:calc(100% + 6px);width:10px;height:4px", "0 0 10 4", "sun", ["M1 2h8"]],
+      ["right:calc(100% + 4px);top:50%;margin-top:-2px;width:14px;height:4px", "0 0 14 4", "cell", ["M1 2h1", "M6 2h1", "M11 2h1"]],
+    ],
+    impact: [
+      ["left:50%;margin-left:-14px;bottom:calc(100% + 2px);width:28px;height:12px", "0 0 28 12", "sun", ["M5 11 1 5", "M14 10V1", "M23 11l4-6"]],
+      ["left:50%;margin-left:-14px;top:calc(100% + 2px);width:28px;height:12px", "0 0 28 12", "sun", ["M5 1 1 7", "M14 2v9", "M23 1l4 6"]],
+      ["right:calc(100% + 3px);top:50%;margin-top:-2px;width:10px;height:4px", "0 0 10 4", "cell", ["M9 2H1"]],
+      ["left:calc(100% + 3px);top:50%;margin-top:-2px;width:10px;height:4px", "0 0 10 4", "cell", ["M1 2h8"]],
+    ],
+    reuse: [
+      ["right:-9px;bottom:calc(100% - 9px);width:18px;height:18px", "0 0 18 18", "cell", ["M3 10a6 6 0 0 1 11-4", "M14 1.5V6H9.5"]],
+      ["left:-9px;top:calc(100% - 9px);width:18px;height:18px", "0 0 18 18", "cell", ["M15 8a6 6 0 0 1-11 4", "M4 16.5V12h4.5"]],
+      ["left:10px;bottom:calc(100% + 4px);width:10px;height:10px", "0 0 10 10", "sun", ["M1.5 1.5l2 2", "M8.5 1.5l-2 2", "M1.5 8.5l2-2", "M8.5 8.5l-2-2"]],
+      ["right:14px;top:calc(100% + 4px);width:9px;height:9px", "0 0 9 9", "sun", ["M4.5 1a3.5 3.5 0 1 1 0 7a3.5 3.5 0 1 1 0-7"]],
+    ],
+  };
+  POPS.other = [[SIDE_L, "0 0 12 16", "cell", ["M10 3 3 1", "M9 8H1", "M10 13l-7 2"]], [SIDE_R, "0 0 12 16", "cell", ["M2 3l7-2", "M3 8h8", "M2 13l7 2"]]];
+  function navPops() {
+    document.querySelectorAll(".nav__links a").forEach((a) => {
+      if (a.querySelector(".pop")) return;
+      const set = POPS[a.dataset.route] || POPS.other;
+      a.insertAdjacentHTML("beforeend", set.map(([box, vb, c, ds], k) => `<svg class="pop pop--${c}" style="${box};--k:${k}" viewBox="${vb}" aria-hidden="true" focusable="false">${ds.map((d, i) => `<path d="${d}" pathLength="1" style="--i:${k + i}"/>`).join("")}</svg>`).join(""));
+    });
+  }
   function init() {
+    try { navPops(); } catch (_) { /* decoration only */ }
     document.documentElement.classList.add(reduced() ? "reduced" : "has-motion");
     const onNav = rafThrottle(updateNav);
     addEventListener("scroll", onNav, { passive: true });

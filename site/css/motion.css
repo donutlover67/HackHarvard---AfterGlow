@@ -1,4 +1,4 @@
-/* Second String site: the motion layer. Loaded after site.css; nothing here changes layout or colour at rest.
+/* Afterglow site: the motion layer. Loaded after site.css; nothing here changes layout or colour at rest.
    Transform, opacity and filter only, so it stays smooth on a phone; readers who prefer reduced motion get
    the end states at once. The moves (entrances, the re-pairing, the headline reveal, the strip, route slides) come from
    motion.js and the rules it relies on further down. */
@@ -61,6 +61,25 @@ a, .btn, .nav__links a, .pool label, .chipcell, .field input, .field select, .fi
   .table tbody tr, .batch__bar, .status.is-bad { animation: none; }
   a, .btn, .nav__links a, .pool label, .chipcell, .table tbody tr td, .link-grow::after { transition: none; }
   .btn:active, .pool label:active { transform: none; }
+}
+
+/* the nav pills: on hover the pill lifts and a few drawn lines pop out of it, each line drawing itself outward
+   (pathLength 1, the dash runs from 1 to 0) on a springy ease; they draw back quickly when the pointer leaves */
+.nav__links a { transition: color var(--m-quick) ease, background-color var(--m-quick) ease, border-color var(--m-quick) ease, transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.nav__links a:hover, .nav__links a:focus-visible { transform: translateY(-2px); }
+.nav__links a:active { transform: translateY(0) scale(0.97); }
+.pop { position: absolute; overflow: visible; pointer-events: none; fill: none; stroke-linecap: round; stroke-width: 2; opacity: 0; transform: scale(0.4); transform-origin: 50% 50%; transition: opacity 120ms ease, transform 200ms ease; }
+.pop path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 160ms ease; }
+.pop--cell { stroke: var(--cell); }
+.pop--sun { stroke: var(--sun); stroke-width: 2.2; }
+@media (hover: hover) {
+  .nav__links a:hover .pop, .nav__links a:focus-visible .pop { opacity: 1; transform: none; transition: opacity 80ms ease, transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--k, 0) * 40ms); }
+  .nav__links a:hover .pop path, .nav__links a:focus-visible .pop path { stroke-dashoffset: 0; transition: stroke-dashoffset 360ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 45ms); }
+}
+@media (hover: none) { .pop { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .nav__links a, .nav__links a:hover, .nav__links a:focus-visible, .nav__links a:active { transform: none; }
+  .pop, .pop path, .nav__links a:hover .pop, .nav__links a:hover .pop path { transition: none; }
 }
 
 /* ---------- the moves: motion.js adds the classes and drives the variables ---------- */
