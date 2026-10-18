@@ -214,7 +214,7 @@ window.SSMotion = (function () {
       cards().forEach((c) => {
         const r = c.getBoundingClientRect(), dx = (r.left + r.width / 2 - vw / 2) / (vw / 2);   // -1 at the left edge, 1 at the right
         c.style.setProperty("--arrive", clamp01((vw - r.left) / (r.width * 0.9)).toFixed(3));
-        c.style.setProperty("--arc", (Math.min(1.6, dx * dx) * 90).toFixed(1));             // the row bends like a ring: both ends dip
+        c.style.setProperty("--arc", (Math.min(1, dx * dx) * 84).toFixed(1));               // the row bends like a ring: both ends dip (at most 84px)
         c.style.setProperty("--rot", (Math.max(-1.3, Math.min(1.3, dx)) * 2.5).toFixed(2));
       });
     }

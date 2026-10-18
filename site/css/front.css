@@ -110,7 +110,7 @@
 @media (min-width: 760px) and (pointer: fine) {
   /* only while motion.js drives it; it adds .is-row (the swipe row) when it cannot */
   html.has-motion .strip:not(.is-row) .strip__pin { position: sticky; top: 0; }
-  html.has-motion .strip:not(.is-row) .strip__track { overflow: visible; scroll-snap-type: none; gap: 44px; padding-inline: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter))); will-change: transform; }
+  html.has-motion .strip:not(.is-row) .strip__track { overflow: visible; scroll-snap-type: none; gap: 44px; padding-bottom: 150px;   /* room for the arc's dipping ends, so they never cover the note */ padding-inline: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter))); will-change: transform; }
   /* when the scroll drives it, each wiring is most of a screen wide, so the strip travels well over a screen sideways */
   html.has-motion .strip:not(.is-row) .wiring { flex-basis: min(72vw, 920px); padding: 32px 36px 36px; }
   html.has-motion .strip:not(.is-row) .wiring__w { font-size: clamp(2.1rem, 3.2vw, 3.4rem); }

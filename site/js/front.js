@@ -216,7 +216,8 @@ window.SSFront = (function () {
     </section>`;
   }
   // a slow band of sourced facts under the hero; it pauses under the pointer
-  const TICKER = ["Most panels still make 80–88% of their rating after 25 years", "About 83% of retired US panels are headed to landfill", "Lab-testing one used panel costs $17–34", "1.2% of retired US panels are reused", "Matched wiring: up to 37% more power from the same four panels, simulated"];
+  // other facts than the three numerals that follow (sources: the impact page)
+  const TICKER = ["Panels lose about 0.5–0.75% of their output a year", "Panels retired early for upgrades often still make 70–95% of their rating", "About 83% of retired US panels are headed to landfill, 9.5% are recycled", "In a series string the weakest panel sets the current for all of them", "Matched wiring: up to 37% more power from the same four panels, simulated"];
   const ticker = () => `<div class="ticker" aria-hidden="true"><div class="ticker__track">${[...TICKER, ...TICKER].map((t) => `<span class="ticker__item">${t}</span>`).join("")}</div></div>`;
   const problem = () => `<section class="problem" data-in>
       ${recycleSvg()}
