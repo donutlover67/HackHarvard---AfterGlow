@@ -6,6 +6,12 @@
 .hero { position: relative; }
 .hero__stage { position: relative; display: grid; grid-template-columns: 1fr; grid-template-areas: "text" "slot"; gap: 28px; max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 24px; }
 .hero .display { font-size: clamp(2.4rem, 5.2vw, 4.8rem); }
+/* the headline as a stack: one word set wide and heavy, the next narrow and light and pushed in, the last plain with its
+   final word drawn as an outline; the lines overlap a little, like type pasted down by hand */
+.stack { display: grid; justify-items: start; line-height: 0.8; }
+.stack__a { font-stretch: 125%; font-weight: 800; letter-spacing: -0.055em; }
+.stack__b { font-stretch: 68%; font-weight: 500; letter-spacing: -0.01em; font-size: 1.22em; margin: -0.06em 0 0 0.55em; }
+.stack__c { font-stretch: 100%; font-weight: 700; letter-spacing: -0.035em; margin-top: 0.02em; }
 .hero__slot { grid-area: slot; position: relative; aspect-ratio: 4 / 3; width: min(100%, calc(56vh * 4 / 3)); justify-self: center; }
 /* the drawing in the slot: the sun's frame reaches 14% above the slot (its own 400x342 box, so nothing stretches);
    the panel leans with the pointer through a perspective transform that motion.js drives (--tx, --ty), its shadow slides (--sx, --sy) */

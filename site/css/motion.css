@@ -93,33 +93,7 @@ html.has-motion .step:not(.is-lit) .step__glyph, html.has-motion .step:not(.is-l
 .strip__stage { will-change: transform, opacity; }
 .wiring { transform: translateY(calc((1 - var(--arrive, 1)) * 28px + var(--arc, 0) * 1px)) rotate(calc(var(--rot, 0) * 1deg)); transform-origin: 50% 50%; opacity: calc(0.5 + 0.5 * var(--arrive, 1)); }
 
-/* the hero intro and the section titles: a solid amber block sweeps across each line and leaves the words behind
-   (after the Lando Norris site's telemetry wipes). Lines alternate direction (.wipe--rtl). The hidden state exists only
-   under html.has-motion; motion.js adds .is-revealed one frame after the page draws, or when the title comes into view. */
-.wipe { position: relative; display: inline-block; }
-.wipe::after { content: ""; position: absolute; inset: -0.06em -0.12em; background: var(--sun); transform: scaleX(0); transform-origin: left center; pointer-events: none; }
-.wipe--rtl::after { transform-origin: right center; }
-html.has-motion [data-reveal]:not(.is-revealed) .wipe__in { opacity: 0; }
-/* the block sets off slowly, races through the middle, overshoots the end of the line and springs back, then clears
-   the same way; each keyframe carries its own timing */
-html.has-motion [data-reveal].is-revealed .wipe::after { animation: wipe-ltr 1050ms linear both; animation-delay: var(--d, 0ms); }
-html.has-motion [data-reveal].is-revealed .wipe--rtl::after { animation-name: wipe-rtl; }
-html.has-motion [data-reveal].is-revealed .wipe__in { animation: wipe-text 1ms linear both; animation-delay: calc(var(--d, 0ms) + 440ms); }
-@keyframes wipe-ltr {
-  0% { transform: scaleX(0); transform-origin: left center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
-  40% { transform: scaleX(1.06); transform-origin: left center; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
-  48% { transform: scaleX(1); transform-origin: left center; }
-  52% { transform: scaleX(1); transform-origin: right center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
-  100% { transform: scaleX(0); transform-origin: right center; }
-}
-@keyframes wipe-rtl {
-  0% { transform: scaleX(0); transform-origin: right center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
-  40% { transform: scaleX(1.06); transform-origin: right center; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
-  48% { transform: scaleX(1); transform-origin: right center; }
-  52% { transform: scaleX(1); transform-origin: left center; animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
-  100% { transform: scaleX(0); transform-origin: left center; }
-}
-@keyframes wipe-text { from { opacity: 0; } to { opacity: 1; } }
+/* the hero intro: the headline's three parts, the lede and the buttons rise in turn; the slot fades in */
 .rise { transition: opacity 600ms var(--m-ease), transform 600ms var(--m-ease); transition-delay: var(--d, 0ms); }
 html.has-motion [data-reveal].rise:not(.is-revealed) { opacity: 0; transform: translateY(14px); }
 .grow { transition: opacity 900ms var(--m-ease), transform 900ms var(--m-ease); }
@@ -144,7 +118,6 @@ html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
   .m-part, .rise, .grow, .fade, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
-  .wipe::after, .wipe__in { animation: none; }
   .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
   .recycle path { animation: none; stroke-dashoffset: 0; }
   .hero__panel { --tx: 12; --ty: -3; }
