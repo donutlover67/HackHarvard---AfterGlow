@@ -52,25 +52,23 @@ window.SSMotion = (function () {
   }
   const rafThrottle = (fn) => { let waiting = false; return () => { if (waiting) return; waiting = true; requestAnimationFrame(() => { waiting = false; fn(); }); }; };
 
-  // ---------- colour helpers for the sky (pure) ----------
-  const hexRgb = (hex) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || "").trim()); const n = m ? parseInt(m[1], 16) : 0xfbfcfd; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
-  const mixRgb = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * clamp01(t)));
-  const rgbCss = (c) => `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
-  // WCAG relative luminance, 0 (black) to 1 (white)
+  // ---------- the sky's time of day (pure) ----------
+  // WCAG relative luminance of an [r, g, b] colour, 0 (black) to 1 (white)
   const luminance = (c) => { const l = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2]; };
   // below this the sky counts as night: white text then reads better on it than navy does
   const NIGHT = 0.18;
-  // The sky colour at viewport height yv. Each section names its own sky; across each boundary the colour blends over a
-  // zone of up to 40% of the screen, so the change is gradual and every section sits on its own colour once it fills the view.
-  function skyColour(rects, cols, yv, vh) {
+  // How far the day has come at viewport height yv. Each section names its own point of the day (data-day); across each
+  // boundary it blends over a zone of up to 40% of the screen, so the change is gradual and every section sits in its
+  // own light once it fills the view.
+  function dayAt(rects, days, yv, vh) {
     const n = rects.length;
-    if (!n) return hexRgb("#fbfcfd");
+    if (!n) return 1;
     let i = 0;
     while (i < n - 1 && yv >= rects[i].bottom) i++;
     const zone = (j, k) => Math.max(1, Math.min(vh * 0.4, rects[j].height / 2, rects[k].height / 2));
-    if (i > 0) { const z = zone(i - 1, i), b = rects[i].top; if (yv < b + z) return mixRgb(cols[i - 1], cols[i], smooth((yv - (b - z)) / (2 * z))); }
-    if (i < n - 1) { const z = zone(i, i + 1), b = rects[i].bottom; if (yv > b - z) return mixRgb(cols[i], cols[i + 1], smooth((yv - (b - z)) / (2 * z))); }
-    return cols[i].slice();
+    if (i > 0) { const z = zone(i - 1, i), b = rects[i].top; if (yv < b + z) return days[i - 1] + (days[i] - days[i - 1]) * smooth((yv - (b - z)) / (2 * z)); }
+    if (i < n - 1) { const z = zone(i, i + 1), b = rects[i].bottom; if (yv > b - z) return days[i] + (days[i + 1] - days[i]) * smooth((yv - (b - z)) / (2 * z)); }
+    return days[i];
   }
 
   // ---------- the nav: its drawn sun lights one ray at a time as the page is scrolled; on the front page the nav takes the sky's colour ----------
@@ -87,59 +85,44 @@ window.SSMotion = (function () {
     if (skyCtl) skyCtl.update();
   }
 
-  // ---------- the front page's sky: night at the top, sunrise at the why, daylight for the product, noon at the end ----------
-  // Stars and a moon fade out as the sky lightens; a drawn sun rises from below the screen and hands over to the
-  // finale's own sun. Colour is driven by the scroll position, so it follows the reader whatever their speed.
-  function seeded(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  // ---------- the front page's sky (sky.js draws it): night at the top, dawn at the why, day for the product ----------
+  // The page's scroll sets the time of day; the renderer animates the twinkle, shooting stars and clouds on its own
+  // frame loop while the page is visible. Text turns light while the sky behind the middle of the screen is dark.
   function sky(view) {
-    const layer = $(".sky"), nav = $(".nav"), body = document.body;
-    const secs = [...view.querySelectorAll("[data-sky]")];
+    const layer = $(".sky"), canvas = layer && layer.querySelector("canvas"), nav = $(".nav"), body = document.body;
+    const secs = [...view.querySelectorAll("[data-day]")];
     const clear = () => {
       body.style.backgroundColor = ""; body.classList.remove("is-night");
       if (nav) { nav.style.removeProperty("--nav-bg"); nav.classList.remove("is-night"); }
     };
-    if (!secs.length || !layer) { clear(); return null; }
-    const stars = layer.querySelector(".sky__stars");
-    if (stars && !stars.children.length) {
-      const rnd = seeded(20261017);   // the same sky on every visit
-      for (let i = 0; i < 90; i++) {
-        const st = document.createElement("span");
-        st.className = "star" + (rnd() < 0.18 ? " is-big" : "");
-        st.style.left = (rnd() * 100).toFixed(2) + "%";
-        st.style.top = (rnd() * 88).toFixed(2) + "%";
-        st.style.setProperty("--tw", (2.5 + rnd() * 4).toFixed(2) + "s");
-        st.style.animationDelay = (-rnd() * 6).toFixed(2) + "s";
-        stars.appendChild(st);
-      }
-    }
-    const cols = secs.map((el) => hexRgb(el.dataset.sky));
-    const why = view.querySelector(".why"), how = view.querySelector(".how"), hero = view.querySelector("[data-hero]"), cue = view.querySelector(".opening__cue");
+    const S = window.SSSky;
+    if (!secs.length || !canvas || !S) { clear(); return null; }
+    const r = S.create(canvas);
+    if (!r) { clear(); return null; }
+    const days = secs.map((el) => Math.max(0, Math.min(1, Number(el.dataset.day) || 0)));
+    const hero = view.querySelector("[data-hero]"), cue = view.querySelector(".problem__cue");
+    const still = reduced();
+    let dead = false, raf = 0;
     function update() {
       const vh = innerHeight, rects = secs.map((el) => el.getBoundingClientRect());
-      const mid = skyColour(rects, cols, vh * 0.5, vh);
+      const t = dayAt(rects, days, vh * 0.5, vh);
       const navH = nav ? nav.offsetHeight : 0;
-      const top = skyColour(rects, cols, navH / 2, vh);
-      const L = luminance(mid);
-      body.style.backgroundColor = rgbCss(mid);
-      body.classList.toggle("is-night", L < NIGHT);
-      if (nav) { nav.style.setProperty("--nav-bg", rgbCss(top)); nav.classList.toggle("is-night", luminance(top) < NIGHT); }
-      const night = clamp01((NIGHT + 0.04 - L) / 0.17);   // 1 in deep night, 0 once the sky has lightened
-      // the sun: below the screen until the why section comes up, fully risen once the bench's steps are half way up,
-      // and gone before the finale, which draws its own sun beside the panel
-      let rise = 0, shown = 0;
-      if (why && hero) {
-        const w = why.getBoundingClientRect(), h = hero.getBoundingClientRect();
-        const end = (how ? how.getBoundingClientRect().bottom : h.top) - vh * 0.5;   // where the rise ends, relative to now
-        rise = clamp01((vh - w.top) / Math.max(1, (vh - w.top) + end));
-        shown = clamp01(rise * 5) * clamp01((h.top - vh * 0.7) / (vh * 0.4));
-      }
-      layer.style.setProperty("--night", night.toFixed(3));
-      layer.style.setProperty("--rise", smooth(rise).toFixed(4));
-      layer.style.setProperty("--sun-on", shown.toFixed(3));
+      const mid = S.colourAt(t, 0.5), top = S.colourAt(t, navH / 2 / vh);   // the nav sits on the top of the same sky
+      body.style.backgroundColor = `rgb(${mid.join(", ")})`;   // what shows if the canvas cannot draw
+      body.classList.toggle("is-night", luminance(mid) < NIGHT);
+      if (nav) { nav.style.setProperty("--nav-bg", `rgb(${top.join(", ")})`); nav.classList.toggle("is-night", luminance(top) < NIGHT); }
+      // the finale draws its own sun beside the panel: the sky's sun fades as it comes up
+      const sun = hero ? clamp01((hero.getBoundingClientRect().top - vh * 0.7) / (vh * 0.4)) : 1;
+      r.set({ t, sun, scroll: scrollY });
       if (cue) cue.classList.toggle("is-gone", scrollY > 40);
+      if (still) r.draw(0, false);
     }
+    function tick(now) { raf = 0; if (dead) return; if (!hidden) r.draw(now, true); raf = requestAnimationFrame(tick); }
+    const onResize = rafThrottle(() => { r.resize(); update(); if (still) r.draw(0, false); });
+    addEventListener("resize", onResize);
     update();
-    return { update, destroy: clear };
+    if (still) r.draw(0, false); else raf = requestAnimationFrame(tick);
+    return { update, destroy() { dead = true; if (raf) cancelAnimationFrame(raf); removeEventListener("resize", onResize); clear(); } };
   }
 
   function init() {
@@ -447,5 +430,5 @@ window.SSMotion = (function () {
     };
   }
 
-  return { init, mount, transition, reduced, parseCount, formatCount, easeOut, supports, progressOf, skyColour, hexRgb, luminance, NIGHT };
+  return { init, mount, transition, reduced, parseCount, formatCount, easeOut, supports, progressOf, dayAt, luminance, NIGHT };
 })();

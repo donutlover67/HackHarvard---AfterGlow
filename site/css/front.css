@@ -1,20 +1,8 @@
 /* Second String site: the front page, from night to day. Sections run full width and wrap their content in .wrap.
-   Each section names a sky colour; motion.js blends the page's background between them as the reader scrolls and
-   sets body.is-night while the sky is dark, which turns the text light. Solid colours only: no gradients, no shadows.
+   Each section names a point of the day (data-day); sky.js draws that sky on a canvas behind the page and motion.js
+   blends it as the reader scrolls, setting body.is-night while it is dark, which turns the text light. The page's own
+   surfaces stay flat: no CSS gradients, no shadows.
    The one strong colour is the gain numeral on its navy card. */
-
-/* the opening: the first screen, under the night sky. The problem in one line and the two ways in */
-.opening { min-height: calc(100svh - 64px); display: grid; align-content: center; position: relative; padding-block: 72px 112px; text-align: center; }
-.opening__in { display: grid; justify-items: center; gap: 26px; }
-.opening .display { font-size: clamp(2.6rem, 7vw, 6.4rem); max-width: 14ch; }
-.opening .lede { margin: 0; font-size: clamp(1.1rem, 1.6vw, 1.35rem); max-width: 34ch; }
-.opening__actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.opening__cue { position: absolute; left: 0; right: 0; bottom: 32px; text-align: center; transition: opacity var(--m-fast, 260ms) ease; }
-.opening__cue.is-gone { opacity: 0; }
-.btn--sun { background: var(--sun); border-color: var(--sun); color: var(--cell-deep); }
-.btn--sun:hover { background: #ffc61a; border-color: #ffc61a; }
-.btn--night { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.55); }
-.btn--night:hover { border-color: #fff; }
 
 /* the finale: the drawn cell under a drawn sun, beside the closing line and the two ways in; text first on small screens */
 .hero { position: relative; padding-block: clamp(48px, 7vw, 112px); }
@@ -42,13 +30,19 @@
   .hero .display { font-size: 5rem; }
 }
 
-/* the problem: a heading, three figures, then the two sentences */
-.problem { padding-block: var(--section); }
-.problem__title { max-width: 22ch; margin-bottom: clamp(36px, 5vw, 64px); }
-.problem__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.problem .num-big { font-size: clamp(2.4rem, 4.6vw, 4.2rem); white-space: nowrap; }
-.fig__line { color: var(--ink-2); margin-top: 10px; max-width: 26ch; }
-.problem__text { max-width: var(--measure); margin-top: 56px; font-size: 1.2rem; line-height: 1.45; }
+/* the problem: the first screen, under the night sky. The headline, three figures, then what goes wrong with the ones kept */
+.problem { min-height: calc(100svh - 64px); display: grid; align-content: center; position: relative; padding-block: clamp(56px, 8vh, 96px) clamp(88px, 12vh, 128px); }
+.problem__in { display: grid; gap: clamp(32px, 5vh, 56px); }
+.problem__head { font-size: clamp(2.3rem, 5.4vw, 5.2rem); max-width: 17ch; }
+.problem__head .line { display: block; }
+.problem__head .line + .line .line__in { color: var(--t2); }
+.problem__grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.problem .num-big { font-size: clamp(2.4rem, 4.4vw, 4rem); white-space: nowrap; }
+.fig__line { margin-top: 10px; max-width: 26ch; }
+.problem__text { max-width: 60ch; font-size: clamp(1.05rem, 1.3vw, 1.2rem); line-height: 1.5; }
+.problem__cue { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center; transition: opacity 260ms ease; }
+.problem__cue.is-gone { opacity: 0; }
+.how__lede { margin-top: 14px; }
 
 /* why: a short paragraph at sunrise */
 .why { padding-block: clamp(64px, 9vw, 128px); }
@@ -127,8 +121,7 @@
   .ppass-row { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 760px) {
-  .problem__grid { grid-template-columns: 1fr; gap: 28px; }
-  .problem__text { margin-top: 40px; font-size: 1.1rem; }
+  .problem__grid { grid-template-columns: 1fr; gap: 22px; }
   /* on a phone the string runs down the left and each step hangs to its right */
   .string { grid-template-columns: 1fr; gap: 28px; }
   .string__wire--h { display: none; }
@@ -147,43 +140,19 @@
 
 
 /* ---------- night to day ---------- */
-/* the sky itself is the body's background on the front page (motion.js sets it); sections are transparent over it */
+/* the sky is one canvas behind the page (sky.js draws it, motion.js sets the time of day); sections are transparent over it */
 body[data-page="front"] #view > section { position: relative; z-index: 1; }
-.sky { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.sky { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 body[data-page="front"] .sky { display: block; }
-.sky__stars { position: absolute; inset: 0; opacity: var(--night, 1); }
-.star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff; opacity: 0.55; animation: twinkle var(--tw, 4s) ease-in-out infinite alternate; }
-.star.is-big { width: 3px; height: 3px; opacity: 0.8; }
-@keyframes twinkle { from { opacity: 0.15; } to { opacity: 0.85; } }
-/* now and then a shooting star crosses the top of the night sky */
-.sky__meteor { position: absolute; top: 12%; left: 70%; width: 110px; height: 1.5px; border-radius: 1px; background: rgba(255, 255, 255, 0.8); opacity: 0; transform: rotate(-22deg); animation: meteor 13s linear infinite 3s; }
-@keyframes meteor { 0%, 88% { opacity: 0; transform: translate(0, 0) rotate(-22deg); } 90% { opacity: calc(0.8 * var(--night, 1)); } 96% { opacity: 0; transform: translate(-46vw, 18vw) rotate(-22deg); } 100% { opacity: 0; transform: translate(-46vw, 18vw) rotate(-22deg); } }
-/* the moon sets and fades as the sun comes up */
-.sky__moon { position: absolute; left: 7vw; top: 15vh; width: clamp(40px, 5.5vw, 84px); height: auto; fill: #e8ecf6; opacity: calc(var(--night, 1) * 0.92); transform: translateY(calc(var(--rise, 0) * 40vh)); }
-/* the sun rises from below the screen toward the top right, then hands over to the finale's own sun */
-.sky__sun { position: absolute; right: 8vw; top: 13vh; width: clamp(76px, 10vw, 150px); height: auto; opacity: var(--sun-on, 0); transform: translateY(calc((1 - var(--rise, 0)) * 85vh)); }
-.sky__disc { fill: var(--sun); }
-.sky__rays line { stroke: var(--sun); stroke-width: 7; stroke-linecap: round; }
-.sky__rays { transform-origin: 100px 100px; animation: sky-turn 90s linear infinite; }
-@keyframes sky-turn { to { transform: rotate(360deg); } }
-html.reduced .sky__sun, html.reduced .sky__moon { transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .star, .sky__meteor, .sky__rays { animation: none; }
-  .sky__meteor { display: none; }
-  .sky__sun, .sky__moon { transform: none; }
-}
-@media (max-width: 760px) {
-  /* phones: a smaller sun tucked into the right edge, so it stays clear of the text column */
-  .sky__sun { right: -14px; top: 15vh; width: 64px; }
-  .sky__moon { top: 12vh; width: 34px; }
-}
+.sky__canvas { display: block; width: 100%; height: 100%; }
 
 /* text follows the sky: navy on a light sky, white on a dark one. Cards keep their own white ground and dark text */
 body[data-page="front"] #view { --t1: var(--cell); --t2: #3e4859; }   /* a shade darker than --ink-2: the sunrise and morning skies are not white */
 body.is-night[data-page="front"] #view { --t1: #ffffff; --t2: rgba(233, 237, 248, 0.84); }
-body[data-page="front"] #view :is(.opening .display, .title, .num-big, .close__name, .hero .display, .step h3) { color: var(--t1); transition: color 400ms ease; }
-body[data-page="front"] #view :is(.opening .lede, .lede, .fig__line, .problem__text, .why__text, .step p, .close__line, .muted, section > .wrap > .label, .strip__note, .close__note, .fpass__actions .label, .opening__cue) { color: var(--t2); transition: color 400ms ease; }
+body[data-page="front"] #view :is(.problem__head, .title, .num-big, .close__name, .hero .display, .step h3) { color: var(--t1); transition: color 400ms ease; }
+body[data-page="front"] #view :is(.lede, .fig__line, .problem__text, .why__text, .step p, .close__line, .muted, section > .wrap > .label, .strip__note, .close__note, .fpass__actions .label, .problem__cue) { color: var(--t2); transition: color 400ms ease; }
 body[data-page="front"] #view .problem__text { color: var(--t1); }
+body[data-page="front"] #view .problem__head .line + .line .line__in { color: var(--t2); }
 /* the bench's drawings sit on small light tiles so they read on any sky */
 .step__glyph { border-radius: 4px; }
 

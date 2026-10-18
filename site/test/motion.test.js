@@ -38,15 +38,24 @@ test("supports reports what the browser offers", () => {
   expect(supports({ IntersectionObserver: function () {}, requestIdleCallback: function () {}, document: { startViewTransition() {}, fonts: {} } })).toEqual({ io: true, idle: true, viewTransitions: true, fonts: true });
 });
 
-test("the sky blends between section colours across each boundary, and night is told by luminance", () => {
+test("the time of day blends across each section boundary, and night is told by luminance", () => {
   const M = win.SSMotion;
   const r = (t, b) => ({ top: t, bottom: b, height: b - t });
-  const rects = [r(0, 800), r(800, 1600), r(1600, 2400)];
-  const cols = ["#070c22", "#f4c9a4", "#fbfcfd"].map(M.hexRgb);
-  expect(M.skyColour(rects, cols, 100, 800)).toEqual(cols[0]);           // inside the first section, its own colour
-  expect(M.skyColour(rects, cols, 1200, 800)).toEqual(cols[1]);          // the middle of the second
-  const mid = M.skyColour(rects, cols, 800, 800);                        // on the boundary: half way
-  expect(mid[0]).toBeGreaterThan(cols[0][0]); expect(mid[0]).toBeLessThan(cols[1][0]);
-  expect(M.luminance(cols[0])).toBeLessThan(M.NIGHT);
-  expect(M.luminance(cols[1])).toBeGreaterThan(M.NIGHT);
+  const rects = [r(0, 800), r(800, 1600), r(1600, 2400)], days = [0, 0.3, 1];
+  expect(M.dayAt(rects, days, 100, 800)).toBe(0);
+  expect(M.dayAt(rects, days, 1200, 800)).toBe(0.3);
+  const mid = M.dayAt(rects, days, 800, 800);
+  expect(mid).toBeGreaterThan(0); expect(mid).toBeLessThan(0.3);
+  expect(M.luminance([7, 16, 30])).toBeLessThan(M.NIGHT);
+  expect(M.luminance([199, 223, 244])).toBeGreaterThan(M.NIGHT);
+});
+
+test("the sky's colours run from deep night to a light day", async () => {
+  const w2 = {};
+  new Function("window", await Bun.file(root + "js/sky.js").text())(w2);
+  const S = w2.SSSky, M = win.SSMotion;
+  expect(M.luminance(S.colourAt(0, 0.5))).toBeLessThan(0.01);
+  expect(M.luminance(S.colourAt(0.3, 0.5))).toBeLessThan(M.NIGHT);
+  expect(M.luminance(S.colourAt(0.72, 0))).toBeGreaterThan(0.4);   // navy text reads at the top of a morning sky
+  expect(M.luminance(S.colourAt(1, 0.5))).toBeGreaterThan(0.7);
 });

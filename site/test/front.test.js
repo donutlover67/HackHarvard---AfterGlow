@@ -18,31 +18,30 @@ const ctxSample = withRun(sample);
 const ctxFive = { ...ctxSample, passports: [...ctxSample.passports, { ...ctxSample.passports[0], passport_id: "SS-0005", measured_at: "2026-10-17T09:00:00-04:00" }] };
 const ctxHostile = { ...ctxSample, passports: [{ ...ctxSample.passports[0], passport_id: "<img src=x onerror=alert(1)>" }] };
 
-test("the opening, at night, holds the problem headline and both ways in", () => {
+test("the page starts with the problem, listed, at night", () => {
   const html = page(ctxEmpty);
   const first = html.slice(0, html.indexOf("</section>"));
-  expect(first).toContain('class="opening"');
-  expect(first).toContain('data-tone="night"');
-  expect(first).toContain('href="#/passports"');
-  expect(first).toContain('href="#/build"');
+  expect(first).toContain('<section class="problem"');
+  expect(first).toContain('data-day="0"');
   expect(first).toContain("<h1");
-  expect(first.replace(/<[^>]+>/g, "")).toContain("Most retired solar panels still work.");  // the headline is two line spans
+  expect(first.replace(/<[^>]+>/g, "")).toContain("Most retired solar panels still work.");
+  expect((first.match(/<li class="fig">/g) || []).length).toBe(3);   // the problem as a list of three figures
+  expect(first).toMatch(/data-count[^>]*>80–88%/);
 });
 
-test("night to day: problem first, then why, then the product, the drawn cell last; skies run from dark to light", () => {
+test("night to day: problem first, then why, then the product, the drawn cell last; the day only moves forward", () => {
   const html = page(ctxSample);
-  const order = ["opening", "problem", "why", "how", "strip", "front-gain", "fpass", "hero", "close"];
+  const order = ["problem", "why", "how", "strip", "front-gain", "fpass", "hero", "close"];
   const at = order.map((c) => html.indexOf(`<section class="${c}"`));
   expect(at.every((i) => i >= 0)).toBe(true);
   expect(at).toEqual([...at].sort((x, y) => x - y));
-  const skies = [...html.matchAll(/<section class="[a-z-]+"[^>]*data-sky="(#[0-9a-f]{6})"/g)].map((m) => m[1]);
-  expect(skies.length).toBe(order.length);
-  const lum = (hex) => { const c = hex.slice(1).match(/../g).map((h) => parseInt(h, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4))); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
-  expect(lum(skies[0])).toBeLessThan(0.02);                 // night
-  expect(lum(skies[skies.length - 1])).toBeGreaterThan(0.9); // noon
-  expect(lum(skies[1])).toBeLessThan(lum(skies[2]));        // the why is where the sky turns
-  expect(html).not.toContain("ticker");   // the facts band repeated the problem's own figures
-  expect(html).not.toContain("teaser");   // the finale carries the same two ways in
+  const days = [...html.matchAll(/<section class="[a-z-]+"[^>]*data-day="([\d.]+)"/g)].map((m) => Number(m[1]));
+  expect(days.length).toBe(order.length);
+  expect(days[0]).toBe(0);
+  expect(days[days.length - 1]).toBe(1);
+  expect(days).toEqual([...days].sort((x, y) => x - y));
+  expect(html).not.toContain("ticker");
+  expect(html).not.toContain("teaser");
   expect(html).not.toContain('class="rp"');
 });
 
@@ -112,9 +111,9 @@ test("the four steps hang on a drawn string, with a drawing each and no numerals
 
 test("every section can enter, the hero intro and the passports heading reveal, the problem numerals count", () => {
   const html = page(ctxSample);
-  expect((html.match(/<section[^>]*data-in/g) || []).length).toBeGreaterThanOrEqual(7);
+  expect((html.match(/<section[^>]*data-in/g) || []).length).toBeGreaterThanOrEqual(7);   // every section but the first, which reveals at once
   expect(html).not.toContain("data-dust");
-  expect((html.match(/data-reveal/g) || []).length).toBe(7);          // opening: headline, lede, buttons; finale: slab, headline, lede, buttons
+  expect((html.match(/data-reveal/g) || []).length).toBe(7);          // problem: headline, figures, sentence; finale: slab, headline, lede, buttons
   expect((html.match(/class="line__in"/g) || []).length).toBe(4);     // two lines in each of the two big headlines
   expect(html).toContain('class="hero__sun"');
   expect((html.match(/class="sun__beam"/g) || []).length).toBe(3);   // three beams of light onto the panel

@@ -1,6 +1,6 @@
-// The front page, from night to day: the problem under a night sky, why it matters at sunrise, the product in daylight,
-// and the drawn cell that follows the pointer at noon. Each section names its sky colour (data-sky) and whether its
-// text sits on a dark or a light ground (data-tone); motion.js blends the sky between sections as the reader scrolls.
+// The front page, from night to day: the problem first, under a night sky; why it matters before dawn; the product in
+// the morning light; the drawn cell that follows the pointer at noon. Each section names how far the day has come
+// (data-day, 0 night to 1 noon); motion.js draws the sky for that point and blends it as the reader scrolls.
 // Markup only. app.js supplies the data and helpers (ctx), motion.js drives the moves.
 // ctx: { runs, passports, loading, esc, num, cellSvg, fmtDay }
 window.SSFront = (function () {
@@ -90,7 +90,7 @@ window.SSFront = (function () {
   // ---------- sections ----------
   // the finale: the drawn cell under a drawn sun, leaning toward the pointer, with the two ways in
   function hero() {
-    return `<section class="hero" data-hero data-sky="#f2f7fc" data-tone="day" data-in>
+    return `<section class="hero" data-hero data-day="1" data-in>
       <div class="hero__pin">
         <div class="hero__slot grow" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
         <div class="hero__text">
@@ -101,25 +101,18 @@ window.SSFront = (function () {
       </div>
     </section>`;
   }
-  // the first screen, at night: the problem in one line and the two ways in
-  const opening = () => `<section class="opening" data-opening data-sky="#070c22" data-tone="night">
-      <div class="wrap opening__in">
-        <h1 class="display" data-reveal><span class="line"><span class="line__in">Most retired solar panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
-        <p class="lede rise" data-reveal style="--d:260ms">Nobody checks which ones, so most of them are thrown away.</p>
-        <div class="opening__actions rise" data-reveal style="--d:380ms"><a class="btn btn--sun" href="#/passports">See the passports</a><a class="btn btn--night" href="#/build">Try the Array Builder</a></div>
+  // the first screen, at night: the problem, listed. The headline, then three figures, then what goes wrong with the ones kept
+  const problem = () => `<section class="problem" data-opening data-day="0">
+      <div class="wrap problem__in">
+        <h1 class="display problem__head" data-reveal><span class="line"><span class="line__in">Most retired solar panels still work.</span></span> <span class="line"><span class="line__in">Most are thrown away anyway.</span></span></h1>
+        <ol class="problem__grid rise" data-reveal style="--d:300ms">
+          <li class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of their rated power is what most panels still make after 25 years</p></li>
+          <li class="fig"><div class="num-big" data-count>1.2%</div><p class="fig__line">of retired US panels are reused; most of the rest go to landfill</p></li>
+          <li class="fig"><div class="num-big" data-count>$17–34</div><p class="fig__line">to lab-test one used panel, against about $55 for a new one</p></li>
+        </ol>
+        <p class="problem__text rise" data-reveal style="--d:420ms">The few that are kept arrive mixed and untested. Wired in a series string, every panel carries the same current, so the weakest one holds back all the rest.</p>
       </div>
-      <p class="opening__cue label" aria-hidden="true">Scroll toward sunrise</p>
-    </section>`;
-  const problem = () => `<section class="problem" data-sky="#0d1636" data-tone="night" data-in>
-      <div class="wrap">
-        <h2 class="title problem__title">Testing them costs too much, so they are thrown away.</h2>
-        <div class="problem__grid">
-          <div class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of rated output is what most panels still make after 25 years</p></div>
-          <div class="fig"><div class="num-big" data-count>1.2%</div><p class="fig__line">of retired US panels are reused; most are landfilled</p></div>
-          <div class="fig"><div class="num-big" data-count>$17–34</div><p class="fig__line">for a lab test of one used panel, against about $55 for a new one</p></div>
-        </div>
-        <p class="problem__text">And the panels that are kept arrive mixed. In a series string every panel carries the same current, so the weakest one limits the rest. Factories sort new panels by current; used ones arrive untested.</p>
-      </div>
+      <p class="problem__cue label" aria-hidden="true">Scroll toward sunrise</p>
     </section>`;
   // the bench's four steps hang in order on one wire, the way panels hang on a string; each carries a drawing of what happens
   const tiny = (x, y, w, h, strong) => `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--cell)"/>${strong ? "" : `<polygon points="${octagon(x, y, w, h, Math.min(w, h) * 0.18)}" fill="var(--film)"/>`}`;
@@ -134,9 +127,10 @@ window.SSFront = (function () {
     prove: `<path d="M4,32 H68" class="g-line g-rail"/><rect x="12" y="6" width="16" height="26" fill="var(--cell)"/><rect x="34" y="16" width="16" height="16" fill="var(--busbar)"/><path d="M12,4 H28" class="g-line"/>`,
   };
   const glyph = (name) => `<svg class="step__glyph" viewBox="0 0 72 40" aria-hidden="true" focusable="false"><rect width="72" height="40" fill="var(--page)"/>${GLYPHS[name]}</svg>`;
-  const how = () => `<section class="how" data-sky="#cfe2f4" data-tone="day" data-in>
+  const how = () => `<section class="how" data-day="0.72" data-in>
       <div class="wrap">
-        <h2 class="title">Four panels, three ways to pair them.</h2>
+        <h2 class="title">Second String grades them, then wires them right.</h2>
+        <p class="lede how__lede">A bench measures every panel at the same moment, under the same light, so they can be compared fairly. Then it tries each way of pairing them and keeps the one that makes the most power.</p>
         <div class="string-box">
           <svg class="string__wire string__wire--h" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,1 H100" pathLength="1"/></svg>
           <svg class="string__wire string__wire--v" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M1,0 V100" pathLength="1"/></svg>
@@ -159,7 +153,7 @@ window.SSFront = (function () {
       </article>`).join("");
     return `<div class="strip__track">${cards}</div><p class="wrap strip__note label">${sourceLine(strip, ctx, "Figures")}</p>`;
   }
-  const strip = (ctx, s) => `<section class="strip" data-strip data-sky="#d9e9f7" data-tone="day" data-in>
+  const strip = (ctx, s) => `<section class="strip" data-strip data-day="0.82" data-in>
       <div class="strip__pin"><div class="strip__stage">
         <div class="wrap"><h2 class="title">Three ways to wire four panels.</h2></div>
         <div id="front-strip">${stripInner(ctx, s)}</div>
@@ -175,7 +169,7 @@ window.SSFront = (function () {
       </div>`;
   }
   // the gain sits on a navy card in the daylight, the page's one strong colour
-  const gainBand = (ctx, g) => `<section class="front-gain" data-sky="#e3eff9" data-tone="day" data-in><div class="wrap"><div class="band front-band" id="front-gain">${gainInner(ctx, g)}</div></div></section>`;
+  const gainBand = (ctx, g) => `<section class="front-gain" data-day="0.88" data-in><div class="wrap"><div class="band front-band" id="front-gain">${gainInner(ctx, g)}</div></div></section>`;
   function passportsInner(ctx) {
     const latest = window.SSFrontData.latestPassports(ctx.passports, 4);
     const card = (p) => `<a class="ppass" href="#/p/${encodeURIComponent(p.passport_id)}">${ctx.cellSvg({ label: p.passport_id, dim: p.grade === "C" })}<span class="ppass__id">${ctx.esc(p.passport_id)}</span><span class="ppass__grade grade g-${ctx.esc(p.grade)}">${ctx.esc(p.grade || "—")}</span><span class="ppass__facts label">${ctx.num(p.isc_ma, 0)} mA, ${ctx.num(p.voc_v, 2)} V</span></a>`;
@@ -192,15 +186,15 @@ window.SSFront = (function () {
         ${body}
       </div>`;
   }
-  const passportsSection = (ctx) => `<section class="fpass" id="front-passports" data-sky="#ebf3fb" data-tone="day" data-in>${passportsInner(ctx)}</section>`;
-  const close = () => `<section class="close" data-sky="#fbfcfd" data-tone="day" data-in><div class="wrap">
+  const passportsSection = (ctx) => `<section class="fpass" id="front-passports" data-day="0.94" data-in>${passportsInner(ctx)}</section>`;
+  const close = () => `<section class="close" data-day="1" data-in><div class="wrap">
       <p class="close__name">Second String</p>
       <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>
       <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
     </div></section>`;
 
   // why we do it, short: solar as something ordinary households can have, not only industrial projects
-  const why = () => `<section class="why" data-sky="#f4c9a4" data-tone="day" data-in>
+  const why = () => `<section class="why" data-day="0.3" data-in>
       <div class="wrap why__in">
         <h2 class="title">Solar for everyday people.</h2>
         <p class="why__text">Solar is usually sold as an industrial project: utility farms, new roofs, big budgets. Tested used panels make it something an ordinary household can afford, a few panels on a balcony, a shed or a backyard, and a step toward a cleaner, healthier way of living at home.</p>
@@ -210,8 +204,8 @@ window.SSFront = (function () {
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    // night to day: the problem, why it matters, the product, then the drawn cell and the two ways in
-    return opening() + problem() + why() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + hero() + close();
+    // night to day: the problem first, why it matters, the product, then the drawn cell and the two ways in
+    return problem() + why() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + hero() + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {
