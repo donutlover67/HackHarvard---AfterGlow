@@ -19,7 +19,7 @@ Plain HTML, CSS and a handful of scripts, hash-routed, no build step, no framewo
 | `#/passports` | passport index: real panels, then the demo batch kept apart and labelled simulated, import tools, runs table |
 | `#/p/SS-0001` | one passport: intro for strangers, QR code of its own URL, measurements, the panel against its run, pairing line |
 | `#/build` | Array Builder: say how the power is used and the device's voltage; sizing.js picks the string length and the builder groups the panels; Adjust for overrides |
-| `#/impact` | the same four panels wired two ways (simulated, editable), the measured gain across proof runs, sourced background figures |
+| `#/impact` | why more solar, for businesses and households (from the bryanchanges branch, without its sky layer): the case for it, the two audiences, a short summary of the figures with the four-panel comparison among them (simulated and labelled), and where this goes next |
 | `#/print` | four passport cards per printed page |
 
 Anything else opens the front page. `tools/serve.py` sends the dashboard to `#/passports` after an upload.

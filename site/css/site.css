@@ -337,3 +337,33 @@ details.adjust[open] summary { margin-bottom: 6px; }
   .grade { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .pnav, .demo-banner { display: none; }
 }
+
+/* ---------- the Impact page (from the bryanchanges branch): why more solar, for businesses and households. Its sections
+   are full width like the front page's; the sky layer that branch drew behind them is not taken. ---------- */
+body[data-page="impact"] .view { max-width: none; padding: 0; }
+body[data-page="impact"] .foot { display: none; }
+.imp-open { min-height: calc(100svh - 64px); display: grid; align-content: center; position: relative; padding-block: clamp(56px, 8vh, 96px) clamp(88px, 12vh, 128px); }
+.imp-open__in { display: grid; gap: 28px; }
+.imp-head { font-size: clamp(2.6rem, 7vw, 6.4rem); max-width: 12ch; }
+.imp-head .line { display: block; }
+.imp-open__lede { margin: 0; font-size: clamp(1.1rem, 1.6vw, 1.35rem); max-width: 46ch; }
+.imp-cue { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center; transition: opacity 260ms ease; }
+.imp-cue.is-gone { opacity: 0; }
+.imp-part { padding-block: clamp(72px, 11vw, 150px); }
+.imp-part__in { max-width: 900px; }
+.imp-part__text { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; margin-top: 18px; max-width: 60ch; }
+.imp-points { list-style: none; padding: 0; margin: 32px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 28px; }
+.imp-points li { display: flex; gap: 12px; align-items: baseline; font-weight: 600; font-stretch: 104%; }
+.imp-points li::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--sun); transform: translateY(-1px); }
+.imp-sum { padding-block: clamp(64px, 9vw, 128px); }
+.imp-sum__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 36px; }
+.imp-sum .num-big { font-size: clamp(2.4rem, 4.4vw, 4rem); white-space: nowrap; }
+.imp-sum__gain { text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 6px; text-underline-offset: 10px; }
+.imp-sum .tag { margin-left: 4px; }
+.imp-sum__note { margin-top: 32px; max-width: 70ch; }
+.imp-next { padding-block: clamp(64px, 9vw, 128px) clamp(96px, 12vw, 160px); }
+.imp-next__list { padding-left: 1.3em; margin: 24px 0 0; display: grid; gap: 14px; max-width: 64ch; font-size: 1.1rem; line-height: 1.5; }
+.imp-next__actions { margin-top: 36px; gap: 12px; }
+@media (max-width: 760px) {
+  .imp-points, .imp-sum__grid { grid-template-columns: 1fr; }
+}

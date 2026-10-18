@@ -410,6 +410,7 @@ window.SSMotion = (function () {
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
     safe(() => countUps(view));
+    safe(() => watchReveal(view));   // every page: the Impact page's opening carries data-reveal too
     let stripCtl = null, stepsCtl = null, rpCtl = null, collageCtl = null;
     if (page === "front") {
       const rp = safe(() => repairing(view));
@@ -418,7 +419,6 @@ window.SSMotion = (function () {
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
       safe(() => intro(view));
-      safe(() => watchReveal(view));
       safe(() => heroPanel(view.querySelector("[data-hero-slot]")));
     }
     // if anything above failed, nothing may stay hidden
