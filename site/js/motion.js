@@ -342,6 +342,29 @@ window.SSMotion = (function () {
     return { redraw() { measure(); update(); }, destroy() { removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); removeEventListener("pageshow", onScroll); } };
   }
 
+  // ---------- the passports collage: pans diagonally with the scroll; a card near the middle of the screen wakes ----------
+  function collage(view) {
+    const section = view.querySelector(".fpass");
+    const none = { rebuild() {}, destroy() {} };
+    if (!section || reduced()) return none;
+    let io = null;
+    const watch = () => {
+      if (io) io.disconnect();
+      if (typeof IntersectionObserver !== "function") { section.querySelectorAll(".ppass").forEach((c) => c.classList.add("is-near")); return; }
+      io = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle("is-near", e.isIntersecting)), { rootMargin: "-38% 0px -38% 0px", threshold: 0 });
+      section.querySelectorAll(".ppass").forEach((c) => io.observe(c));
+    };
+    const update = () => {
+      const r = section.getBoundingClientRect(), vh = innerHeight;
+      section.style.setProperty("--pan", clamp01((vh - r.top) / (vh + r.height)).toFixed(4));   // 0 as it enters from below, 1 as it leaves above
+    };
+    const onScroll = rafThrottle(update);
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+    watch(); update();
+    return { rebuild() { watch(); update(); }, destroy() { if (io) io.disconnect(); removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); } };
+  }
+
   // ---------- the drawn cell follows the pointer ----------
   // It leans toward the pointer (a CSS perspective transform on the svg), its shadow slides away from the sun, and the
   // sunlit corner of its face reaches further the more the face turns up and left, toward the sun. Left alone it sways
@@ -391,11 +414,12 @@ window.SSMotion = (function () {
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
     safe(() => countUps(view));
-    let stripCtl = null, stepsCtl = null, rpCtl = null;
+    let stripCtl = null, stepsCtl = null, rpCtl = null, collageCtl = null;
     if (page === "front") {
       const rp = safe(() => repairing(view));
       rpCtl = rp;
       safe(() => portal(view));
+      collageCtl = safe(() => collage(view));
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
       safe(() => revealHero(view));
@@ -410,7 +434,7 @@ window.SSMotion = (function () {
     }, 2500);
     return {
       // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new heading
-      refresh() { updateNav(); safe(() => countUps(view)); if (rpCtl && rpCtl.redraw) rpCtl.redraw(); if (stripCtl) stripCtl.size(); if (stepsCtl) stepsCtl.rebuild(); safe(() => watchReveal(view)); },
+      refresh() { updateNav(); safe(() => countUps(view)); if (rpCtl && rpCtl.redraw) rpCtl.redraw(); if (stripCtl) stripCtl.size(); if (stepsCtl) stepsCtl.rebuild(); if (collageCtl) collageCtl.rebuild(); safe(() => watchReveal(view)); },
       destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); },
     };
   }

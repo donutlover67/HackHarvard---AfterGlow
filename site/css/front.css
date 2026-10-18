@@ -209,3 +209,16 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .doodle--sun circle { fill: var(--sun); stroke: none; }
 .doodle--string { width: 2.4em; }
 .step .doodle { width: 1.3em; height: 1.3em; }
+
+/* the inversion: the dark chapters meet the paper on a shallow curve (after the Lando Norris site's editorial turn from
+   olive to cream), and the passports lie scattered like snapshots on a table: each on its own height, the whole row
+   panning diagonally as the reader scrolls (--pan 0..1 from motion.js), each card grey and quiet until it is hovered
+   or passes the middle of the screen */
+.strip { border-radius: 50% 50% 0 0 / 40px 40px 0 0; }
+.front-band { border-radius: 0 0 50% 50% / 0 0 40px 40px; }
+@media (min-width: 900px) {
+  .ppass-row { width: calc(100% + 12vw); align-items: start; transform: translate(calc(var(--pan, 0) * -12vw), calc(var(--pan, 0) * 56px)); }
+  .ppass:nth-child(1) { margin-top: 40px; } .ppass:nth-child(3) { margin-top: 72px; } .ppass:nth-child(4) { margin-top: 24px; }
+}
+html.has-motion .ppass { filter: grayscale(1); opacity: 0.72; }
+html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-motion .ppass.is-near { filter: none; opacity: 1; }

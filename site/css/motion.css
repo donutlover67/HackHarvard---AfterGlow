@@ -82,6 +82,7 @@ html.reduced .hero__scroll { display: none; }
 
 /* cards wipe in from the top edge once their section is on screen, one after another */
 .wiring, .ppass, .teaser__box { transition: clip-path 760ms var(--m-ease); transition-delay: calc(var(--j, 0) * 90ms); }
+.ppass { transition: clip-path 760ms var(--m-ease), filter 520ms var(--m-ease), opacity 520ms var(--m-ease); transition-delay: calc(var(--j, 0) * 90ms), 0ms, 0ms; }
 .wiring:nth-child(2), .ppass:nth-child(2) { --j: 1; } .wiring:nth-child(3), .ppass:nth-child(3) { --j: 2; } .ppass:nth-child(4) { --j: 3; }
 html.has-motion .strip:not(.is-in) .wiring, html.has-motion .fpass:not(.is-in) .ppass, html.has-motion .teaser:not(.is-in) .teaser__box { clip-path: inset(0 0 100% 0); }
 /* how the bench works: the rail draws across as the reader scrolls through the section (motion.js sets the offset), and
