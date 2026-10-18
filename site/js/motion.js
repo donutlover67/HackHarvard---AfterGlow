@@ -51,19 +51,25 @@ window.SSMotion = (function () {
   }
   const rafThrottle = (fn) => { let waiting = false; return () => { if (waiting) return; waiting = true; requestAnimationFrame(() => { waiting = false; fn(); }); }; };
 
-  // the nav's small sun fills clockwise as the page is scrolled (after the ui-refresh branch)
-  function navUpdate() {
-    const sun = document.querySelector(".nav .nav__sun");
-    if (!sun) return;
-    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    sun.style.setProperty("--p", clamp01(scrollY / max).toFixed(3));
+  // the nav, as the ui-refresh branch's motion.js has it (updateNav there): hidden over a full-bleed hero, then slides
+  // in; the sun fills as you scroll. This site has no .hero--full, so the nav shows on every page from the first paint.
+  const $ = (sel, root = document) => root.querySelector(sel);
+  let route = "index";
+  function updateNav() {
+    const nav = $(".nav");
+    if (!nav) return;
+    const y = scrollY, max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    const sun = $(".nav__sun");
+    if (sun) sun.style.setProperty("--p", clamp01(y / max).toFixed(3));
+    const hero = route === "index" && $(".hero--full");
+    nav.classList.toggle("is-tucked", !!hero && y < innerHeight * 0.25);
   }
   function init() {
     document.documentElement.classList.add(reduced() ? "reduced" : "has-motion");
-    const onNav = rafThrottle(navUpdate);
+    const onNav = rafThrottle(updateNav);
     addEventListener("scroll", onNav, { passive: true });
-    addEventListener("resize", onNav);
-    navUpdate();
+    addEventListener("resize", onNav, { passive: true });
+    updateNav();
     hidden = document.hidden;
     document.addEventListener("visibilitychange", () => {
       hidden = document.hidden;
@@ -333,7 +339,9 @@ window.SSMotion = (function () {
 
   function mount(view, page) {
     const cleanups = [];
-    navUpdate();   // the page changed: a new scroll height
+    route = page === "front" ? "index" : page;
+    document.body.classList.toggle("has-hero", !!$(".hero--full", view));
+    updateNav();
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
     safe(() => countUps(view));
@@ -355,7 +363,7 @@ window.SSMotion = (function () {
     }, 2500);
     return {
       // runs arrived and front.js redrew its sections in place: count the new numerals, re-measure the strip, watch the new heading
-      refresh() { navUpdate(); safe(() => countUps(view)); if (rpCtl && rpCtl.redraw) rpCtl.redraw(); if (stripCtl) stripCtl.size(); if (stepsCtl) stepsCtl.rebuild(); safe(() => watchReveal(view)); },
+      refresh() { updateNav(); safe(() => countUps(view)); if (rpCtl && rpCtl.redraw) rpCtl.redraw(); if (stripCtl) stripCtl.size(); if (stepsCtl) stepsCtl.rebuild(); safe(() => watchReveal(view)); },
       destroy() { cleanups.forEach((fn) => { try { fn(); } catch (_) {} }); },
     };
   }
