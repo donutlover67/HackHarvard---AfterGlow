@@ -135,3 +135,7 @@ The hero's three.js slab is replaced by a drawing, at the owner's request, so th
 
 ### Amendment: the hero no longer pins (Oct 17, night)
 The owner found the 280 vh pinned hero read as the page refusing to scroll. The hero is now a normal section; the re-pairing plays as the diagram rises through the viewport (`repairing` in motion.js: from the first scroll when the diagram is already on screen, or from its entry on phones, finished by the time its upper quarter reaches the top). The "scroll" hint stays hidden.
+
+### Amendment: the navbar and dollars (Oct 17, night)
+- **Navbar** after the ui-refresh branch: sticky on every page, a larger name with a small sun that fills clockwise with scroll progress (an SVG arc driven by `--p`, no gradient), and over the front page's hero it lies fixed and tucked away until the reader has scrolled a quarter of a screen, then slides in. Reduced motion keeps it sticky and always visible.
+- **Dollars.** The lab-test figures show in US dollars: €16–31 → $17–34, €50 → about $55 (about 1.08 $/€); the impact page keeps the euro source figures in brackets. Docs outside `site/` (spec-v2, runbook) still quote the euro sources; they belong to D.

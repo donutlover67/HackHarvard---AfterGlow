@@ -51,8 +51,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .small { font-size: 0.88rem; }
 
 /* layout */
-.nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 14px var(--gutter); background: var(--surface); border-bottom: 1px solid var(--busbar-2); position: relative; z-index: 2; }
-.nav__name { font-weight: 700; font-stretch: 118%; color: var(--cell); text-decoration: none; font-size: 1.2rem; letter-spacing: -0.01em; }
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 16px var(--gutter); background: var(--surface); border-bottom: 1px solid var(--busbar-2); position: sticky; top: 0; z-index: 5; }
+.nav__name { display: inline-flex; align-items: center; font-weight: 700; font-stretch: 118%; color: var(--cell); text-decoration: none; font-size: 1.35rem; letter-spacing: -0.01em; }
+/* the small sun fills clockwise as the reader scrolls down the page (--p from motion.js); drawn as an arc, not a gradient */
+.nav__sun { --p: 0; flex: none; width: 18px; height: 18px; margin-right: 10px; transform: rotate(-90deg); }
+.nav__sun-ring { fill: var(--busbar-2); stroke: var(--cell); stroke-width: 2; }
+.nav__sun-fill { fill: none; stroke: var(--sun); stroke-width: 7; stroke-dasharray: calc(var(--p) * 100) 100; }
+/* on the front page the nav lies over the hero, out of the way at the top and sliding in once the reader scrolls */
+html.has-motion body[data-page="front"] .nav { position: fixed; left: 0; right: 0; top: 0; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+html.has-motion body[data-page="front"] .nav.is-tucked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 .nav__links { display: flex; gap: 22px; }
 .nav__links a { color: var(--ink-2); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; font-weight: 500; }
 .nav__links a:hover { color: var(--cell); }
