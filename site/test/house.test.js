@@ -33,8 +33,7 @@ test("nothing loads from the internet", async () => {
 test("house style: no gradients, shadows or uppercase labels", async () => {
   for (const f of cssFiles) {
     const css = await read(`css/${f}`);
-    const gradients = css.split("\n").filter((l) => l.includes("gradient("));
-    expect(gradients.every((l) => l.includes(".hero__sun"))).toBe(true);   // the sun's glow is the one gradient
+    expect(css).not.toContain("gradient(");
     expect(css).not.toContain("box-shadow");
     expect(css).not.toContain("text-transform: uppercase");
   }

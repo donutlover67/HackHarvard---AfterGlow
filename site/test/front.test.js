@@ -83,5 +83,7 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect((html.match(/class="line__in"/g) || []).length).toBe(2);     // the two headline lines
   expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
   expect(html).toContain('class="hero__sun"');
+  expect((html.match(/class="sun__beam"/g) || []).length).toBe(3);   // three beams of light onto the panel
+  expect(html.indexOf('class="hero__sun"')).toBeLessThan(html.indexOf('class="hero__svg"'));   // drawn first, so the panel paints over the beams
   expect(html).toMatch(/data-count[^>]*>80–88%/);
 });

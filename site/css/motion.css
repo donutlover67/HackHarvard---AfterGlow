@@ -123,8 +123,17 @@ html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 
 @media (prefers-reduced-motion: reduce) {
   .m-part, .line__in, .rise, .grow, .hero__scroll, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
-  .ticker__track, .hero__sun { animation: none; }
+  .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
   [data-hero] { --k: 1; --w: 1; --g: 1; }
   ::view-transition-old(view), ::view-transition-new(view), .view.is-leaving, .view.is-entering { animation: none; }
 }
 html.reduced .m-part, html.reduced .line__in, html.reduced .rise, html.reduced .grow { transition: none; }
+
+/* sunlight: the disc breathes, the rays turn slowly, and the dashes of each beam travel down toward the panel */
+.sun__disc, .sun__rays { transform-box: fill-box; transform-origin: center; }
+.sun__disc { animation: sun-breathe 5s ease-in-out infinite alternate; }
+.sun__rays { animation: sun-turn 80s linear infinite; }
+.sun__beam { animation: sun-beam 1.4s linear infinite; animation-delay: calc(var(--b, 0) * -0.45s); }
+@keyframes sun-breathe { from { transform: scale(0.95); } to { transform: scale(1.05); } }
+@keyframes sun-turn { to { transform: rotate(360deg); } }
+@keyframes sun-beam { to { stroke-dashoffset: -16; } }

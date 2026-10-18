@@ -125,7 +125,7 @@ Build on this branch with the current site untouched on `main`; preview on the l
 Chosen by the owner from a comparison of the two designs, keeping our 3D slab, the re-pairing, the four steps and the sideways strip:
 - **Ticker.** A slow band of five sourced facts under the hero (`.ticker`, 56 s loop, paused under the pointer, `aria-hidden` since the facts repeat the problem chapter). Separators are drawn amber dots, not glyphs.
 - **Amber as the chapter accent.** One key figure per chapter is set in `--sun`: the hero's gain numeral, the first problem numeral, the best wiring's watts in the strip.
-- **Sunlight.** A soft amber disc behind the slab's top corner (`.hero__sun`), breathing over 6 s, sinking 70 px as the panels pair (`--k`); on phones a smaller disc beside the headline, half past the edge, with the hero clipped sideways. Its radial gradient is the one gradient the house rules allow.
+- **Sunlight.** A hand-drawn sun (strokes in `--sun`, no gradient) in the slab's top left corner, drawn inside the slot's own 4:3 frame so it never meets text; its disc breathes, its rays turn slowly, and three dashed beams run down onto the panel's top face, where the panel paints over them. Phones (≤ 760 px) show no sun.
 - **Softer surfaces.** `--radius` 6 px and a hairline `--rule` border on cards.
 - **Reveals.** Section parts now fade up 40 px out of a 6 px blur over 1 s (`cubic-bezier(0.2, 0.8, 0.2, 1)`, 110 ms stagger), replacing the 360 ms slide; the three section titles join their sections' fade instead of the masked line reveal, which the hero's headline keeps.
 - Found while doing this: front.css ended with a stray `}` that silently dropped the next rule; a house test now checks every stylesheet's braces balance.

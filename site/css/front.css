@@ -155,12 +155,11 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .front-band { padding-top: calc(var(--section) * 0.5); }
 .hero__pin { z-index: 1; }
 
-/* the sun: a soft disc behind the slab's top corner that breathes, and sinks a little as the panels pair (--k from motion.js) */
-.hero__sun { position: absolute; left: 39%; top: -34px; width: 280px; height: 280px; border-radius: 50%; pointer-events: none; z-index: 0; background: radial-gradient(circle closest-side, #fff1b8 0%, var(--sun) 34%, rgba(242, 183, 5, 0.38) 62%, rgba(242, 183, 5, 0) 100%); transform: translateY(calc(var(--k, 0) * 70px)); animation: sun-breathe 6s ease-in-out infinite alternate; }
-@keyframes sun-breathe { from { opacity: 0.72; scale: 0.97; } to { opacity: 1; scale: 1.03; } }
-.hero__slot, .hero__text, .rp, .hero__caption, .hero__scroll { position: relative; z-index: 1; }
-.hero { overflow-x: clip; } /* the sun may bleed past the edge; clip keeps the page from scrolling sideways (clip, not hidden, so the pin stays sticky) */
-@media (max-width: 760px) { .hero__sun { width: 120px; height: 120px; left: auto; right: -32px; top: 36px; } }
+/* the sun: hand-drawn strokes in the slab's top left corner, sharing the slot's 4:3 frame so the beams land on the panel at every size */
+.hero__sun { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.hero__sun .sun__disc { fill: var(--sun); }
+.hero__sun .sun__beam { stroke-width: 2; stroke-dasharray: 5 11; opacity: 0.85; }
+@media (max-width: 760px) { .hero__sun { display: none; } }
 
 /* the ticker: a slow band of sourced facts under the hero, paused under the pointer */
 .ticker { overflow: hidden; background: var(--cell); color: #fff; }

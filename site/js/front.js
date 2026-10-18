@@ -18,6 +18,27 @@ window.SSFront = (function () {
     return `<polygon points="${pts}" fill="var(--cell)"/>${fingers}${bus}${strong ? "" : `<polygon points="${pts}" fill="var(--film)"/>`}<text x="${x + w / 2}" y="${y + h / 2 + 5}" text-anchor="middle">${n}</text>`;
   }
   // the hero slab as an svg (the fallback when three.js stays off): the cell at 4:3 and a light band the scroll moves across it
+  // a hand-drawn sun in the slab's top left corner (the slot's own 400x300 frame), with three beams of light
+  // that run down onto the panel's top face; the panel is painted over them, so the light ends where it lands
+  function sunSvg() {
+    const cx = 34, cy = 30;
+    const rays = Array.from({ length: 11 }, (_, i) => {
+      const a = (i / 11) * Math.PI * 2 - 0.4, len = 7 + ((i * 7) % 5);   // uneven lengths, as if drawn by hand
+      const r0 = 25 + ((i * 3) % 3);
+      const p = (r) => `${(cx + Math.cos(a) * r).toFixed(1)} ${(cy + Math.sin(a) * r).toFixed(1)}`;
+      return `<path d="M${p(r0)} L${p(r0 + len)}"/>`;
+    }).join("");
+    return `<svg class="hero__sun" viewBox="0 0 400 300" aria-hidden="true" focusable="false">
+      <g class="sun__rays">${rays}</g>
+      <path class="sun__disc" d="M34 10 C46 9 55 19 54 31 C53 43 44 51 33 50 C21 49 13 40 14 29 C15 18 23 11 34 10 Z"/>
+      <g class="sun__beams">
+        <path class="sun__beam" style="--b:0" d="M52 46 Q 90 58 126 80"/>
+        <path class="sun__beam" style="--b:1" d="M58 38 Q 130 50 200 76"/>
+        <path class="sun__beam" style="--b:2" d="M60 28 Q 160 40 268 72"/>
+      </g>
+    </svg>`;
+  }
+
   function slabSvg() {
     const w = 400, h = 300, pts = octagon(0, 0, w, h, 36);
     let fingers = "";
@@ -66,8 +87,7 @@ window.SSFront = (function () {
   function hero(ctx, gain) {
     return `<section class="hero" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
       <div class="hero__pin">
-        <span class="hero__sun" aria-hidden="true"></span>
-        <div class="hero__slot grow" data-reveal data-hero-slot>${slabSvg()}</div>
+        <div class="hero__slot grow" data-reveal data-hero-slot>${sunSvg()}${slabSvg()}</div>
         <div class="hero__text">
           <h1 class="display" data-reveal><span class="line"><span class="line__in">Used panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
           <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
