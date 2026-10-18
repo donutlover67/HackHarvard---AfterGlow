@@ -89,9 +89,11 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect(html).not.toContain("contours");
   expect((html.match(/class="recycle"/g) || []).length).toBe(1);
   const recycle = html.slice(html.indexOf('class="recycle"'), html.indexOf("</svg>", html.indexOf('class="recycle"')));
-  expect((recycle.match(/pathLength="1"/g) || []).length).toBe(19);   // "recycle" in cursive: nineteen pen strokes
-  expect(recycle).toContain('--d:0.00s');                             // the first starts at once; the rest follow at pen speed
-  expect(/stroke-width="1[0-9]"/.test(recycle) && /stroke-width="[34][0-9]"/.test(recycle)).toBe(true);   // thin upstrokes, thick downstrokes
+  expect((recycle.match(/pathLength="1"/g) || []).length).toBeGreaterThan(150);   // "recycle": nineteen pen strokes in short pieces
+  expect(recycle).toContain('--d:0.000s');                            // the first starts at once; the rest follow at pen speed
+  const widths = [...recycle.matchAll(/stroke-width="([\d.]+)"/g)].map((m) => Number(m[1]));
+  expect(Math.min(...widths)).toBeLessThan(12); expect(Math.max(...widths)).toBeGreaterThan(30);   // from a hairline to a full brush
+  expect(Math.max(...widths.slice(1).map((w, i) => Math.abs(w - widths[i])))).toBeLessThan(9);     // and never a sudden jump
   expect((html.match(/class="doodle /g) || []).length).toBe(3);       // the sun, the cell, the string
   expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
   expect(html).toContain('class="hero__sun"');

@@ -110,7 +110,7 @@
 @media (min-width: 760px) and (pointer: fine) {
   /* only while motion.js drives it; it adds .is-row (the swipe row) when it cannot */
   html.has-motion .strip:not(.is-row) .strip__pin { position: sticky; top: 0; }
-  html.has-motion .strip:not(.is-row) .strip__track { overflow: visible; scroll-snap-type: none; padding-inline: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter))); will-change: transform; }
+  html.has-motion .strip:not(.is-row) .strip__track { overflow: visible; scroll-snap-type: none; gap: 44px; padding-inline: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter))); will-change: transform; }
   /* when the scroll drives it, each wiring is most of a screen wide, so the strip travels well over a screen sideways */
   html.has-motion .strip:not(.is-row) .wiring { flex-basis: min(72vw, 920px); padding: 32px 36px 36px; }
   html.has-motion .strip:not(.is-row) .wiring__w { font-size: clamp(2.1rem, 3.2vw, 3.4rem); }
@@ -195,12 +195,12 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 
 /* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
    is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
-.recycle { position: absolute; left: 50%; top: 58%; width: min(104vw, 1700px); height: auto; transform: translate(-50%, -50%) rotate(-14deg); pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
+.recycle { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }   /* fitted to the section, never cut */
 .recycle path { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; }   /* parked just past the start, so no round cap shows before the pen arrives */
 .problem.is-in .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
 html.reduced .recycle path { stroke-dashoffset: 0; }
 @keyframes draw-stroke { to { stroke-dashoffset: 0; } }
-.problem { overflow: clip; }
+.problem { overflow: clip; padding-block: calc(var(--section) * 1.5); }   /* room for the word to run at its angle */
 /* doodles: a drawn full stop at the end of a block of text */
 .doodle { display: inline-block; vertical-align: -0.35em; width: 1.5em; height: 1.5em; margin-left: 0.35em; fill: none; stroke: var(--sun); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .doodle--sun circle { fill: var(--sun); stroke: none; }

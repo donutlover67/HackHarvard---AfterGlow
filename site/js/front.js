@@ -121,36 +121,69 @@ window.SSFront = (function () {
   // screen while the reader scrolls (--q, from motion.js): the ground turns navy, the headline fades, the cell shrinks
   // into a framed box at the centre and an amber string signs itself across the frame. Then the page lets go and the
   // re-pairing follows on the navy ground.
-  // "recycle", written by hand behind the problem's numerals: one connected cursive line, rising from the bottom left
-  // to the top right, in brush-pen weights (thin upstrokes, thick downstrokes, a flourish out). Each segment is one
-  // stroke of the pen; front.css draws them in order at a steady pen speed (--d, --t from the segment's length).
+  // "recycle", written by hand behind the problem's numerals: one connected cursive line in nineteen pen strokes,
+  // each with a pressure curve (weight at its start, middle and end). Every stroke is sampled into short pieces whose
+  // width follows that curve, so the line swells and tapers like a brush; the pieces are drawn one after another at a
+  // steady pen speed (--d, --t per piece). The word is slanted and set at 14 degrees in the numbers themselves, and the
+  // viewBox is fitted to it, so nothing is ever cut off.
   const RECYCLE = [
-    ["M60 372 C 76 326, 94 278, 112 232", 12],                                                  // r: up
-    ["M112 232 C 122 216, 142 214, 146 230", 20],                                              //    a short shoulder
-    ["M140 238 C 144 278, 148 320, 152 360", 30],                                               //    down
-    ["M152 360 C 172 318, 198 270, 228 262", 12],                                               // e: up
-    ["M228 262 C 254 258, 258 292, 230 300 C 202 308, 192 340, 214 356 C 232 368, 258 352, 272 336", 27],
-    ["M272 336 C 294 302, 320 272, 350 262", 12],                                               // c: up
-    ["M354 264 C 324 252, 302 286, 306 318 C 310 346, 340 356, 368 332", 27],
-    ["M368 332 C 390 302, 412 270, 434 252", 12],                                               // y: up
-    ["M434 252 C 428 282, 422 312, 430 336 C 438 352, 462 338, 476 314", 23],
-    ["M492 248 C 484 300, 472 370, 456 440", 31],                                               //    the descender, thick
-    ["M456 440 C 448 474, 416 472, 420 446 C 422 428, 442 420, 462 418", 13],                 //    and its thin return
-    ["M462 418 C 502 380, 542 310, 586 262", 11],                                               // c: long up
-    ["M590 264 C 560 252, 538 286, 542 318 C 546 346, 576 356, 604 332", 27],
-    ["M604 332 C 634 292, 664 220, 678 120", 12],                                               // l: tall up
-    ["M678 120 C 684 86, 718 90, 708 132 C 696 186, 668 282, 652 360", 29],                   //    loop and down
-    ["M652 360 C 662 372, 682 366, 694 352", 19],
-    ["M694 352 C 714 314, 740 270, 770 262", 12],                                               // e: up
-    ["M770 262 C 796 258, 800 292, 772 300 C 744 308, 734 340, 756 356 C 774 368, 800 352, 816 336", 27],
-    ["M816 336 C 848 306, 898 290, 954 300", 13],                                               // the flourish out
+    ["M60 372 C 76 326, 94 278, 112 232", 9, 12, 20],                                           // r: up
+    ["M112 232 C 122 216, 142 214, 146 230", 20, 22, 18],                                       //    a short shoulder
+    ["M140 238 C 144 278, 148 320, 152 360", 18, 34, 24],                                       //    down
+    ["M152 360 C 172 318, 198 270, 228 262", 20, 11, 18],                                       // e: up
+    ["M228 262 C 254 258, 258 292, 230 300 C 202 308, 192 340, 214 356 C 232 368, 258 352, 272 336", 18, 31, 15],
+    ["M272 336 C 294 302, 320 272, 350 262", 14, 11, 17],                                       // c: up
+    ["M354 264 C 324 252, 302 286, 306 318 C 310 346, 340 356, 368 332", 17, 31, 15],
+    ["M368 332 C 390 302, 412 270, 434 252", 14, 11, 17],                                       // y: up
+    ["M434 252 C 428 282, 422 312, 430 336 C 438 352, 462 338, 476 314", 17, 25, 15],
+    ["M492 248 C 484 300, 472 370, 456 440", 15, 35, 22],                                       //    the descender, swelling
+    ["M456 440 C 448 474, 416 472, 420 446 C 422 428, 442 420, 462 418", 20, 11, 10],          //    and its thin return
+    ["M462 418 C 502 380, 542 310, 586 262", 10, 11, 17],                                       // c: long up
+    ["M590 264 C 560 252, 538 286, 542 318 C 546 346, 576 356, 604 332", 17, 31, 15],
+    ["M604 332 C 634 292, 664 220, 678 120", 14, 11, 15],                                       // l: tall up
+    ["M678 120 C 684 86, 718 90, 708 132 C 696 186, 668 282, 652 360", 15, 34, 22],            //    loop and down
+    ["M652 360 C 662 372, 682 366, 694 352", 22, 17, 15],
+    ["M694 352 C 714 314, 740 270, 770 262", 15, 11, 18],                                       // e: up
+    ["M770 262 C 796 258, 800 292, 772 300 C 744 308, 734 340, 756 356 C 774 368, 800 352, 816 336", 18, 31, 15],
+    ["M816 336 C 848 306, 898 290, 954 300", 15, 13, 7],                                        // the flourish out
   ];
-  const PEN_SPEED = 360;   // viewBox units per second
-  const strokeLength = (d) => { const n = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number); let L = 0; for (let i = 2; i + 1 < n.length; i += 2) L += Math.hypot(n[i] - n[i - 2], n[i + 1] - n[i - 1]); return Math.max(40, L * 0.8); };
+  const PEN_SPEED = 300;   // drawing units per second
+  // the cubic beziers of one stroke, sampled every ~10 units, then slanted (skew 16°) and set at 14 degrees
+  function samplePen(d) {
+    const n = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number), pts = [];
+    const push = (x, y) => { const sx = x - Math.tan(16 * Math.PI / 180) * y, sy = y, a = -14 * Math.PI / 180; pts.push([sx * Math.cos(a) - sy * Math.sin(a), sx * Math.sin(a) + sy * Math.cos(a)]); };
+    let x0 = n[0], y0 = n[1];
+    push(x0, y0);
+    for (let i = 2; i + 5 < n.length; i += 6) {
+      const [x1, y1, x2, y2, x3, y3] = n.slice(i, i + 6);
+      const approx = Math.hypot(x1 - x0, y1 - y0) + Math.hypot(x2 - x1, y2 - y1) + Math.hypot(x3 - x2, y3 - y2), steps = Math.max(4, Math.round(approx / 10));
+      for (let k = 1; k <= steps; k++) {
+        const t = k / steps, u = 1 - t;
+        push(u * u * u * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3, u * u * u * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3);
+      }
+      x0 = x3; y0 = y3;
+    }
+    return pts;
+  }
   function recycleSvg() {
-    let at = 0;
-    const paths = RECYCLE.map(([d, w]) => { const t = strokeLength(d) / PEN_SPEED; const html = `<path d="${d}" pathLength="1" stroke-width="${w}" style="--d:${at.toFixed(2)}s;--t:${t.toFixed(2)}s"/>`; at += t; return html; });
-    return `<svg class="recycle" viewBox="-80 50 1080 470" aria-hidden="true" focusable="false"><g transform="skewX(-16)">${paths.join("")}</g></svg>`;   // the skew gives the hand its slant
+    let at = 0, minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    const pieces = [];
+    RECYCLE.forEach(([d, w0, w1, w2]) => {
+      const pts = samplePen(d), lens = [];
+      let total = 0;
+      for (let i = 1; i < pts.length; i++) { const L = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); lens.push(L); total += L; }
+      let run = 0;
+      for (let i = 1; i < pts.length; i++) {
+        const t = (run + lens[i - 1] / 2) / total, dur = lens[i - 1] / PEN_SPEED;
+        const ease = (v) => v * v * (3 - 2 * v), w = t < 0.5 ? w0 + (w1 - w0) * ease(t * 2) : w1 + (w2 - w1) * ease((t - 0.5) * 2);   // pressure: start, middle, end
+        const [ax, ay] = pts[i - 1], [bx, by] = pts[i];
+        minX = Math.min(minX, ax, bx); maxX = Math.max(maxX, ax, bx); minY = Math.min(minY, ay, by); maxY = Math.max(maxY, ay, by);
+        pieces.push(`<path d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}" pathLength="1" stroke-width="${w.toFixed(1)}" style="--d:${at.toFixed(3)}s;--t:${dur.toFixed(3)}s"/>`);
+        run += lens[i - 1]; at += dur;
+      }
+    });
+    const pad = 40;
+    return `<svg class="recycle" viewBox="${(minX - pad).toFixed(0)} ${(minY - pad).toFixed(0)} ${(maxX - minX + 2 * pad).toFixed(0)} ${(maxY - minY + 2 * pad).toFixed(0)}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">${pieces.join("")}</svg>`;
   }
   // small drawn marks that end a block of text, the way a signature ends a note: a sun, a cell, a loop of string
   const DOODLES = {
