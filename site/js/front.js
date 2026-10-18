@@ -104,7 +104,7 @@ window.SSFront = (function () {
   const glyph = (name) => `<svg class="step__glyph" viewBox="0 0 72 40" aria-hidden="true" focusable="false"><rect width="72" height="40" fill="var(--page)"/>${GLYPHS[name]}</svg>`;
   const how = () => `<section class="how" data-in>
       <div class="wrap">
-        <h2 class="title">Four panels, three ways to pair them.</h2>
+        <h2 class="title" data-reveal><span class="line"><span class="line__in">Four panels, three ways to pair them.</span></span></h2>
         <div class="string-box">
           <svg class="string__wire string__wire--h" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,1 H100" pathLength="1"/></svg>
           <svg class="string__wire string__wire--v" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M1,0 V100" pathLength="1"/></svg>
@@ -129,7 +129,7 @@ window.SSFront = (function () {
   }
   const strip = (ctx, s) => `<section class="strip" data-strip data-in>
       <div class="strip__pin"><div class="strip__stage">
-        <div class="wrap"><h2 class="title">Three ways to wire four panels.</h2></div>
+        <div class="wrap"><h2 class="title" data-reveal><span class="line"><span class="line__in">Three ways to wire four panels.</span></span></h2></div>
         <div id="front-strip">${stripInner(ctx, s)}</div>
       </div></div>
     </section>`;
@@ -167,11 +167,39 @@ window.SSFront = (function () {
       <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
     </div></section>`;
 
+  // ---------- the ground: the bench as a faint schematic behind the whole page, drifting slower than the scroll ----------
+  // Four panels on the left, two relay stages, the sweep capacitor, the output sensor and the pump, in hairlines; a
+  // datum line with a small spec note, the way an engineering drawing carries its own notes.
+  function ground() {
+    const relay = (x, y, name) => `<rect x="${x}" y="${y}" width="56" height="34" rx="2"/><path d="M${x + 10},${y + 17} H${x + 22} L${x + 36},${y + 8} M${x + 36},${y + 17} H${x + 46}"/><text x="${x + 28}" y="${y + 48}">${name}</text>`;
+    const cells = [[120, 300], [120, 420], [120, 540], [120, 660]].map(([x, y], i) => `<g>${miniCell(x, y, 110, 78, i + 1, true)}</g>`).join("");
+    return `<div class="ground" aria-hidden="true"><svg class="ground__svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <g class="gr-lines">
+        <path d="M230,339 H330 V459 H230 M230,579 H330 V699 H230 M330,399 H420 M330,639 H420"/>
+        <path d="M476,399 H560 M476,639 H560 M560,399 V639 M560,519 H700"/>
+        ${relay(420, 382, "K1")}${relay(420, 622, "K2")}${relay(700, 502, "K3")}
+        <path d="M756,519 H840 M840,470 V568 M864,470 V568 M864,519 H960"/>
+        <path d="M960,519 H1040 M1040,519 V440 M1040,440 H1140"/>
+        <circle cx="1170" cy="440" r="30"/><path d="M1200,440 H1300 M1300,440 V560 M1300,560 H1150"/>
+        <circle cx="1120" cy="560" r="30"/><path d="M1090,560 H960 M960,560 V519"/>
+        <path class="gr-datum" d="M60,860 H1540"/>
+        <path d="M60,120 H1540" class="gr-datum"/>
+      </g>
+      <g class="gr-text">
+        <text x="1170" y="445">A</text><text x="1120" y="565">P</text>
+        <text x="852" y="600">10 000 µF</text><text x="1170" y="400">INA219 · 0x42</text>
+        <text x="60" y="100">SECOND STRING · BENCH · 2S2P · A B C</text>
+        <text x="60" y="890">RELATIVE GRADING · ISC AT THE SAME INSTANT · SWEEP EACH WIRING · PROVE 20 CYCLES</text>
+      </g>
+      ${cells}
+    </svg></div>`;
+  }
+
   // ---------- the page ----------
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    return hero(ctx, g) + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
+    return ground() + hero(ctx, g) + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {

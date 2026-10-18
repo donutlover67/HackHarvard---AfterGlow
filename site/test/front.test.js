@@ -78,7 +78,7 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   const html = page(ctxSample);
   expect((html.match(/<section[^>]*data-in/g) || []).length).toBeGreaterThanOrEqual(7);
   expect(html).not.toContain("data-dust");
-  expect((html.match(/data-reveal/g) || []).length).toBe(5);          // headline, lede, buttons, slab, passports heading
-  expect((html.match(/class="line__in"/g) || []).length).toBe(3);     // two headline lines and the passports heading
+  expect((html.match(/data-reveal/g) || []).length).toBe(7);          // headline, lede, buttons, slab, and the three section titles
+  expect((html.match(/class="line__in"/g) || []).length).toBe(5);     // two headline lines and three titles
   expect(html).toMatch(/data-count[^>]*>80–88%/);
 });
