@@ -131,8 +131,11 @@ window.SSMotion = (function () {
     const diagram = hero.querySelector(".rp"), numEl = hero.querySelector("[data-rp-num]"), pin = hero.querySelector(".repair__pin");
     const gain = () => Number(hero.dataset.gain) || 0;
     const setVars = (k, w, g) => { hero.style.setProperty("--k", k.toFixed(4)); hero.style.setProperty("--w", w.toFixed(4)); hero.style.setProperty("--g", g.toFixed(4)); };
-    const setFill = (f) => hero.style.setProperty("--fill", f.toFixed(4));
-    if (reduced()) { setVars(1, 1, 1); setFill(1); if (numEl) numEl.textContent = `+${Math.round(gain())}%`; return none; }
+    const fill = hero.querySelector(".repair__fill");
+    // the bubble's radius in vmax and whether the panels show; the layer itself is fixed to the screen, so it is
+    // switched off before the section approaches and once it has scrolled past
+    const setBubble = (r, show, on) => { hero.style.setProperty("--r", r.toFixed(2)); hero.style.setProperty("--show", show.toFixed(4)); if (fill) fill.classList.toggle("is-off", !on); };
+    if (reduced()) { setVars(1, 1, 1); setBubble(170, 1, false); if (numEl) numEl.textContent = `+${Math.round(gain())}%`; return none; }
     const pinned = () => !!pin && getComputedStyle(pin).position === "sticky";
     let raw = -1, hook = null;
     const apply = (p) => {
@@ -148,15 +151,24 @@ window.SSMotion = (function () {
     function update() {
       const vh = innerHeight;
       if (pinned()) {
-        // the screen holds: over the section's extra height the bubble fills the screen first (--fill), then the swap
-        const q = progressOf(hero.getBoundingClientRect(), vh);
-        setFill(smooth(q / 0.34));
-        const p = clamp01((q - 0.3) / 0.7);
+        const rect = hero.getBoundingClientRect(), q = progressOf(rect, vh);
+        if (rect.top > 0) {
+          // approaching: a semicircle rises at the bottom of the screen while the first screen is still leaving
+          const pre = clamp01((vh - rect.top) / (vh * 0.8));
+          setBubble(20 * smooth(pre), 0, pre > 0);
+        } else if (rect.bottom <= vh) {
+          setBubble(170, 1, false);   // scrolled past: the pin's own navy carries on, the screen layer goes
+        } else {
+          // the screen holds: the bubble swells slowly at first and fast at the end, then the panels show and swap
+          const x = clamp01(q / 0.42);
+          setBubble(20 + 160 * x * x * x, clamp01((q - 0.3) / 0.14), true);
+        }
+        const p = clamp01((q - 0.38) / 0.62);
         if (p !== raw) apply(p);
         return;
       }
       // unpinned (phones): the ground is simply navy and the swap plays as the diagram rises into view
-      setFill(1);
+      setBubble(170, 1, false);
       const r = diagram.getBoundingClientRect(), docTop = r.top + scrollY;
       const start = Math.max(0, docTop - vh * 0.9);
       const end = Math.max(start + vh * 0.6, Math.min(start + vh, docTop + r.height * 0.35));

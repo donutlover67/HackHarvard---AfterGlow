@@ -14,12 +14,11 @@
 .hero__sun .sun__beam { stroke-width: 2; stroke-dasharray: 5 11; opacity: 0.85; }
 .hero__panel { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; transform: perspective(1200px) rotateX(calc(var(--tx, 14) * 1deg)) rotateY(calc(var(--ty, 0) * 1deg)); transform-origin: 50% 55%; }
 .pnl__shadow { transform: translate(calc(var(--sx, 10) * 1px), calc(var(--sy, 12) * 1px)); }
-.pnl__xray text { font-family: var(--font); }
 .hero__text { grid-area: text; display: grid; gap: 22px; align-content: center; }
 .hero__text .lede { margin: 0; }
 .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
 /* the comparison. On phones a navy section; on large screens its own pinned screen: a navy bubble at the bottom centre
-   (--fill 0..1 from motion.js) swells until it covers the screen, the four panels sit large in the middle and the band
+   (its radius --r from motion.js) swells until it covers the screen, the four panels sit large in the middle and the band
    of facts runs along the bottom edge */
 .repair { position: relative; color: #fff; background: var(--cell); }
 .repair__pin { position: relative; overflow: clip; display: grid; grid-template-rows: 1fr auto; }
@@ -48,10 +47,15 @@
   /* the pinned comparison: the section is pale like the hero, and only the bubble brings the navy */
   .repair { background: var(--page); min-height: 260vh; }
   .repair__pin { position: sticky; top: 0; height: 100vh; }
-  .repair__fill { display: block; position: absolute; inset: 0; background: var(--cell); clip-path: circle(calc(16vmax + var(--fill, 0) * 150vmax) at 50% 100%); z-index: 0; }
-  .repair__stage { opacity: clamp(0, calc(var(--fill, 0) * 2.2 - 0.9), 1); transform: translateY(calc((1 - var(--fill, 0)) * 40px)); }
+  /* the bubble is a layer fixed to the screen (so it can rise before the section pins), a navy circle at the bottom
+     centre whose radius motion.js sets in vmax (--r); the pin's own navy (::before) comes with the panels (--show) and
+     carries on as the section scrolls out */
+  .repair__fill { display: block; position: fixed; inset: 0; background: var(--cell); clip-path: circle(calc(var(--r, 0) * 1vmax) at 50% 100%); z-index: 0; pointer-events: none; }
+  .repair__fill.is-off, html.reduced .repair__fill { display: none; }
+  .repair__pin::before { content: ""; position: absolute; inset: 0; background: var(--cell); opacity: var(--show, 1); }
+  .repair__stage { opacity: var(--show, 1); transform: translateY(calc((1 - var(--show, 1)) * 40px)); }
   .repair .rp { width: min(92vw, 1500px); max-height: 60vh; }
-  .repair .ticker { position: relative; z-index: 1; opacity: clamp(0, calc(var(--fill, 0) * 2 - 1), 1); }
+  .repair .ticker { position: relative; z-index: 1; opacity: var(--show, 1); }
 }
 @media (min-width: 1800px) {   /* 1920x1080: the two halves split evenly, the headline stays on two lines, the slab grows */
   .hero__stage { max-width: 1720px; grid-template-columns: 1fr 1fr; }
@@ -185,12 +189,12 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 
 /* amber on one key figure per chapter: the hero's gain, the first problem numeral, the best wiring's power */
 .rp-num { fill: var(--sun); }
-.problem .fig:first-child .num-big { color: var(--sun); }
+.problem .fig:first-child .num-big { color: var(--cell); }   /* the amber here is the written word behind */
 .wiring.is-best .wiring__w { color: var(--sun); }
 
 /* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
    is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
-.recycle { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }   /* fitted to the section, never cut */
+.recycle { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.82; }   /* fitted to the section, never cut */
 .recycle path { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; }   /* parked just past the start, so no round cap shows before the pen arrives */
 .problem.is-in .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
 html.reduced .recycle path { stroke-dashoffset: 0; }

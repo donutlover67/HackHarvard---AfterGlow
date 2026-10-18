@@ -74,7 +74,6 @@ window.SSFront = (function () {
           ${[0.25, 0.5, 0.75].map((f) => `<line x1="${x + w * f}" y1="${y + 4}" x2="${x + w * f}" y2="${y + h - 4}" stroke-width="5" opacity="0.95"/>`).join("")}
           <rect x="${x + 196}" y="${y + 28}" width="74" height="58" fill="#000" stroke="none" opacity="0.6"/>
           <path d="M${x + 58} ${y + 18} l 26 40 l -12 26 l 34 48 l -6 36" stroke-width="1.8" opacity="0.95"/>
-          <text x="${x + w - 12}" y="${y + h - 12}" text-anchor="end" stroke="none" fill="var(--sun)" font-size="11" font-weight="600">what the bench sees</text>
         </g>
       </g>
     </svg>`;
@@ -152,7 +151,7 @@ window.SSFront = (function () {
     push(x0, y0);
     for (let i = 2; i + 5 < n.length; i += 6) {
       const [x1, y1, x2, y2, x3, y3] = n.slice(i, i + 6);
-      const approx = Math.hypot(x1 - x0, y1 - y0) + Math.hypot(x2 - x1, y2 - y1) + Math.hypot(x3 - x2, y3 - y2), steps = Math.max(4, Math.round(approx / 10));
+      const approx = Math.hypot(x1 - x0, y1 - y0) + Math.hypot(x2 - x1, y2 - y1) + Math.hypot(x3 - x2, y3 - y2), steps = Math.max(8, Math.round(approx / 4));   // dense, so the taper is smooth and the edge clean
       for (let k = 1; k <= steps; k++) {
         const t = k / steps, u = 1 - t;
         push(u * u * u * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3, u * u * u * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3);
@@ -202,7 +201,7 @@ window.SSFront = (function () {
     </section>`;
   }
   // The comparison: on large screens its own screen that pins. As the reader scrolls, a navy bubble at the bottom centre
-  // of the screen (--fill, from motion.js) swells until it has filled the whole screen, the four panels appear large and
+  // of the screen (its radius --r, from motion.js) swells until it has filled the whole screen, the four panels appear large and
   // re-pair while the screen holds, and the band of facts runs along the bottom edge. Phones get a plain navy section.
   function repair(ctx, gain) {
     return `<section class="repair" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
