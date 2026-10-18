@@ -146,7 +146,32 @@
 }
 
 
-/* chapters change ground: paper for the problem and the steps, navy for the wirings and the gain */
+/* night-to-day sky driven by scroll progress (--day 0..1) */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    hsl(230, 45%, calc(8% + var(--day, 0) * 78%)) 0%,
+    hsl(210, 40%, calc(12% + var(--day, 0) * 72%)) 40%,
+    hsl(200, 30%, calc(18% + var(--day, 0) * 68%)) 100%);
+  transition: background 0.1s linear;
+}
+body[data-page="front"] { background: transparent; }
+.why { padding-block: var(--section); background: transparent; }
+.why .lede { font-size: 1.15rem; max-width: 62ch; }
+.space-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; opacity: calc(1 - var(--day, 0)); transition: opacity 0.2s linear; }
+.space-layer__stars, .space-layer__meteors { position: absolute; inset: 0; }
+.star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: 0.4; animation: twinkle 3s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: 0.9; } }
+.meteor { position: absolute; width: 120px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6)); transform: rotate(-25deg); opacity: 0; animation: meteor 8s linear infinite; }
+@keyframes meteor { 0% { transform: translate(100vw, -20vh) rotate(-25deg); opacity: 0; } 10% { opacity: 0.7; } 100% { transform: translate(-20vw, 100vh) rotate(-25deg); opacity: 0; } }
+body[data-page="front"] .space-layer { display: block; }
+.space-layer { display: none; }
+
+/* floating planets that drift on scroll (parallax via JS) */
+.float-planet { position: absolute; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f2b705, #15224a); opacity: 0.15; pointer-events: none; filter: blur(1px); }
 body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .problem, .how { background: var(--surface); }
 .problem { padding-block: var(--section); }

@@ -207,11 +207,18 @@ window.SSFront = (function () {
       <p class="close__note label">Measured numbers come from the bench; simulated and hand-entered runs are labelled. Sources: NREL; IEA PVPS Task 13.</p>
     </div></section>`;
 
+  const why = () => `<section class="why" data-in>
+      <div class="wrap">
+        <h2 class="title">Solar for everyday people.</h2>
+        <p class="lede">Solar has long felt like something only for big industrial projects or new builds. Second String is part of a shift: making tested, reliable used panels practical and affordable for ordinary households, so more people can choose a cleaner, healthier way of living at home.</p>
+      </div>
+    </section>`;
   // ---------- the page ----------
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    return hero(ctx, g) + ticker() + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
+    // problem first, then why, then the product, interactive hero last
+    return problem() + why() + ticker() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + hero(ctx, g) + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {
