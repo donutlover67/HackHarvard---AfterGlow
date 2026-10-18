@@ -28,7 +28,7 @@ test("the hero holds the headline and both ways in", () => {
   expect(html).toContain('class="hero__caption');      // the diagram's caption as text, for phones where the svg's is too small
   expect(hero).toContain('href="#/passports"');
   expect(hero).toContain('href="#/build"');
-  expect(hero).toContain(">Used<"); expect(hero).toContain(">panels<"); expect(hero).toContain(">still <span");   // the headline's three parts
+  expect(hero.replace(/<[^>]+>/g, "")).toContain("Used panels still work.");
 });
 
 test("with nothing published the page says so, offers the example batch and labels the model figures", () => {
@@ -85,7 +85,7 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   expect(html).not.toContain("✦");   // the ticker's separators are drawn, not glyphs
   expect((html.match(/data-reveal/g) || []).length).toBe(4);          // headline, lede, buttons, slot; the titles fade in with their sections
   expect(html).not.toContain("wipe");
-  expect((html.match(/class="stack__[abc] rise"/g) || []).length).toBe(3);   // the headline's three parts rise in turn
+  expect((html.match(/class="hline rise"/g) || []).length).toBe(2);   // the headline's two lines rise in turn
   expect(html).toContain('<span class="hollow">work.</span>');
   expect(html).not.toContain("contours");
   expect((html.match(/class="recycle"/g) || []).length).toBe(1);
