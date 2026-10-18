@@ -189,12 +189,15 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 
 /* amber on one key figure per chapter: the hero's gain, the first problem numeral, the best wiring's power */
 .rp-num { fill: var(--sun); }
-.problem .fig:first-child .num-big { color: var(--cell); }   /* the amber here is the written word behind */
+.problem .fig:first-child .num-big { color: var(--sun); }
 .wiring.is-best .wiring__w { color: var(--sun); }
 
 /* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
    is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
-.recycle { position: absolute; inset: 3% 0; width: 100%; height: 94%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.96; shape-rendering: geometricPrecision; }   /* fitted inside the section with a margin, never cut */
+/* fitted between the section's top and the point where the next section is pulled up over it (its negative margin), from
+   the left edge, mostly transparent and always under the text */
+.recycle { position: absolute; left: 1%; top: 3%; width: 98%; height: calc(94% - var(--section) + 24px);   /* an svg keeps its ratio when only top and bottom are set, so the height is explicit */ pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.3; shape-rendering: geometricPrecision; }
+.problem .wrap { position: relative; z-index: 1; }
 .recycle path { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; }   /* parked just past the start, so no round cap shows before the pen arrives */
 .problem.is-in .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
 html.reduced .recycle path { stroke-dashoffset: 0; }

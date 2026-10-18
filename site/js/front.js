@@ -142,7 +142,7 @@ window.SSFront = (function () {
     ["M770 262 C 796 258, 800 292, 772 300 C 744 308, 734 340, 756 356 C 774 368, 800 352, 816 336", 18, 31, 15],
     ["M816 336 C 848 306, 898 290, 954 300", 15, 12, 4],                                        // the flourish out, to a hairline
   ];
-  const PEN_SPEED = 440;   // drawing units per second: the whole word in about seven seconds
+  const PEN_SPEED = 300;   // drawing units per second: slow, about ten seconds for the word
   // the cubic beziers of one stroke, sampled every ~10 units, then slanted (skew 16°) and set at 14 degrees
   function samplePen(d) {
     const n = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number), pts = [];
@@ -178,7 +178,7 @@ window.SSFront = (function () {
       }
     });
     const pad = 40;
-    return `<svg class="recycle" viewBox="${(minX - pad).toFixed(0)} ${(minY - pad).toFixed(0)} ${(maxX - minX + 2 * pad).toFixed(0)} ${(maxY - minY + 2 * pad).toFixed(0)}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">${pieces.join("")}</svg>`;
+    return `<svg class="recycle" viewBox="${(minX - pad).toFixed(0)} ${(minY - pad).toFixed(0)} ${(maxX - minX + 2 * pad).toFixed(0)} ${(maxY - minY + 2 * pad).toFixed(0)}" preserveAspectRatio="xMinYMid meet" aria-hidden="true" focusable="false">${pieces.join("")}</svg>`;   // from the left edge
   }
   // small drawn marks that end a block of text, the way a signature ends a note: a sun, a cell, a loop of string
   const DOODLES = {
