@@ -122,7 +122,7 @@ window.SSFront = (function () {
   // steady pen speed (--d, --t per piece). The word is slanted and set at 14 degrees in the numbers themselves, and the
   // viewBox is fitted to it, so nothing is ever cut off.
   const RECYCLE = [
-    ["M60 372 C 76 326, 94 278, 112 232", 9, 12, 20],                                           // r: up
+    ["M60 372 C 76 326, 94 278, 112 232", 5, 11, 20],                                           // r: up, from a hairline
     ["M112 232 C 122 216, 142 214, 146 230", 20, 22, 18],                                       //    a short shoulder
     ["M140 238 C 144 278, 148 320, 152 360", 18, 34, 24],                                       //    down
     ["M152 360 C 172 318, 198 270, 228 262", 20, 11, 18],                                       // e: up
@@ -140,9 +140,9 @@ window.SSFront = (function () {
     ["M652 360 C 662 372, 682 366, 694 352", 22, 17, 15],
     ["M694 352 C 714 314, 740 270, 770 262", 15, 11, 18],                                       // e: up
     ["M770 262 C 796 258, 800 292, 772 300 C 744 308, 734 340, 756 356 C 774 368, 800 352, 816 336", 18, 31, 15],
-    ["M816 336 C 848 306, 898 290, 954 300", 15, 13, 7],                                        // the flourish out
+    ["M816 336 C 848 306, 898 290, 954 300", 15, 12, 4],                                        // the flourish out, to a hairline
   ];
-  const PEN_SPEED = 300;   // drawing units per second
+  const PEN_SPEED = 440;   // drawing units per second: the whole word in about seven seconds
   // the cubic beziers of one stroke, sampled every ~10 units, then slanted (skew 16°) and set at 14 degrees
   function samplePen(d) {
     const n = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number), pts = [];

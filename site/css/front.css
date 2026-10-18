@@ -194,7 +194,7 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 
 /* "RECYCLE" by hand behind the problem's numerals: thick, uneven amber strokes, drawn one after another once the section
    is on screen (motion.js adds .is-in); under reduced motion the word is simply there */
-.recycle { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.82; }   /* fitted to the section, never cut */
+.recycle { position: absolute; inset: 3% 0; width: 100%; height: 94%; pointer-events: none; z-index: 0; fill: none; stroke: var(--sun); stroke-linecap: round; stroke-linejoin: round; opacity: 0.96; shape-rendering: geometricPrecision; }   /* fitted inside the section with a margin, never cut */
 .recycle path { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; }   /* parked just past the start, so no round cap shows before the pen arrives */
 .problem.is-in .recycle path { animation: draw-stroke var(--t, 600ms) linear both; animation-delay: calc(var(--d, 0s) + 300ms); }
 html.reduced .recycle path { stroke-dashoffset: 0; }
