@@ -120,3 +120,12 @@ Build on this branch with the current site untouched on `main`; preview on the l
 - Spatial pass after a look at current Awwwards winners (Aevion, Belgrade Arbor, Odyssée, Heron AI): a fixed schematic of the bench in hairlines behind the whole front page; chapters that change ground (paper for the problem and the steps, navy for the wirings and the gain); the wiring and passport cards wipe in with clip-path masks; every section title rises out of a mask like the headline. Still no gradients.
 - The parallax drift of the ground and the easing of the scroll-driven values were removed within the hour: the drift slid the fixed layer out of view and the easing made the hero and the strip lag the scroll. The ground is static; the hero and the strip follow the scroll directly again.
 - The schematic ground was removed at the user's request; the chapter grounds stay. In the hero the gain now counts up over the same stretch of scroll as the cells cross, so the number rises with the pairing.
+
+### Amendment: mixes taken from the ui-refresh branch (Oct 17, late)
+Chosen by the owner from a comparison of the two designs, keeping our 3D slab, the re-pairing, the four steps and the sideways strip:
+- **Ticker.** A slow band of five sourced facts under the hero (`.ticker`, 56 s loop, paused under the pointer, `aria-hidden` since the facts repeat the problem chapter). Separators are drawn amber dots, not glyphs.
+- **Amber as the chapter accent.** One key figure per chapter is set in `--sun`: the hero's gain numeral, the first problem numeral, the best wiring's watts in the strip.
+- **Sunlight.** A soft amber disc behind the slab's top corner (`.hero__sun`), breathing over 6 s, sinking 70 px as the panels pair (`--k`); on phones a smaller disc beside the headline, half past the edge, with the hero clipped sideways. Its radial gradient is the one gradient the house rules allow.
+- **Softer surfaces.** `--radius` 6 px and a hairline `--rule` border on cards.
+- **Reveals.** Section parts now fade up 40 px out of a 6 px blur over 1 s (`cubic-bezier(0.2, 0.8, 0.2, 1)`, 110 ms stagger), replacing the 360 ms slide; the three section titles join their sections' fade instead of the masked line reveal, which the hero's headline keeps.
+- Found while doing this: front.css ended with a stray `}` that silently dropped the next rule; a house test now checks every stylesheet's braces balance.

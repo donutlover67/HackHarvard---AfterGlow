@@ -154,4 +154,23 @@ body[data-page="front"] #view > section { position: relative; z-index: 1; }
 .strip .wiring__label { color: var(--ink-2); }
 .front-band { padding-top: calc(var(--section) * 0.5); }
 .hero__pin { z-index: 1; }
-}
+
+/* the sun: a soft disc behind the slab's top corner that breathes, and sinks a little as the panels pair (--k from motion.js) */
+.hero__sun { position: absolute; left: 39%; top: -34px; width: 280px; height: 280px; border-radius: 50%; pointer-events: none; z-index: 0; background: radial-gradient(circle closest-side, #fff1b8 0%, var(--sun) 34%, rgba(242, 183, 5, 0.38) 62%, rgba(242, 183, 5, 0) 100%); transform: translateY(calc(var(--k, 0) * 70px)); animation: sun-breathe 6s ease-in-out infinite alternate; }
+@keyframes sun-breathe { from { opacity: 0.72; scale: 0.97; } to { opacity: 1; scale: 1.03; } }
+.hero__slot, .hero__text, .rp, .hero__caption, .hero__scroll { position: relative; z-index: 1; }
+.hero { overflow-x: clip; } /* the sun may bleed past the edge; clip keeps the page from scrolling sideways (clip, not hidden, so the pin stays sticky) */
+@media (max-width: 760px) { .hero__sun { width: 120px; height: 120px; left: auto; right: -32px; top: 36px; } }
+
+/* the ticker: a slow band of sourced facts under the hero, paused under the pointer */
+.ticker { overflow: hidden; background: var(--cell); color: #fff; }
+.ticker__track { display: flex; width: max-content; animation: marquee 56s linear infinite; }
+.ticker:hover .ticker__track { animation-play-state: paused; }
+.ticker__item { display: inline-flex; align-items: center; white-space: nowrap; padding: 16px 0; font-size: 1.02rem; font-weight: 600; font-stretch: 105%; }
+.ticker__item::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--sun); margin: 0 30px; flex: none; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* amber on one key figure per chapter: the hero's gain, the first problem numeral, the best wiring's power */
+.rp-num { fill: var(--sun); }
+.problem .fig:first-child .num-big { color: var(--sun); }
+.wiring.is-best .wiring__w { color: var(--sun); }

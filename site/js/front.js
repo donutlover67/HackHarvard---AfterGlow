@@ -66,6 +66,7 @@ window.SSFront = (function () {
   function hero(ctx, gain) {
     return `<section class="hero" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
       <div class="hero__pin">
+        <span class="hero__sun" aria-hidden="true"></span>
         <div class="hero__slot grow" data-reveal data-hero-slot>${slabSvg()}</div>
         <div class="hero__text">
           <h1 class="display" data-reveal><span class="line"><span class="line__in">Used panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
@@ -78,6 +79,9 @@ window.SSFront = (function () {
       </div>
     </section>`;
   }
+  // a slow band of sourced facts under the hero; it pauses under the pointer
+  const TICKER = ["Most panels still make 80–88% of their rating after 25 years", "About 83% of retired US panels are headed to landfill", "Lab-testing one used panel costs €16–31", "1.2% of retired US panels are reused", "Matched wiring: up to 37% more power from the same four panels, simulated"];
+  const ticker = () => `<section class="ticker" aria-hidden="true"><div class="ticker__track">${[...TICKER, ...TICKER].map((t) => `<span class="ticker__item">${t}</span>`).join("")}</div></section>`;
   const problem = () => `<section class="problem" data-in>
       <div class="wrap">
         <div class="problem__grid">
@@ -103,7 +107,7 @@ window.SSFront = (function () {
   const glyph = (name) => `<svg class="step__glyph" viewBox="0 0 72 40" aria-hidden="true" focusable="false"><rect width="72" height="40" fill="var(--page)"/>${GLYPHS[name]}</svg>`;
   const how = () => `<section class="how" data-in>
       <div class="wrap">
-        <h2 class="title" data-reveal><span class="line"><span class="line__in">Four panels, three ways to pair them.</span></span></h2>
+        <h2 class="title">Four panels, three ways to pair them.</h2>
         <div class="string-box">
           <svg class="string__wire string__wire--h" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,1 H100" pathLength="1"/></svg>
           <svg class="string__wire string__wire--v" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M1,0 V100" pathLength="1"/></svg>
@@ -128,7 +132,7 @@ window.SSFront = (function () {
   }
   const strip = (ctx, s) => `<section class="strip" data-strip data-in>
       <div class="strip__pin"><div class="strip__stage">
-        <div class="wrap"><h2 class="title" data-reveal><span class="line"><span class="line__in">Three ways to wire four panels.</span></span></h2></div>
+        <div class="wrap"><h2 class="title">Three ways to wire four panels.</h2></div>
         <div id="front-strip">${stripInner(ctx, s)}</div>
       </div></div>
     </section>`;
@@ -153,7 +157,7 @@ window.SSFront = (function () {
         : `<p class="muted">No panels published yet.</p>
            <div class="row fpass__actions"><button type="button" class="btn" id="btn-sample-front">Show example panels</button><span class="label">A simulated batch, not a real measurement.</span><span class="status" id="front-status"></span></div>`;
     return `<div class="wrap">
-        <h2 class="title" data-reveal><span class="line"><span class="line__in">Every panel gets a passport.</span></span></h2>
+        <h2 class="title">Every panel gets a passport.</h2>
         <p class="lede">An ID, a QR code and the record of what the bench measured, so the next owner knows what they are buying.</p>
         ${body}
       </div>`;
@@ -170,7 +174,7 @@ window.SSFront = (function () {
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    return hero(ctx, g) + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
+    return hero(ctx, g) + ticker() + problem() + how() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {

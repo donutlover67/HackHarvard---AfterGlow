@@ -14,7 +14,8 @@
   --pair-a: #b8860b; --pair-b: #2f55a4; --pair-c: #1f9e4a;
   --film: rgba(52, 38, 22, 0.55);
   --alert: #b3261e; --focus: #2f55a4;
-  --radius: 3px;
+  --radius: 6px;
+  --rule: #d5dae2;
   --font: "Archivo", "Helvetica Neue", Arial, sans-serif;
   /* type: two sizes do the visible work on any screen */
   --display: clamp(2.4rem, 6.5vw, 6rem);
@@ -66,7 +67,7 @@ body[data-page="front"] .foot { display: none; }
 .stack { display: grid; gap: 12px; }
 
 /* surfaces: white blocks on the pale ground, told apart by tone */
-.card { background: var(--surface); border-radius: var(--radius); padding: 22px 24px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 22px 24px; }
 .card + .card { margin-top: 16px; }
 .card h2 { font-size: 1.1rem; font-weight: 700; font-stretch: 106%; letter-spacing: -0.01em; color: var(--cell); margin-bottom: 10px; }
 .legend { font-size: 0.88rem; color: var(--ink-2); max-width: 72ch; margin-top: 12px; }

@@ -78,7 +78,10 @@ test("every section can enter, the hero intro and the passports heading reveal, 
   const html = page(ctxSample);
   expect((html.match(/<section[^>]*data-in/g) || []).length).toBeGreaterThanOrEqual(7);
   expect(html).not.toContain("data-dust");
-  expect((html.match(/data-reveal/g) || []).length).toBe(7);          // headline, lede, buttons, slab, and the three section titles
-  expect((html.match(/class="line__in"/g) || []).length).toBe(5);     // two headline lines and three titles
+  expect(html).not.toContain("✦");   // the ticker's separators are drawn, not glyphs
+  expect((html.match(/data-reveal/g) || []).length).toBe(4);          // headline, lede, buttons, slab; the titles fade in with their sections
+  expect((html.match(/class="line__in"/g) || []).length).toBe(2);     // the two headline lines
+  expect((html.match(/class="ticker__item"/g) || []).length).toBe(10); // five facts, doubled for the loop
+  expect(html).toContain('class="hero__sun"');
   expect(html).toMatch(/data-count[^>]*>80–88%/);
 });

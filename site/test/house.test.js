@@ -7,6 +7,13 @@ const root = new URL("..", import.meta.url).pathname; // site/
 const read = (p) => Bun.file(root + p).text();
 const cssFiles = readdirSync(root + "css").filter((f) => f.endsWith(".css"));
 
+test("every stylesheet has balanced braces (a stray brace silently drops the next rule)", async () => {
+  for (const f of cssFiles) {
+    const css = (await read("css/" + f)).replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(`${f}: ${(css.match(/{/g) || []).length}`).toBe(`${f}: ${(css.match(/}/g) || []).length}`);
+  }
+});
+
 test("three.js is vendored as one minified module with its licence", async () => {
   const f = Bun.file(root + "vendor/three.module.min.js");
   expect(f.size).toBe(691648);
@@ -26,7 +33,8 @@ test("nothing loads from the internet", async () => {
 test("house style: no gradients, shadows or uppercase labels", async () => {
   for (const f of cssFiles) {
     const css = await read(`css/${f}`);
-    expect(css).not.toContain("gradient(");
+    const gradients = css.split("\n").filter((l) => l.includes("gradient("));
+    expect(gradients.every((l) => l.includes(".hero__sun"))).toBe(true);   // the sun's glow is the one gradient
     expect(css).not.toContain("box-shadow");
     expect(css).not.toContain("text-transform: uppercase");
   }
