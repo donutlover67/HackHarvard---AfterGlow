@@ -71,12 +71,12 @@ test("the nav is sticky and its sun is drawn, with eight rays", async () => {
   expect(html).toMatch(/<a class="nav__name" href="#\/"><svg class="nav__sun"[\s\S]*?<\/svg>Second String<\/a>/);
 });
 
-test("the sky is one canvas drawn by sky.js, on the front page only, still under reduced motion", async () => {
+test("the sky is one canvas drawn by sky.js, on the front and impact pages only", async () => {
   const html = await read("index.html");
   expect(html).toContain('<canvas class="sky__canvas">');
   expect(html.indexOf('src="js/sky.js"')).toBeLessThan(html.indexOf('src="js/motion.js"'));
   const css = await read("css/front.css");
-  expect(css).toContain('body[data-page="front"] .sky { display: block; }');
+  expect(css).toContain('body:is([data-page="front"], [data-page="impact"]) .sky { display: block; }');
   const js = await read("js/sky.js");
   for (const part of ["Milky Way", "sparkle", "shooting stars", "moon", "sun", "clouds"]) expect(js).toContain(part);
   expect(js).not.toMatch(/https?:\/\//);

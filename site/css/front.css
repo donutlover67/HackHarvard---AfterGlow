@@ -141,18 +141,18 @@
 
 /* ---------- night to day ---------- */
 /* the sky is one canvas behind the page (sky.js draws it, motion.js sets the time of day); sections are transparent over it */
-body[data-page="front"] #view > section { position: relative; z-index: 1; }
+body:is([data-page="front"], [data-page="impact"]) #view > section { position: relative; z-index: 1; }
 .sky { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-body[data-page="front"] .sky { display: block; }
+body:is([data-page="front"], [data-page="impact"]) .sky { display: block; }
 .sky__canvas { display: block; width: 100%; height: 100%; }
 
 /* text follows the sky: navy on a light sky, white on a dark one. Cards keep their own white ground and dark text */
-body[data-page="front"] #view { --t1: var(--cell); --t2: #3e4859; }   /* a shade darker than --ink-2: the sunrise and morning skies are not white */
-body.is-night[data-page="front"] #view { --t1: #ffffff; --t2: rgba(233, 237, 248, 0.84); }
-body[data-page="front"] #view :is(.problem__head, .title, .num-big, .close__name, .hero .display, .step h3) { color: var(--t1); transition: color 400ms ease; }
-body[data-page="front"] #view :is(.lede, .fig__line, .problem__text, .why__text, .step p, .close__line, .muted, section > .wrap > .label, .strip__note, .close__note, .fpass__actions .label, .problem__cue) { color: var(--t2); transition: color 400ms ease; }
-body[data-page="front"] #view .problem__text { color: var(--t1); }
-body[data-page="front"] #view .problem__head .line + .line .line__in { color: var(--t2); }
+body:is([data-page="front"], [data-page="impact"]) #view { --t1: var(--cell); --t2: #3e4859; }   /* a shade darker than --ink-2: the sunrise and morning skies are not white */
+body.is-night:is([data-page="front"], [data-page="impact"]) #view { --t1: #ffffff; --t2: rgba(233, 237, 248, 0.84); }
+body:is([data-page="front"], [data-page="impact"]) #view :is(.problem__head, .imp-head, .title, .num-big, .close__name, .hero .display, .step h3, .imp-next__list b) { color: var(--t1); transition: color 400ms ease; }
+body:is([data-page="front"], [data-page="impact"]) #view :is(.lede, .fig__line, .problem__text, .why__text, .step p, .close__line, .muted, section > .wrap > .label, .strip__note, .close__note, .fpass__actions .label, .problem__cue, .imp-cue, .imp-part__text, .imp-points li, .imp-next__list li, .imp-sum__note) { color: var(--t2); transition: color 400ms ease; }
+body:is([data-page="front"], [data-page="impact"]) #view .problem__text { color: var(--t1); }
+body:is([data-page="front"], [data-page="impact"]) #view .problem__head .line + .line .line__in { color: var(--t2); }
 /* the bench's drawings sit on small light tiles so they read on any sky */
 .step__glyph { border-radius: 4px; }
 
@@ -161,3 +161,30 @@ body[data-page="front"] #view .problem__head .line + .line .line__in { color: va
 /* amber on one key figure per chapter: the first problem numeral on the night sky; the best wiring's power is navy, underlined in amber */
 .problem .fig:first-child .num-big { color: var(--sun) !important; }
 .wiring.is-best .wiring__w { color: var(--cell); text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 5px; text-underline-offset: 8px; }
+
+/* ---------- Impact: the same night-to-day sky and moves as the front page ---------- */
+.imp-open { min-height: calc(100svh - 64px); display: grid; align-content: center; position: relative; padding-block: clamp(56px, 8vh, 96px) clamp(88px, 12vh, 128px); }
+.imp-open__in { display: grid; gap: 28px; }
+.imp-head { font-size: clamp(2.6rem, 7vw, 6.4rem); max-width: 12ch; }
+.imp-head .line { display: block; }
+.imp-open__lede { margin: 0; font-size: clamp(1.1rem, 1.6vw, 1.35rem); max-width: 46ch; }
+.imp-cue { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center; transition: opacity 260ms ease; }
+.imp-cue.is-gone { opacity: 0; }
+.imp-part { padding-block: clamp(72px, 11vw, 150px); }
+.imp-part__in { max-width: 900px; }
+.imp-part__text { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; margin-top: 18px; max-width: 60ch; }
+.imp-points { list-style: none; padding: 0; margin: 32px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 28px; }
+.imp-points li { display: flex; gap: 12px; align-items: baseline; font-weight: 600; font-stretch: 104%; }
+.imp-points li::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--sun); transform: translateY(-1px); }
+.imp-sum { padding-block: clamp(64px, 9vw, 128px); }
+.imp-sum__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 36px; }
+.imp-sum .num-big { font-size: clamp(2.4rem, 4.4vw, 4rem); white-space: nowrap; }
+.imp-sum__gain { text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 6px; text-underline-offset: 10px; }
+.imp-sum .tag { margin-left: 4px; }
+.imp-sum__note { margin-top: 32px; max-width: 70ch; }
+.imp-next { padding-block: clamp(64px, 9vw, 128px) clamp(96px, 12vw, 160px); }
+.imp-next__list { padding-left: 1.3em; margin: 24px 0 0; display: grid; gap: 14px; max-width: 64ch; font-size: 1.1rem; line-height: 1.5; }
+.imp-next__actions { margin-top: 36px; gap: 12px; }
+@media (max-width: 760px) {
+  .imp-points, .imp-sum__grid { grid-template-columns: 1fr; }
+}

@@ -72,8 +72,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .view { max-width: var(--wrap); margin: 0 auto; padding: 36px var(--gutter) 64px; }
 .foot { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter) 48px; color: var(--ink-3); font-size: 0.85rem; }
 /* the front page lays out its own full-width sections and ends with its own close */
-body[data-page="front"] .view { max-width: none; padding: 0; }
-body[data-page="front"] .foot { display: none; }
+body:is([data-page="front"], [data-page="impact"]) .view { max-width: none; padding: 0; }
+body:is([data-page="front"], [data-page="impact"]) .foot { display: none; }
 .wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: var(--gutter); }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .stack { display: grid; gap: 12px; }
@@ -268,7 +268,7 @@ details.tools[open] summary { margin-bottom: 10px; }
 }
 
 /* ---------- from the ui-refresh branch, under this system's tokens: demo labelling, passport navigation, the builder's
-   use-and-sizing form, the Impact comparison, grades as badges ---------- */
+   use-and-sizing form, grades as badges ---------- */
 .tag { display: inline-block; vertical-align: middle; font-size: 0.74rem; font-weight: 600; font-stretch: 95%; padding: 2px 8px; border-radius: var(--radius); background: #f4e7c3; color: #6b4e00; }
 .demo { border-left: 3px solid var(--pair-a); }
 .demo__note { max-width: 70ch; }
@@ -307,26 +307,12 @@ details.tools[open] summary { margin-bottom: 10px; }
 .sizing ol b { color: var(--ink); }
 .build-auto { margin: -2px 0 16px; color: var(--ink-2); }
 .build-auto b { color: var(--ink); }
-details.adjust summary, details.impact-edit summary { cursor: pointer; font-weight: 700; color: var(--cell); }
+details.adjust summary { cursor: pointer; font-weight: 700; color: var(--cell); }
 details.adjust[open] summary { margin-bottom: 6px; }
-/* the Impact comparison: the same four panels wired two ways */
-.impact-main { border-left: 3px solid var(--pair-a); }
-.impact-hero { margin: 14px 0 18px; }
-.impact-bars { display: grid; gap: 14px; margin-bottom: 14px; }
-.impact-bar { display: grid; grid-template-columns: minmax(0, 15rem) 1fr 5.5rem; gap: 14px; align-items: center; }
-.impact-bar__label { font-size: 0.92rem; color: var(--ink-2); }
-.impact-bar__track { height: 22px; background: var(--page); border-radius: var(--radius); overflow: hidden; }
-.impact-bar__fill { display: block; height: 100%; background: var(--pair-b); border-radius: var(--radius); transition: width 300ms ease-out; }
-.impact-bar__fill.is-base { background: var(--busbar); }
-.impact-bar > b { text-align: right; font-size: 1.1rem; }
-.impact-edit { margin-top: 12px; }
-.impact-table input { width: 6.5em; text-align: right; font: inherit; border: 1px solid var(--busbar); border-radius: var(--radius); padding: 4px 6px; background: var(--surface); }
 @media (max-width: 760px) {
   /* on a phone the reader has just scanned the card: the ID, grade and numbers first, the cell and QR after */
   .passport > div:not(.passport__visual) { order: 1; }
   .passport__visual { order: 2; padding-top: 16px; border-top: 1px solid var(--busbar-2); }
-  .impact-bar { grid-template-columns: 1fr auto; }
-  .impact-bar__track { grid-column: 1 / -1; }
   .pnav__pos { font-size: 0.82rem; }
 }
 @media print {

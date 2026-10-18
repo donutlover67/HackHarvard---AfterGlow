@@ -100,7 +100,7 @@ window.SSMotion = (function () {
     const r = S.create(canvas);
     if (!r) { clear(); return null; }
     const days = secs.map((el) => Math.max(0, Math.min(1, Number(el.dataset.day) || 0)));
-    const hero = view.querySelector("[data-hero]"), cue = view.querySelector(".problem__cue");
+    const hero = view.querySelector("[data-hero]"), cue = view.querySelector(".problem__cue, .imp-cue");
     const still = reduced();
     let dead = false, raf = 0;
     function update() {
@@ -402,7 +402,7 @@ window.SSMotion = (function () {
     const cleanups = [];
     route = page === "front" ? "index" : page;
     if (skyCtl) { skyCtl.destroy(); skyCtl = null; }
-    if (page === "front") skyCtl = sky(view);
+    if (page === "front" || page === "impact") skyCtl = sky(view);   // the pages that run from night to day
     updateNav();
     const safe = (fn) => { try { const c = fn(); if (c) cleanups.push(typeof c === "function" ? c : () => c.destroy && c.destroy()); return c; } catch (err) { console.warn("motion:", err && err.message); return null; } };
     safe(() => entrances(view));
@@ -413,10 +413,9 @@ window.SSMotion = (function () {
       rpCtl = rp;
       stripCtl = safe(() => strip(view));
       stepsCtl = safe(() => stepsDriver(view));
-      safe(() => revealHero(view));
-      safe(() => watchReveal(view));
       safe(() => heroPanel(view.querySelector("[data-hero-slot]")));
     }
+    if (page === "front" || page === "impact") { safe(() => revealHero(view)); safe(() => watchReveal(view)); }
     // if anything above failed, nothing may stay hidden
     if (!reduced()) setTimeout(() => {
       view.querySelectorAll("[data-in]:not(.is-in)").forEach((el) => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("is-in"); });

@@ -534,86 +534,72 @@
     </div>`;
   }
 
-  // The Impact page's demo batch: the four panels in the Chalk advisor's sample (tools/chalk_integration/
-  // panel_passports.py on feat/bea-chalk-integration), editable in this browser.
+  // ---------- Impact: why more solar, for businesses and households, from night to day like the front page ----------
+  // The four-panel comparison is one figure in the summary: the Chalk advisor's demo batch (tools/chalk_integration/
+  // panel_passports.py on feat/bea-chalk-integration), two strong panels and two weakened ones, simulated by our model.
   const CHALK_DEMO = [{ id: "A", isc_ma: 350, voc_v: 6.2 }, { id: "B", isc_ma: 320, voc_v: 6.1 }, { id: "C", isc_ma: 180, voc_v: 6.0 }, { id: "D", isc_ma: 160, voc_v: 5.9 }];
-  function impactPanels() {
-    const saved = LS.get("ss.site.impact", null);
-    const ok = Array.isArray(saved) && saved.length === 4 && saved.every((q) => q && Number(q.isc_ma) > 0 && Number(q.voc_v) > 0);
-    return (ok ? saved : CHALK_DEMO).map((q, i) => ({ id: CHALK_DEMO[i].id, isc_ma: Number(q.isc_ma), voc_v: Number(q.voc_v) }));
-  }
-  // one system = all four in a single series string, the way a mixed batch is usually wired without testing;
-  // the controller's wiring = the Array Builder's grouping into two series pairs in parallel (what the bench switches between)
-  function renderImpact() {
-    const out = $("#impact-result");
-    if (!out) return;
+  // one string of all four (a mixed batch wired without testing) against the Array Builder's matched pairs
+  function demoGain() {
     const M = window.SSModel;
-    const ps = impactPanels();
-    const asIs = M.arrayPmax([ps.map((q) => M.panel(q.isc_ma, q.voc_v))]).p;
-    const res = window.SSBuilder.analyze(ps, 2);
-    const linked = res.greedy.pmax;
-    const gain = asIs > 0 ? (linked / asIs - 1) * 100 : 0;
-    const max = Math.max(asIs, linked, 1e-9);
-    const pairs = res.greedy.groups.map((g) => g.map((q) => q.id).join(" + ")).join(" and ");
-    out.innerHTML = `
-      <div class="band impact-hero"><div class="band__num" data-count>${gain >= 0 ? "+" : ""}${gain.toFixed(0)}%</div><p class="band__text">more power from the same panels when the controller links them (simulated)</p></div>
-      <div class="impact-bars">
-        <div class="impact-bar"><span class="impact-bar__label">Wired as they are, one string of all four</span><span class="impact-bar__track"><span class="impact-bar__fill is-base" style="width:${(asIs / max) * 100}%"></span></span><b>${asIs.toFixed(2)} W</b></div>
-        <div class="impact-bar"><span class="impact-bar__label">Linked by the controller: ${esc(pairs)}, the pairs in parallel</span><span class="impact-bar__track"><span class="impact-bar__fill" style="width:${(linked / max) * 100}%"></span></span><b>${linked.toFixed(2)} W</b></div>
-      </div>
-      <p class="small muted">Maximum power of each wiring from our single-diode panel model, with a bypass diode per panel. Wiring all four in parallel would give about the same power as the controller's wiring, but only one panel's voltage (about 5 V), too low for a 12 V load; that is why the panels go in series pairs.${res.brute && res.brute.worst ? ` The worst way to make two pairs gives ${res.brute.worst.pmax.toFixed(2)} W.` : ""}</p>`;
+    const asIs = M.arrayPmax([CHALK_DEMO.map((q) => M.panel(q.isc_ma, q.voc_v))]).p;
+    const matched = window.SSBuilder.analyze(CHALK_DEMO, 2).greedy.pmax;
+    return { asIs, matched, pct: asIs > 0 ? (matched / asIs - 1) * 100 : 0 };
   }
-  function wireImpact() {
-    renderImpact();
-    document.querySelectorAll(".imp-in").forEach((inp) => inp.addEventListener("input", () => {
-      const ps = impactPanels();
-      document.querySelectorAll(".imp-in").forEach((el) => { const v = Number(el.value); if (v > 0) ps[Number(el.dataset.i)][el.dataset.f] = v; });
-      LS.set("ss.site.impact", ps);
-      renderImpact();
-    }));
-    const reset = $("#btn-imp-reset");
-    if (reset) reset.addEventListener("click", () => { LS.del("ss.site.impact"); render("data"); });
-  }
-
   function pageImpact() {
-    const withProof = runs.filter((r) => r.proof && r.proof.kind === "sweep");
-    const real = withProof.filter((r) => !["mock", "sample"].includes(r.link));
-    const shown = real.length ? real : withProof;
-    const gains = shown.map((r) => Number(r.proof.gain_pct));
-    const mean = gains.length ? gains.reduce((a, b) => a + b, 0) / gains.length : null;
-    const n = shown.length;
-    const rowsIn = impactPanels().map((q, i) => `<tr><td><b>${esc(q.id)}</b></td><td class="num"><input class="imp-in" type="number" min="1" step="1" data-i="${i}" data-f="isc_ma" value="${q.isc_ma}" aria-label="Panel ${esc(q.id)} short-circuit current in mA"> mA</td><td class="num"><input class="imp-in" type="number" min="0.1" step="0.1" data-i="${i}" data-f="voc_v" value="${q.voc_v}" aria-label="Panel ${esc(q.id)} open-circuit voltage in volts"> V</td></tr>`).join("");
+    const g = demoGain();
+    const line = (a, b) => `<span class="line"><span class="line__in">${a}</span></span> <span class="line"><span class="line__in">${b}</span></span>`;
     return `
-      <h1 class="page-title">Impact</h1>
-      <p class="lede">Numbers here are either measured on our bench, simulated by our panel model and labelled so, or taken from a named source.</p>
-      <div class="card impact-main">
-        <h2>The same four panels, wired two ways <span class="tag">Simulated</span></h2>
-        <p class="muted">A mixed batch from our Chalk advisor's demo data: two strong panels and two weakened ones. Wired as they are, as one system, the weakest panels set the current for everything. Linked by the Second String controller, panels with similar current share a string.</p>
-        <div id="impact-result"></div>
-        <details class="impact-edit no-print">
-          <summary>Edit the demo panels</summary>
-          <table class="table impact-table"><thead><tr><th>Panel</th><th class="num">Short-circuit current</th><th class="num">Open-circuit voltage</th></tr></thead><tbody>${rowsIn}</tbody></table>
-          <div class="row" style="margin-top:8px"><button type="button" class="btn btn--quiet" id="btn-imp-reset">Back to the Chalk demo values</button></div>
-        </details>
-      </div>
-      <div class="card">
-        <h2>What our bench measured</h2>
-        <p>${mean == null ? "No bench run is published yet; the first one fills this in." : real.length ? `Across ${n} bench run${n === 1 ? "" : "s"}, matching panels by current gave <b>${mean.toFixed(1)}% more power</b> than the worst wiring of the same panels, measured at each wiring's maximum power point.` : "No bench run is published yet; the first one fills this in. Until then, the comparison above is simulated."}</p>
-        <p class="small muted" style="margin-top:8px">With two of four panels behind 35% film this is deliberately a bad batch. Our model puts the gain for realistic aging (panels at 80%) at about 5–7%, and the gain against the average wiring at about 22% for the film case.</p>
-      </div>
-      <div class="card">
-        <h2>Why reuse matters</h2>
-        <ul class="small" style="padding-left:1.2em;display:grid;gap:6px">
-          <li>Panels lose about 0.5–0.75% of output a year (NREL fleet study, median 0.75%/yr; literature median 0.5%/yr). After 25 years most still make 80–88% of their rating.</li>
-          <li>Panels retired early, for upgrades or damage, often still produce 70–95% of their rating (NREL).</li>
-          <li>NREL's baseline for US modules 2020–2050: about 83% landfilled, 9.5% recycled, 1.2% reused.</li>
-          <li>Testing a used panel in a lab (flash test plus electroluminescence) costs about $17–34 per module (€16–31), against about $55 (€50) for a new module (IEA PVPS Task 13, 2026; German test labs' price lists; converted at about 1.08 $/€).</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h2>What we don't claim yet</h2>
-        <p class="small muted">How many panels a bench keeps out of landfill, and any carbon figure, depend on a scenario: panels graded per hour, the share that pass, what they displace. We will publish those numbers only with the scenario and a source next to them.</p>
-      </div>`;
+      <section class="imp-open" data-opening data-day="0">
+        <div class="wrap imp-open__in">
+          <h1 class="display imp-head" data-reveal>${line("More solar,", "for more people.")}</h1>
+          <p class="lede imp-open__lede rise" data-reveal style="--d:260ms">Every working panel that is thrown away is solar power nobody gets to use. Graded and matched, used panels make solar cheaper to start with, for a business and for a family.</p>
+        </div>
+        <p class="imp-cue label" aria-hidden="true">Scroll toward sunrise</p>
+      </section>
+      <section class="imp-part" data-day="0.3" data-in>
+        <div class="wrap imp-part__in">
+          <h2 class="title">For businesses</h2>
+          <p class="imp-part__text">A warehouse roof, a barn, a parking lot or a remote site can add solar with tested used panels for less than the price of new ones. Each panel comes with a passport, so a buyer knows what it still makes, and the Array Builder wires a mixed batch to the voltage the site needs, for the most power it can give.</p>
+          <ul class="imp-points">
+            <li>Lower cost per watt to get started</li>
+            <li>Each panel's record on a passport</li>
+            <li>Sized for the site's inverter or battery</li>
+          </ul>
+        </div>
+      </section>
+      <section class="imp-part" data-day="0.72" data-in>
+        <div class="wrap imp-part__in">
+          <h2 class="title">For households</h2>
+          <p class="imp-part__text">Solar does not have to start with a new roof. A few used panels on a balcony, a shed or a backyard can run a pump, light a garden or charge a battery. Seeing your own panels make power is how solar stops feeling like an industrial project and becomes part of an everyday, healthier way of living.</p>
+          <ul class="imp-points">
+            <li>Start with a few panels, not a full roof</li>
+            <li>Run something real: a pump, lights, a battery</li>
+            <li>The Array Builder tells you how to wire them</li>
+          </ul>
+        </div>
+      </section>
+      <section class="imp-sum" data-day="0.86" data-in>
+        <div class="wrap">
+          <h2 class="title">In short</h2>
+          <div class="imp-sum__grid">
+            <div class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of their rated power is what most panels still make after 25 years (NREL)</p></div>
+            <div class="fig"><div class="num-big" data-count>1.2%</div><p class="fig__line">of retired US panels are reused today; about 83% go to landfill (NREL baseline, 2020–2050)</p></div>
+            <div class="fig"><div class="num-big imp-sum__gain" data-count>${g.pct >= 0 ? "+" : ""}${g.pct.toFixed(0)}%</div><p class="fig__line">more power from the same four mixed panels when matched into pairs instead of one string: ${g.asIs.toFixed(2)} W to ${g.matched.toFixed(2)} W <span class="tag">Simulated</span></p></div>
+          </div>
+          <p class="imp-sum__note label">The four panels are our demo batch, two strong and two weakened, run through our single-diode panel model. Lab-testing a used panel costs about $17–34 against about $55 for a new one (IEA PVPS Task 13).</p>
+        </div>
+      </section>
+      <section class="imp-next" data-day="1" data-in>
+        <div class="wrap">
+          <h2 class="title">Where this goes next</h2>
+          <ol class="imp-next__list">
+            <li><b>Real panels.</b> Grade retired panels from a recycler and check the grades against their measured output.</li>
+            <li><b>Bigger batches.</b> More panels per round, with a reference panel so every round compares fairly.</li>
+            <li><b>Counted impact.</b> How many panels a bench keeps out of landfill, published with the scenario and sources beside it.</li>
+          </ol>
+          <div class="row imp-next__actions"><a class="btn btn--primary" href="#/build">Try the Array Builder</a><a class="btn" href="#/passports">See the passports</a></div>
+        </div>
+      </section>`;
   }
 
   // ---------- router ----------
@@ -634,7 +620,7 @@
     try {
       if (r.page === "passport") view.innerHTML = pagePassport(r.id);
       else if (r.page === "build") { view.innerHTML = pageBuild(); wireBuild(); }
-      else if (r.page === "impact") { view.innerHTML = pageImpact(); wireImpact(); }
+      else if (r.page === "impact") { if (reason === "data" && view.querySelector(".imp-open")) inPlace = true; else view.innerHTML = pageImpact(); }   // it does not depend on runs: never rebuilt under the reader
       else if (r.page === "print") view.innerHTML = pagePrint();
       else if (r.page === "passports") { view.innerHTML = pageIndex(); wireIndex(); }
       else if (reason === "data" && view.querySelector("[data-hero]")) { window.SSFront.refresh(view, frontCtx()); inPlace = true; }
