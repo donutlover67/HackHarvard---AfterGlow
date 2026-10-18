@@ -50,7 +50,7 @@
   .hero__slot { width: min(100%, calc(64vh * 4 / 3)); justify-self: start; align-self: center; }
   .hero__text { padding-right: 24px; }
   /* the pinned comparison: the section is pale like the hero, and only the bubble brings the navy */
-  .repair { background: transparent; min-height: 260vh; }   /* the page's own ground shows through until the bubble covers it, sun and all */
+  .repair { background: var(--page); min-height: 260vh; }
   .repair__pin { position: sticky; top: 0; height: 100vh; }
   /* the bubble is a layer fixed to the screen (so it can rise before the section pins), a navy circle at the bottom
      centre whose radius motion.js sets in vmax (--r); the pin's own navy (::before) comes with the panels (--show) and
@@ -226,19 +226,15 @@ html.reduced .recycle path { stroke-dashoffset: 0; }
 html.has-motion .ppass { filter: grayscale(1); opacity: 0.72; }
 html.has-motion .ppass:hover, html.has-motion .ppass:focus-visible, html.has-motion .ppass.is-near { filter: none; opacity: 1; }
 
-/* the page's sun: fixed to the screen below the nav, drawn by hand, walking from left to right along a shallow arc as the
-   page scrolls (--sx in vw and --sy in vh from motion.js); above the chapters, under the nav */
-.skysun { position: fixed; left: calc(var(--sx, 6) * 1vw); top: calc(var(--sy, 13) * 1vh); width: 78px; height: 78px; transform: translate(-50%, -50%); z-index: 2; pointer-events: none; }
-/* the navy chapters sit above the sun and cover it as it passes; the pale ones sit below it */
-body[data-page="front"] #view > .repair, body[data-page="front"] #view > .strip, body[data-page="front"] #view > .front-band { z-index: 3; }
-.skysun svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: var(--sun); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.skysun .sun__disc { fill: var(--sun); }
-body:not([data-page="front"]) .skysun { display: none; }
-@media (max-width: 760px) { .skysun { width: 50px; height: 50px; } }
-/* the landscape along the bottom of a white block: sage hills with a drawn edge, grass, two trees; under the text */
-.landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 30%; z-index: 0; pointer-events: none; stroke: #5f8a55; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
-.land__back { fill: #d3e3ca; } .land__mid { fill: #b7d2a9; } .land__front { fill: #98bd88; }
-.land__crown { fill: #a7c898; }
-.land__grass { fill: none; }
+/* the landscape along the bottom of a white block: pen work in sage and ink, under the text */
+.landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 30%; z-index: 0; pointer-events: none; fill: none; stroke: #3f6139; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0.72; }
+.land__fill { stroke: none; }
+.land__back { fill: #dde8d4; } .land__mid { fill: #c6d9b9; } .land__front { fill: #aac89a; }
+.land__ink { stroke-width: 2; }
+.land__ink--2 { stroke-width: 1.1; opacity: 0.55; }
+.land__hatch { stroke-width: 1.2; opacity: 0.6; }
+.land__grass { stroke-width: 1.5; }
+.land__trunk { stroke-width: 2.4; }
+.land__crown { stroke-width: 1.4; fill: #b9d4aa; fill-opacity: 0.6; }
 .close { position: relative; overflow: clip; }
 .close .wrap { position: relative; z-index: 1; }

@@ -20,27 +20,7 @@ window.SSFront = (function () {
   // The hero's drawing. Both svgs share the slot's box; the sun's frame reaches 14% above it (400x342 against the
   // panel's 400x300, so nothing is stretched), which puts the sun in the hero's top left corner without meeting text.
   // The panel is drawn after the sun, so the beams end where they land on its face.
-  const SUN = { cx: 26, cy: 50, r: 18 };   // where the beams start: under the page's sun at the top of the page
-  // the page's one sun, drawn by hand and fixed to the screen; motion.js walks it from left to right as the page scrolls
-  function skySun() {
-    const cx = 40, cy = 40, r = 17;
-    const rays = Array.from({ length: 11 }, (_, i) => { const a = (i / 11) * Math.PI * 2 - 0.4, len = 7 + ((i * 7) % 5), r0 = r + 6 + ((i * 3) % 3); const p = (rr) => `${(cx + Math.cos(a) * rr).toFixed(1)} ${(cy + Math.sin(a) * rr).toFixed(1)}`; return `<path d="M${p(r0)} L${p(r0 + len)}"/>`; }).join("");
-    const d = `M${cx} ${cy - r} C${cx + 12} ${cy - r - 1} ${cx + r + 1} ${cy - 11} ${cx + r} ${cy + 1} C${cx + r - 1} ${cy + 13} ${cx + 10} ${cy + r + 1} ${cx - 1} ${cy + r} C${cx - 13} ${cy + r - 1} ${cx - r - 1} ${cy + 10} ${cx - r} ${cy - 1} C${cx - r + 1} ${cy - 12} ${cx - 11} ${cy - r + 1} ${cx} ${cy - r} Z`;
-    return `<div class="skysun" aria-hidden="true"><svg viewBox="0 0 80 80" focusable="false"><g class="sun__rays">${rays}</g><path class="sun__disc" d="${d}"/></svg></div>`;
-  }
-  // a hand-drawn landscape along the bottom of a white block: three hills in sage, a few blades of grass, two trees
-  function landscape() {
-    const grass = [[150, 262], [162, 258], [640, 232], [652, 236], [1180, 248], [1192, 244], [1410, 266]].map(([x, y]) => `<path d="M${x} ${y} l -3 -11 M${x + 5} ${y - 1} l 2 -10"/>`).join("");
-    const tree = (x, y, s) => `<path d="M${x} ${y} C ${x + 1} ${y - 10 * s}, ${x - 1} ${y - 18 * s}, ${x} ${y - 26 * s}"/><path class="land__crown" d="M${x} ${y - 24 * s} C ${x + 14 * s} ${y - 30 * s}, ${x + 16 * s} ${y - 54 * s}, ${x} ${y - 56 * s} C ${x - 16 * s} ${y - 54 * s}, ${x - 14 * s} ${y - 30 * s}, ${x} ${y - 24 * s} Z"/>`;
-    return `<svg class="landscape" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
-      <path class="land__back" d="M-20 222 C 180 150, 390 158, 570 202 C 700 234, 820 170, 960 150 C 1110 128, 1260 196, 1400 182 C 1480 174, 1540 190, 1620 204 V320 H-20 Z"/>
-      <path class="land__mid" d="M-20 254 C 240 188, 500 236, 740 212 C 900 196, 1040 166, 1220 190 C 1380 212, 1500 236, 1620 240 V320 H-20 Z"/>
-      ${tree(1010, 206, 1)}${tree(1046, 212, 0.7)}
-      <path class="land__front" d="M-20 278 C 290 236, 610 268, 900 246 C 1120 230, 1360 226, 1620 268 V320 H-20 Z"/>
-      ${tree(300, 268, 0.9)}
-      <g class="land__grass">${grass}</g>
-    </svg>`;
-  }   // above and left of the face's corner; clear of the nav and the viewport's edge at 1920x1080 and 1440x900
+  const SUN = { cx: 30, cy: 58, r: 18 };
   const FACE = { x: 48, y: 64, w: 304, h: 172, c: 30 };
   function sunSvg() {
     const { cx, cy, r } = SUN;
@@ -51,12 +31,51 @@ window.SSFront = (function () {
     }).join("");
     // three beams fan out from the disc's edge and run down onto the face (sun frame = panel frame shifted down by 42)
     const beams = [[130, 172], [205, 156], [285, 146]].map(([ex, ey], i) => {
-      const a = Math.atan2(ey - cy, ex - cx), sx = cx + Math.cos(a) * (r + 2), sy = cy + Math.sin(a) * (r + 2);
+      const a = Math.atan2(ey - cy, ex - cx), sx = cx + Math.cos(a) * (r + 9), sy = cy + Math.sin(a) * (r + 9);
       const mx = (sx + ex) / 2, my = (sy + ey) / 2 - 12;   // a slight sag, like a drawn line
       return `<path class="sun__beam" style="--b:${i}" d="M${sx.toFixed(1)} ${sy.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex} ${ey}"/>`;
     }).join("");
     const d = `M${cx} ${cy - r} C${cx + 12} ${cy - r - 1} ${cx + r + 1} ${cy - 11} ${cx + r} ${cy + 1} C${cx + r - 1} ${cy + 13} ${cx + 10} ${cy + r + 1} ${cx - 1} ${cy + r} C${cx - 13} ${cy + r - 1} ${cx - r - 1} ${cy + 10} ${cx - r} ${cy - 1} C${cx - r + 1} ${cy - 12} ${cx - 11} ${cy - r + 1} ${cx} ${cy - r} Z`;
-    return `<svg class="hero__sun" viewBox="0 0 400 342" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g class="sun__beams">${beams}</g></svg>`;   // the sun itself is the page's (skySun), fixed to the screen
+    return `<svg class="hero__sun" viewBox="0 0 400 342" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <g class="sun__rays">${rays}</g>
+      <path class="sun__disc" d="${d}"/>
+      <g class="sun__beams">${beams}</g>
+    </svg>`;
+  }
+  // A landscape drawn by hand along the bottom of a white block. Everything is pen work: each ridge is a line sampled
+  // every few units with a tremor, inked twice a little out of register, hatched on its shaded slope; grass is tufts of
+  // three strokes; trees are a bent trunk and a scribbled crown. The same seed every time, so the drawing never changes.
+  function landscape() {
+    let seed = 7;
+    const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+    const jit = (k) => (rnd() - 0.5) * k;
+    const W = 1600;
+    const ridge = (y0, a1, w1, p1, a2, w2, p2) => { const pts = []; for (let x = -24; x <= W + 24; x += 14) pts.push([x + jit(3), y0 + a1 * Math.sin(x / w1 + p1) + a2 * Math.sin(x / w2 + p2) + jit(3)]); return pts; };
+    const line = (pts) => pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+    const hill = (pts, cls) => {
+      const shifted = pts.map(([x, y]) => [x + 3 + jit(2), y - 3 + jit(2)]);
+      let hatch = "";
+      for (let i = 2; i < pts.length - 2; i += 2) {   // short strokes down the slopes that face away from the light
+        const slope = pts[i + 1][1] - pts[i - 1][1];
+        if (slope > 1.5) { const [x, y] = pts[i]; hatch += `M${(x + jit(2)).toFixed(1)} ${(y + 7).toFixed(1)} L${(x - 9 + jit(3)).toFixed(1)} ${(y + 24 + jit(4)).toFixed(1)} `; }
+      }
+      return `<path class="land__fill ${cls}" d="${line(pts)} L${W + 24} 330 L-24 330 Z"/><path class="land__ink" d="${line(pts)}"/><path class="land__ink land__ink--2" d="${line(shifted)}"/><path class="land__hatch" d="${hatch}"/>`;
+    };
+    const tuft = (x, y) => `<path d="M${x.toFixed(1)} ${y.toFixed(1)} l ${(-4 + jit(2)).toFixed(1)} ${(-13 + jit(4)).toFixed(1)} M${(x + 3).toFixed(1)} ${y.toFixed(1)} l ${jit(2).toFixed(1)} ${(-16 + jit(4)).toFixed(1)} M${(x + 6).toFixed(1)} ${y.toFixed(1)} l ${(4 + jit(2)).toFixed(1)} ${(-12 + jit(4)).toFixed(1)}"/>`;
+    const tree = (x, y, h) => {
+      let crown = "";
+      for (let k = 0; k < 7; k++) { const cx = x + jit(h * 0.5), cy = y - h * 0.78 + jit(h * 0.4), rx = h * 0.26 + jit(h * 0.1), ry = h * 0.2 + jit(h * 0.08), t = jit(1); crown += `M${(cx - rx).toFixed(1)} ${cy.toFixed(1)} C ${(cx - rx).toFixed(1)} ${(cy - ry * 1.3 + t).toFixed(1)}, ${(cx + rx).toFixed(1)} ${(cy - ry * 1.3 - t).toFixed(1)}, ${(cx + rx).toFixed(1)} ${cy.toFixed(1)} C ${(cx + rx).toFixed(1)} ${(cy + ry * 1.3).toFixed(1)}, ${(cx - rx).toFixed(1)} ${(cy + ry * 1.3).toFixed(1)}, ${(cx - rx).toFixed(1)} ${cy.toFixed(1)} `; }
+      return `<path class="land__trunk" d="M${x} ${y.toFixed(1)} C ${(x + 2 + jit(3)).toFixed(1)} ${(y - h * 0.2).toFixed(1)}, ${(x - 2 + jit(3)).toFixed(1)} ${(y - h * 0.4).toFixed(1)}, ${(x + jit(2)).toFixed(1)} ${(y - h * 0.62).toFixed(1)}"/><path class="land__crown" d="${crown}"/>`;
+    };
+    const back = ridge(196, 26, 190, 0.6, 12, 73, 2.1), mid = ridge(236, 20, 240, 2.4, 9, 61, 0.3), front = ridge(268, 12, 300, 1.1, 6, 47, 1.7);
+    const yAt = (pts, x) => { const i = Math.max(0, Math.min(pts.length - 1, Math.round((x + 24) / 14))); return pts[i][1]; };
+    const tufts = [90, 210, 330, 470, 560, 690, 820, 940, 1060, 1190, 1290, 1420, 1530].map((x) => tuft(x + jit(20), yAt(front, x) - 2)).join("");
+    return `<svg class="landscape" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+      ${hill(back, "land__back")}${tree(1180, yAt(back, 1180) + 4, 70)}${tree(1225, yAt(back, 1225) + 3, 48)}
+      ${hill(mid, "land__mid")}${tree(330, yAt(mid, 330) + 3, 62)}
+      ${hill(front, "land__front")}
+      <g class="land__grass">${tufts}</g>
+    </svg>`;
   }
   // the cell as a drawing: its shadow, its thickness, its face with fingers and busbars, and the sunlight on the face
   // as an amber wash and hatching from the top left corner, whose reach motion.js sets from the way the panel turns.
@@ -332,7 +351,7 @@ window.SSFront = (function () {
   function page(ctx) {
     const D = window.SSFrontData;
     const g = D.gainFigure(ctx.runs), s = D.stripFigures(ctx.runs);
-    return skySun() + hero() + repair(ctx, g) + paper() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
+    return hero() + repair(ctx, g) + paper() + strip(ctx, s) + gainBand(ctx, g) + passportsSection(ctx) + teaser() + close();
   }
   // runs arrived while the page is open: redraw the data-bearing parts in place, leave the hero and the reader's scroll alone
   function refresh(root, ctx) {
