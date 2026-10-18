@@ -142,7 +142,7 @@ The owner found the 280 vh pinned hero read as the page refusing to scroll. The 
 
 ### Amendment: the Lando Norris pass (Oct 17, late night)
 The owner asked for the artistic devices of landonorris.com (a 30 s screen recording, kept out of the repo) applied to the front page. Mapped onto our palette and content, in six commits:
-1. **Portal hero.** On large screens the hero pins for most of a screen while `--q` runs: the headline fades, the drawn cell shrinks into a centred framed box and dims, the ground turns navy, two giant lines (amber light, paper bold) pass behind, an amber string signs itself across the frame (`portal` in motion.js). The re-pairing moved to its own navy `.repair` section, unpinned.
+1. **Portal hero.** On large screens the hero pins for most of a screen while `--q` runs: the headline fades, the drawn cell shrinks into a centred framed box and dims, the ground turns navy, an amber string signs itself across the frame (`portal` in motion.js); the two giant marquee lines were tried and removed at the owner's request. The re-pairing moved to its own navy `.repair` section, unpinned.
 2. **Block wipes.** Amber blocks sweep across the headline lines and section titles, alternating direction; one hollow outlined word ("work."). Replaces the masked line rise.
 3. **Contours.** Winding single-weight lines a few shades off the ground behind every chapter, drifting over 90 s; ink on paper, paper on navy, one set crossing into the other inside the portal.
 4. **Doodles.** A drawn sun, cell and loop of string end the problem text, the last step and the gain note.

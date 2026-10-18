@@ -119,8 +119,8 @@ window.SSFront = (function () {
   // ---------- sections ----------
   // The hero opens bright: the drawn cell and the headline on the pale ground. On large screens it pins for most of a
   // screen while the reader scrolls (--q, from motion.js): the ground turns navy, the headline fades, the cell shrinks
-  // into a framed box at the centre, two giant lines slide past behind it and an amber string signs itself across the
-  // frame. Then the page lets go and the re-pairing follows on the navy ground.
+  // into a framed box at the centre and an amber string signs itself across the frame. Then the page lets go and the
+  // re-pairing follows on the navy ground.
   // "recycle", written by hand behind the problem's numerals: one connected cursive line, rising from the bottom left
   // to the top right, in brush-pen weights (thin upstrokes, thick downstrokes, a flourish out). Each segment is one
   // stroke of the pen; front.css draws them in order at a steady pen speed (--d, --t from the segment's length).
@@ -164,10 +164,6 @@ window.SSFront = (function () {
     return `<section class="hero" data-portal data-in>
       <div class="hero__pin">
         <div class="hero__ground" aria-hidden="true"></div>
-        <div class="hero__marquee" aria-hidden="true">
-          <div class="hero__marquee-row"><span>Used panels still work</span><span>Used panels still work</span></div>
-          <div class="hero__marquee-row"><span>Second String</span><span>Second String</span></div>
-        </div>
         <div class="hero__stage">
           <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
           <div class="hero__text">
