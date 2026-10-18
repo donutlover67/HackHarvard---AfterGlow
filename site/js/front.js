@@ -117,7 +117,7 @@ window.SSFront = (function () {
         <div class="hero__stage">
           <div class="hero__slot fade" data-reveal data-hero-slot>${sunSvg()}${panelSvg()}</div>
           <div class="hero__text">
-            <h1 class="display" data-reveal><span class="line"><span class="line__in">Used panels</span></span> <span class="line"><span class="line__in">still work.</span></span></h1>
+            <h1 class="display" data-reveal><span class="wipe"><span class="wipe__in">Used panels</span></span> <span class="wipe wipe--rtl" style="--d:140ms"><span class="wipe__in">still <span class="hollow">work.</span></span></span></h1>
             <p class="lede rise" data-reveal style="--d:260ms">Nobody can tell which ones, so most are landfilled. Second String grades them against each other and wires them so no good panel is wasted on a weak partner.</p>
             <div class="hero__actions rise" data-reveal style="--d:380ms"><a class="btn btn--primary" href="#/passports">See the passports</a><a class="btn" href="#/build">Try the Array Builder</a></div>
           </div>
@@ -164,7 +164,7 @@ window.SSFront = (function () {
   const glyph = (name) => `<svg class="step__glyph" viewBox="0 0 72 40" aria-hidden="true" focusable="false"><rect width="72" height="40" fill="var(--page)"/>${GLYPHS[name]}</svg>`;
   const how = () => `<section class="how" data-in>
       <div class="wrap">
-        <h2 class="title">Four panels, three ways to pair them.</h2>
+        <h2 class="title" data-reveal><span class="wipe"><span class="wipe__in">Four panels, three ways to pair them.</span></span></h2>
         <div class="string-box">
           <svg class="string__wire string__wire--h" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0,1 H100" pathLength="1"/></svg>
           <svg class="string__wire string__wire--v" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M1,0 V100" pathLength="1"/></svg>
@@ -189,7 +189,7 @@ window.SSFront = (function () {
   }
   const strip = (ctx, s) => `<section class="strip" data-strip data-in>
       <div class="strip__pin"><div class="strip__stage">
-        <div class="wrap"><h2 class="title">Three ways to wire four panels.</h2></div>
+        <div class="wrap"><h2 class="title" data-reveal><span class="wipe wipe--rtl"><span class="wipe__in">Three ways to wire four panels.</span></span></h2></div>
         <div id="front-strip">${stripInner(ctx, s)}</div>
       </div></div>
     </section>`;
@@ -214,7 +214,7 @@ window.SSFront = (function () {
         : `<p class="muted">No panels published yet.</p>
            <div class="row fpass__actions"><button type="button" class="btn" id="btn-sample-front">Show example panels</button><span class="label">A simulated batch, not a real measurement.</span><span class="status" id="front-status"></span></div>`;
     return `<div class="wrap">
-        <h2 class="title">Every panel gets a passport.</h2>
+        <h2 class="title" data-reveal><span class="wipe"><span class="wipe__in">Every panel gets a passport.</span></span></h2>
         <p class="lede">An ID, a QR code and the record of what the bench measured, so the next owner knows what they are buying.</p>
         ${body}
       </div>`;

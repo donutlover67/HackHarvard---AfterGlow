@@ -46,6 +46,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .page-title { font-size: var(--page-title); font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.025em; line-height: 1; color: var(--cell); margin-bottom: 12px; }
 .lede { font-size: 1.06rem; color: var(--ink-2); max-width: var(--measure); margin-bottom: 24px; }
 .label { font-size: var(--label); font-stretch: 88%; color: var(--ink-2); }
+/* one word drawn as an outline in amber (after the Lando Norris site's hollowed words) */
+.hollow { color: transparent; -webkit-text-stroke: 0.035em var(--sun); paint-order: stroke fill; }
 .num-big { font-size: var(--display); font-weight: 700; font-stretch: 112.5%; letter-spacing: -0.03em; line-height: 1; color: var(--cell); }
 .muted { color: var(--ink-2); }
 .small { font-size: 0.88rem; }
