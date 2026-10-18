@@ -105,11 +105,30 @@ window.SSFront = (function () {
   // screen while the reader scrolls (--q, from motion.js): the ground turns navy, the headline fades, the cell shrinks
   // into a framed box at the centre, two giant lines slide past behind it and an amber string signs itself across the
   // frame. Then the page lets go and the re-pairing follows on the navy ground.
+  // Winding single-weight lines a few shades off the ground, behind every chapter: part circuit contour, part pen on a
+  // sketchbook page (after the Lando Norris site). They drift slowly (front.css) and never compete with the type.
+  const CONTOUR_PATHS = [
+    "M-120 300 C 180 110, 520 430, 820 250 S 1320 60, 1720 300",
+    "M-120 640 C 300 490, 430 840, 780 670 S 1230 420, 1720 650",
+    "M420 150 C 640 85, 920 170, 880 340 S 540 530, 390 410 S 250 215, 420 150 Z",
+    "M1010 690 C 1210 550, 1510 630, 1460 820 S 1110 990, 960 870 S 860 760, 1010 690 Z",
+    "M-120 880 C 420 720, 920 980, 1720 810",
+    "M1150 60 C 1320 20, 1560 90, 1620 220 S 1420 420, 1250 330 S 1030 150, 1150 60 Z",
+  ];
+  const contours = (cls) => `<svg class="contours ${cls}" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">${CONTOUR_PATHS.map((d) => `<path d="${d}"/>`).join("")}</svg>`;
+  // small drawn marks that end a block of text, the way a signature ends a note: a sun, a cell, a loop of string
+  const DOODLES = {
+    sun: `<svg class="doodle doodle--sun" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle cx="20" cy="20" r="6.5"/>${Array.from({ length: 8 }, (_, i) => { const a = (i / 8) * Math.PI * 2 + 0.3, r0 = 10.5, r1 = 14 + (i % 3); return `<path d="M${(20 + Math.cos(a) * r0).toFixed(1)} ${(20 + Math.sin(a) * r0).toFixed(1)} L${(20 + Math.cos(a) * r1).toFixed(1)} ${(20 + Math.sin(a) * r1).toFixed(1)}"/>`; }).join("")}</svg>`,
+    cell: `<svg class="doodle doodle--cell" viewBox="0 0 44 34" aria-hidden="true" focusable="false"><path d="M9 4 H35 L41 10 V24 L35 30 H9 L3 24 V10 Z"/><path d="M16 6 V28 M28 6 V28"/></svg>`,
+    string: `<svg class="doodle doodle--string" viewBox="0 0 64 34" aria-hidden="true" focusable="false"><path d="M3 24 C 12 4, 20 4, 24 18 S 34 34, 40 16 S 52 2, 61 20"/></svg>`,
+  };
+  const doodle = (k) => DOODLES[k] || "";
   const SIGNATURE = "M40 390 C 120 210, 230 150, 310 250 S 340 450, 250 430 C 150 405, 330 170, 530 130 C 720 90, 780 250, 650 330 S 420 390, 560 300 C 700 215, 870 165, 965 105";
   function hero(ctx) {
     return `<section class="hero" data-portal data-in>
       <div class="hero__pin">
         <div class="hero__ground" aria-hidden="true"></div>
+        ${contours("contours--ink contours--fades")}${contours("contours--light contours--rises")}
         <div class="hero__marquee" aria-hidden="true">
           <div class="hero__marquee-row"><span>Used panels still work</span><span>Used panels still work</span></div>
           <div class="hero__marquee-row"><span>Second String</span><span>Second String</span></div>
@@ -130,6 +149,7 @@ window.SSFront = (function () {
   // the four panels re-pairing as the reader scrolls on, on the navy ground the portal left behind
   function repair(ctx, gain) {
     return `<section class="repair" data-hero data-gain="${ctx.esc(Math.round(gain.pct))}" data-in>
+      ${contours("contours--light")}
       <div class="wrap">
         ${repairingSvg(gainText(gain))}
         <p class="hero__caption label">more power than wiring A, once the strong pair shares a string</p>
@@ -140,13 +160,14 @@ window.SSFront = (function () {
   const TICKER = ["Most panels still make 80–88% of their rating after 25 years", "About 83% of retired US panels are headed to landfill", "Lab-testing one used panel costs $17–34", "1.2% of retired US panels are reused", "Matched wiring: up to 37% more power from the same four panels, simulated"];
   const ticker = () => `<section class="ticker" aria-hidden="true"><div class="ticker__track">${[...TICKER, ...TICKER].map((t) => `<span class="ticker__item">${t}</span>`).join("")}</div></section>`;
   const problem = () => `<section class="problem" data-in>
+      ${contours("contours--ink")}
       <div class="wrap">
         <div class="problem__grid">
           <div class="fig"><div class="num-big" data-count>80–88%</div><p class="fig__line">of rated output is what most panels still make after 25 years</p></div>
           <div class="fig"><div class="num-big" data-count>1.2%</div><p class="fig__line">of retired US panels are reused; most are landfilled</p></div>
           <div class="fig"><div class="num-big" data-count>$17–34</div><p class="fig__line">for a lab test of one used panel, against about $55 for a new one</p></div>
         </div>
-        <p class="problem__text">In a series string every panel carries the same current, so the weakest panel limits the string. Factories sort new panels into current classes; used ones arrive mixed and untested.</p>
+        <p class="problem__text">In a series string every panel carries the same current, so the weakest panel limits the string. Factories sort new panels into current classes; used ones arrive mixed and untested. ${doodle("sun")}</p>
       </div>
     </section>`;
   // the bench's four steps hang in order on one wire, the way panels hang on a string; each carries a drawing of what happens
@@ -163,6 +184,7 @@ window.SSFront = (function () {
   };
   const glyph = (name) => `<svg class="step__glyph" viewBox="0 0 72 40" aria-hidden="true" focusable="false"><rect width="72" height="40" fill="var(--page)"/>${GLYPHS[name]}</svg>`;
   const how = () => `<section class="how" data-in>
+      ${contours("contours--ink")}
       <div class="wrap">
         <h2 class="title" data-reveal><span class="wipe"><span class="wipe__in">Four panels, three ways to pair them.</span></span></h2>
         <div class="string-box">
@@ -172,7 +194,7 @@ window.SSFront = (function () {
           <li class="step">${glyph("measure")}<h3>Measure</h3><p>Every panel's current at the same instant, and its voltage.</p></li>
           <li class="step">${glyph("predict")}<h3>Predict</h3><p>The scores say which pairs match.</p></li>
           <li class="step">${glyph("sweep")}<h3>Switch and sweep</h3><p>Relays try all three wirings; a capacitor sweeps each one's power curve.</p></li>
-          <li class="step">${glyph("prove")}<h3>Keep and prove</h3><p>The best wiring stays on; alternating best and worst twenty times proves the gain.</p></li>
+          <li class="step">${glyph("prove")}<h3>Keep and prove</h3><p>The best wiring stays on; alternating best and worst twenty times proves the gain. ${doodle("cell")}</p></li>
         </ol>
         </div>
       </div>
@@ -199,7 +221,7 @@ window.SSFront = (function () {
     return `<div class="wrap">
         <div class="band__num" data-count>${gainText(g)}</div>
         <p class="band__text">more power than the worst wiring of the same panels, ${g.model ? "" : "measured "}at each wiring's maximum power point. With normal aging the gain is about 5 to 7%.</p>
-        <p class="band__note">${g.model ? "A model figure for the demo batch, two of four panels behind 35% film. The first published bench run replaces it." : `${ctx.num(g.pct, 1)}%${detail}, ${fromRun(g, ctx)}.`}</p>
+        <p class="band__note">${g.model ? "A model figure for the demo batch, two of four panels behind 35% film. The first published bench run replaces it." : `${ctx.num(g.pct, 1)}%${detail}, ${fromRun(g, ctx)}.`} ${doodle("string")}</p>
       </div>`;
   }
   const gainBand = (ctx, g) => `<section class="band front-band" id="front-gain" data-in>${gainInner(ctx, g)}</section>`;
@@ -213,14 +235,15 @@ window.SSFront = (function () {
            <div class="row fpass__actions"><a class="btn btn--primary" href="#/passports">See all passports</a><a class="btn" href="#/print">Print cards</a></div>`
         : `<p class="muted">No panels published yet.</p>
            <div class="row fpass__actions"><button type="button" class="btn" id="btn-sample-front">Show example panels</button><span class="label">A simulated batch, not a real measurement.</span><span class="status" id="front-status"></span></div>`;
-    return `<div class="wrap">
+    return `${contours("contours--ink")}<div class="wrap">
         <h2 class="title" data-reveal><span class="wipe"><span class="wipe__in">Every panel gets a passport.</span></span></h2>
         <p class="lede">An ID, a QR code and the record of what the bench measured, so the next owner knows what they are buying.</p>
         ${body}
       </div>`;
   }
   const passportsSection = (ctx) => `<section class="fpass" id="front-passports" data-in>${passportsInner(ctx)}</section>`;
-  const teaser = () => `<section class="teaser" data-in><div class="wrap"><div class="teaser__box"><p class="teaser__text">Have passports? The Array Builder groups them into strings so no strong panel is held back.</p><a class="btn" href="#/build">Try the Array Builder</a></div></div></section>`;
+  const teaser = () => `<section class="teaser" data-in>
+      ${contours("contours--ink")}<div class="wrap"><div class="teaser__box"><p class="teaser__text">Have passports? The Array Builder groups them into strings so no strong panel is held back.</p><a class="btn" href="#/build">Try the Array Builder</a></div></div></section>`;
   const close = () => `<section class="close" data-in><div class="wrap">
       <p class="close__name">Second String</p>
       <p class="close__line">Grades used solar panels against each other, then wires them for the most power.</p>

@@ -133,7 +133,7 @@ html[data-dir="back"] .view.is-entering { animation-name: vt-in-back; }
 @media (prefers-reduced-motion: reduce) {
   .m-part, .rise, .grow, .fade, .hero__scroll, .step__glyph, .step h3, .wiring, .ppass, .teaser__box { transition: none; }
   .wipe::after, .wipe__in { animation: none; }
-  .ticker__track, .sun__disc, .sun__rays, .sun__beam { animation: none; }
+  .ticker__track, .sun__disc, .sun__rays, .sun__beam, .contours { animation: none; }
   .hero__panel { --tx: 12; --ty: -3; }
   [data-hero] { --k: 1; --w: 1; --g: 1; }
   [data-portal] { --q: 0; }
