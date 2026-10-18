@@ -67,7 +67,7 @@ window.SSMotion = (function () {
   }
   function initSpaceLayer() {
     const layer = document.querySelector(".space-layer");
-    if (!layer || document.body.dataset.page !== "front") return;
+    if (!layer) return;
     const stars = layer.querySelector(".space-layer__stars");
     const meteors = layer.querySelector(".space-layer__meteors");
     if (stars && !stars.children.length) {
