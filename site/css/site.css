@@ -188,8 +188,10 @@ details.tools[open] summary { margin-bottom: 10px; }
   .sheet { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
-  .nav { padding: 12px var(--gutter); gap: 12px; }
-  .nav__links { gap: 14px; }
+  .nav { padding: 12px var(--gutter) 10px; gap: 8px 12px; flex-wrap: wrap; }
+  .nav__name { white-space: nowrap; }
+  .nav__links { gap: 6px 14px; flex-wrap: wrap; font-size: 0.92rem; }
+  .nav__links a { white-space: nowrap; padding: 2px 0; }
   .view { padding: 24px var(--gutter) 48px; }
   .card { padding: 16px 14px; }
   .band { padding: 28px 20px; }
